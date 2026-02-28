@@ -6,7 +6,7 @@ from torchvision import transforms
 # here will be more model_types
 model_type_paths = ['imagenet_ai_0419_biggan', 'imagenet_ai_0508_adm', 'imagenet_glide']
 
-def get_paths(data_dir:str, model_type_paths = model_type_paths):
+def get_images_paths(data_dir:str, model_type_paths = model_type_paths):
     images_paths_train = []
     images_paths_val = []
     labels_train = []
@@ -14,7 +14,7 @@ def get_paths(data_dir:str, model_type_paths = model_type_paths):
 
     for model_type in model_type_paths:
         for split in ['train', 'val']:
-            for label_name in ['fake', 'real']:
+            for label_name in ['ai', 'nature']:
                 
                 folder = os.path.join(data_dir, model_type, split, label_name)
 
@@ -24,16 +24,16 @@ def get_paths(data_dir:str, model_type_paths = model_type_paths):
 
                     if split == 'train':
                         images_paths_train.append(full_path)
-                        labels_train.append(0 if label_name=='real' else 1)
+                        labels_train.append(0 if label_name=='nature' else 1)
                     else:
                         images_paths_val.append(full_path)
-                        labels_val.append(0 if label_name=='real' else 1)
+                        labels_val.append(0 if label_name=='nature' else 1)
 
     return images_paths_train, images_paths_val, labels_train, labels_val   
 
 
 IMAGE_TRANSFORM_TRAIN = transforms.Compose([
-    transforms.Resize((256, 256)),
+    transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
     transforms.Normalize(
@@ -42,7 +42,7 @@ IMAGE_TRANSFORM_TRAIN = transforms.Compose([
     )   
 ])
 IMAGE_TRANSFORM_VAL = transforms.Compose([
-    transforms.Resize((256, 256)),
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(
         mean=[0.485,0.456,0.406], 
