@@ -5,6 +5,24 @@ from torchvision import transforms
 
 # here will be more model_types
 model_type_paths = ['imagenet_ai_0419_biggan', 'imagenet_ai_0508_adm', 'imagenet_glide']
+IMAGE_TRANSFORM_TRAIN = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.RandomHorizontalFlip(),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485,0.456,0.406], #standard values used for dataset ImageNet
+        std=[0.229,0.224,0.225]
+    )   
+])
+IMAGE_TRANSFORM_VAL = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485,0.456,0.406], 
+        std=[0.229,0.224,0.225]
+    )
+])
+
 
 def get_images_paths(data_dir:str, model_type_paths = model_type_paths):
     images_paths_train = []
@@ -30,25 +48,6 @@ def get_images_paths(data_dir:str, model_type_paths = model_type_paths):
                         labels_val.append(0 if label_name=='nature' else 1)
 
     return images_paths_train, images_paths_val, labels_train, labels_val   
-
-
-IMAGE_TRANSFORM_TRAIN = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.RandomHorizontalFlip(),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485,0.456,0.406], #standard values used for dataset ImageNet
-        std=[0.229,0.224,0.225]
-    )   
-])
-IMAGE_TRANSFORM_VAL = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485,0.456,0.406], 
-        std=[0.229,0.224,0.225]
-    )
-])
 
 
 class DeepfakeDataset(Dataset):
