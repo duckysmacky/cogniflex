@@ -1,32 +1,37 @@
+import os
 import flet as ft
 from utils.picture_detection import PictureDetector
 
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_PATH = os.path.join(BASE_DIR, "weights", "best_resnet_fc-2.pth")
+
 try:
-    
-    detector = PictureDetector("C:/pet_project/my_learn/best_resnet_fc-2.pth")
+ 
+    detector = PictureDetector(MODEL_PATH)
     model_loaded = True
-    print("Модель загружена!")
+    print("✅ Модель загружена!")
 except Exception as e:
-    print(f"Ошибка загрузки модели: {e}")
+    print(f"❌ Ошибка загрузки модели: {e}")
     
-  
+   
     if "CUDA" in str(e):
-        print("Пробую загрузить с map_location='cpu'...")
+        print("🔄 Пробую загрузить с map_location='cpu'...")
         try:
-            
             import torch
             from torchvision.models import resnet18
             import torch.nn as nn
             
             model = resnet18()
             model.fc = nn.Linear(model.fc.in_features, 2)
-            model.load_state_dict(torch.load("C:/pet_project/my_learn/best_resnet_fc-2.pth", map_location='cpu'))
+            model.load_state_dict(torch.load(MODEL_PATH, map_location='cpu'))
             model.eval()
             
-            
+        
             class WrapperDetector:
                 def __init__(self, model):
                     self.model = model
+                    
                 def predict_picure(self, path):
                     from PIL import Image
                     from utils.preprocess_data import IMAGE_TRANSFORM_TRAIN
@@ -52,7 +57,7 @@ except Exception as e:
         model_loaded = False
 
 def main(page: ft.Page):
-    
+   
     page.title = 'test model'
     page.theme_mode = 'dark'
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
