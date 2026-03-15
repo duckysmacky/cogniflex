@@ -2,18 +2,18 @@ import flet as ft
 from utils.picture_detection import PictureDetector
 
 try:
-    # ЕДИНСТВЕННОЕ ИЗМЕНЕНИЕ - обрабатываем ошибку CUDA
+    
     detector = PictureDetector("C:/pet_project/my_learn/best_resnet_fc-2.pth")
     model_loaded = True
     print("Модель загружена!")
 except Exception as e:
     print(f"Ошибка загрузки модели: {e}")
     
-    # Если ошибка из-за CUDA, пробуем с map_location='cpu'
+  
     if "CUDA" in str(e):
         print("Пробую загрузить с map_location='cpu'...")
         try:
-            # Создаем детектор вручную с правильным map_location
+            
             import torch
             from torchvision.models import resnet18
             import torch.nn as nn
@@ -23,7 +23,7 @@ except Exception as e:
             model.load_state_dict(torch.load("C:/pet_project/my_learn/best_resnet_fc-2.pth", map_location='cpu'))
             model.eval()
             
-            # Создаем класс-обертку
+            
             class WrapperDetector:
                 def __init__(self, model):
                     self.model = model
@@ -52,7 +52,7 @@ except Exception as e:
         model_loaded = False
 
 def main(page: ft.Page):
-    # Весь твой код main без изменений
+    
     page.title = 'test model'
     page.theme_mode = 'dark'
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
