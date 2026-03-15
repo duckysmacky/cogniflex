@@ -10,5 +10,3 @@ def view_picture(path:str):
     plt.axis('off')
     plt.title('Example image')
     plt.show()
-
-
