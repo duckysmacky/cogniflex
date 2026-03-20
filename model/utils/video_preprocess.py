@@ -1,3 +1,4 @@
+import os
 import cv2
 import torch
 from torchvision import transforms
@@ -52,11 +53,38 @@ def preprocess__one_video(path: str, N_frames: int = 16) -> list:
     return video_tensor
 
 
-def get_paths_forensics() -> list[str]:
-    pass
-
-def get_paths_celebs() -> list[str]:
-    pass
+def get_paths_forensics(data_dir:str) -> list[str]:
+    fake_folder = ['DeepFakeDetection', 'Deepfakes', 'Face2Face', 
+                    'FaceShifter', 'FaceSwap', 'NeuralTextures']
+    video_paths = []
+    
+    for folder in fake_folder:
+        
+        folder_path = os.path.join(data_dir, folder)
+        if not os.path.exists(folder_path):
+            print('файл не найден') 
+            continue
+        
+        for file in os.listdir(folder_path):
+            if file.lower().endswith(('.mp4', '.avi', '.mov')):
+                video_paths.append(os.path.join(folder_path, file))
+            
+            
+    return video_paths    
+        
+    
+def get_paths_celebs(data_dir:str) -> list[str]:
+    video_paths = []
+    folder_path = os.path.join(data_dir, 'original')
+    if not os.path.exists(folder_path):
+        print('файл не найден')
+        return video_paths
+    
+    for file in os.listdir(folder_path):
+        if file.lower().endswith(('.mp4', '.avi', '.mov')):
+            video_paths.append(os.path.join(folder_path, file))
+    
+    return video_paths
 
 class VideoDataset(Dataset):
 
