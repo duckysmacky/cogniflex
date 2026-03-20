@@ -2,7 +2,7 @@ import cv2
 import torch
 from torchvision import transforms
 from PIL import Image
-from preprocess_data import IMAGE_TRANSFORM_VAL
+from preprocess_images import IMAGE_TRANSFORM_VAL
 from torch.utils.data import Dataset
 
 

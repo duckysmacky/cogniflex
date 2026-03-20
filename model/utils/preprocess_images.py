@@ -23,7 +23,7 @@ IMAGE_TRANSFORM_VAL = transforms.Compose([
     )
 ])
 
-
+#DATASET tiny genimage
 def get_images_paths(data_dir:str, model_type_paths = model_type_paths):
     images_paths_train = []
     images_paths_val = []
@@ -47,7 +47,32 @@ def get_images_paths(data_dir:str, model_type_paths = model_type_paths):
                         images_paths_val.append(full_path)
                         labels_val.append(0 if label_name=='nature' else 1)
 
-    return images_paths_train, images_paths_val, labels_train, labels_val   
+    return images_paths_train, images_paths_val, labels_train, labels_val  
+
+#DATASET DeepDetect-2025
+def get_images_paths_faces(data_dir:str):
+    images_paths_train = []
+    images_paths_val = []
+    labels_train = []
+    labels_val = []
+
+    for split in ['test', 'train']:
+        for label_name in ['fake', 'real']:
+
+            folder = os.path.join(data_dir, split, label_name)
+
+            for file in os.listdir(folder):
+                if not file.lower().endswith(('.jpg', '.png', '.jpeg')): continue
+                full_path = os.path.join(folder, file)
+
+                if split == 'train':
+                    images_paths_train.append(full_path)
+                    labels_train.append(0 if label_name == 'real' else 1)
+                else:
+                    images_paths_val.append(full_path)
+                    labels_val.append(0 if label_name == 'real' else 1)
+
+    return images_paths_train, images_paths_val, labels_train, labels_val  
 
 
 class DeepfakeDataset(Dataset):
