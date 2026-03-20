@@ -27,3 +27,4 @@ class PictureDetector:
             confidence = probs[0].max().item()
         
         return confidence, pred
+    

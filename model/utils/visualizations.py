@@ -10,3 +10,7 @@ def view_picture(path:str):
     plt.axis('off')
     plt.title('Example image')
     plt.show()
+
+def view_video(path:str):
+    from IPython.display import Video
+    return Video(path)

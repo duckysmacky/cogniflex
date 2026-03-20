@@ -8,3 +8,5 @@ scikit-learn
 ipykernel
 gdown
 pillow 
+pytorchvideo
+opencv
