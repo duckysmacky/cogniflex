@@ -3,10 +3,10 @@ torchvision
 numpy
 pandas
 matplotlib
-mlflow
 scikit-learn 
 ipykernel
 gdown
 pillow 
 pytorchvideo
 opencv
+mediapipe
