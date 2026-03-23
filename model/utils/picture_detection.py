@@ -1,7 +1,7 @@
 from torchvision.models import resnet18
 import torch
 import torch.nn as nn
-from utils.preprocess_images import IMAGE_TRANSFORM_VAL
+from preprocess_images import IMAGE_TRANSFORM_VAL
 from PIL import Image
 
 class PictureDetector:

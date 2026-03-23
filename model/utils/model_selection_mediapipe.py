@@ -52,3 +52,9 @@ class MultitypePictureDetector:
             confidence = probs[0].max().item()
 
         return confidence, pred
+    
+
+if __name__ == '__main__':
+    detector = MultitypePictureDetector('/Users/iaroslav/Desktop/resnet_general92.pth', '/Users/iaroslav/Desktop/resnet_faces88.pth')
+    prediction = detector.predict_picture('...') #insert some path 
+    print(prediction)
