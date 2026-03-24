@@ -12,3 +12,4 @@ out
 *.map
 package-lock.json
 yarn.lock
+README.MD
