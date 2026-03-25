@@ -1,6 +1,5 @@
 package io.github.duckysmacky.cogniflex_backend.Entities;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,8 +15,11 @@ public class HistoryRecord {
     @Id
     private UUID id;
 
-    @Column(nullable = false, length = 16)
-    private String type;
+    @Column(name = "input_type", nullable = false, length = 16)
+    private String inputType;
+
+    @Column(name = "media_type", length = 16)
+    private String mediaType;
 
     @Column(nullable = false)
     private int kind;
@@ -31,9 +33,17 @@ public class HistoryRecord {
     protected HistoryRecord() {
     }
 
-    public HistoryRecord(UUID id, String type, int kind, double accuracy, Instant createdAt) {
+    public HistoryRecord(
+            UUID id,
+            String inputType,
+            String mediaType,
+            int kind,
+            double accuracy,
+            Instant createdAt
+    ) {
         this.id = id;
-        this.type = type;
+        this.inputType = inputType;
+        this.mediaType = mediaType;
         this.kind = kind;
         this.accuracy = accuracy;
         this.createdAt = createdAt;
@@ -47,12 +57,20 @@ public class HistoryRecord {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getInputType() {
+        return inputType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setInputType(String inputType) {
+        this.inputType = inputType;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 
     public int getKind() {

@@ -5,7 +5,8 @@ import java.util.UUID;
 
 public record HistoryItemResponse(
         UUID id,
-        String type,
+        String inputType,
+        String mediaType,
         int kind,
         double accuracy,
         Instant createdAt

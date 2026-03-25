@@ -23,25 +23,25 @@ public class HistoryController {
 
     @GetMapping
     public ResponseEntity<List<HistoryItemResponse>> getHistory() {
-        return ResponseEntity.ok(historyService.getAll());
+        return ResponseEntity.ok(historyService.getAllHistoryItems());
     }
 
     @PostMapping
-    public ResponseEntity<HistoryItemResponse> createHistory(
+    public ResponseEntity<HistoryItemResponse> createHistoryItem(
             @Valid @RequestBody CreateHistoryRequest request
     ) {
-        HistoryItemResponse response = historyService.create(request);
+        HistoryItemResponse response = historyService.createHistoryItem(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HistoryItemResponse> getHistoryById(@PathVariable UUID id) {
-        return ResponseEntity.ok(historyService.getById(id));
+    public ResponseEntity<HistoryItemResponse> getHistoryItemById(@PathVariable UUID id) {
+        return ResponseEntity.ok(historyService.getHistoryItemById(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteHistory(@PathVariable UUID id) {
-        historyService.delete(id);
+    public ResponseEntity<Void> deleteHistoryItem(@PathVariable UUID id) {
+        historyService.deleteHistoryItem(id);
         return ResponseEntity.noContent().build();
     }
 }

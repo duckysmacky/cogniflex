@@ -2,57 +2,94 @@ package io.github.duckysmacky.cogniflex_backend.Services;
 
 import io.github.duckysmacky.cogniflex_backend.Dtos.CreateHistoryRequest;
 import io.github.duckysmacky.cogniflex_backend.Dtos.HistoryItemResponse;
+import io.github.duckysmacky.cogniflex_backend.Entities.HistoryRecord;
+import io.github.duckysmacky.cogniflex_backend.Repositories.HistoryRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class HistoryService {
 
-    private final Map<UUID, HistoryItemResponse> storage = new ConcurrentHashMap<>();
+    private final HistoryRepository historyRepository;
 
-    public List<HistoryItemResponse> getAll() {
-        return storage.values().stream()
-                .sorted(Comparator.comparing(HistoryItemResponse::createdAt).reversed())
+    public HistoryService(HistoryRepository historyRepository) {
+        this.historyRepository = historyRepository;
+    }
+
+    public List<HistoryItemResponse> getAllHistoryItems() {
+        return historyRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .map(this::toResponse)
                 .toList();
     }
 
-    public HistoryItemResponse create(CreateHistoryRequest request) {
-        HistoryItemResponse response = new HistoryItemResponse(
+    public HistoryItemResponse createHistoryItem(CreateHistoryRequest request) {
+        validateRequest(request);
+
+        HistoryRecord record = new HistoryRecord(
                 UUID.randomUUID(),
                 request.inputType(),
                 request.mediaType(),
                 request.kind(),
                 request.accuracy(),
-                Instant.now().toString()
+                Instant.now()
         );
 
-        storage.put(response.id(), response);
-        return response;
+        HistoryRecord savedRecord = historyRepository.save(record);
+        return toResponse(savedRecord);
     }
 
-    public HistoryItemResponse getById(UUID id) {
-        HistoryItemResponse item = storage.get(id);
+    public HistoryItemResponse getHistoryItemById(UUID id) {
+        HistoryRecord record = historyRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "History item not found"
+                ));
 
-        if (item == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "History item not found");
-        }
-
-        return item;
+        return toResponse(record);
     }
 
-    public void delete(UUID id) {
-        HistoryItemResponse removed = storage.remove(id);
-
-        if (removed == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "History item not found");
+    public void deleteHistoryItem(UUID id) {
+        if (!historyRepository.existsById(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "History item not found"
+            );
         }
+
+        historyRepository.deleteById(id);
+    }
+
+    private void validateRequest(CreateHistoryRequest request) {
+        if ("TEXT".equals(request.inputType()) && request.mediaType() != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "mediaType must be null when inputType is TEXT"
+            );
+        }
+
+        if ("MEDIA".equals(request.inputType()) && request.mediaType() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "mediaType is required when inputType is MEDIA"
+            );
+        }
+    }
+
+    private HistoryItemResponse toResponse(HistoryRecord record) {
+        return new HistoryItemResponse(
+                record.getId(),
+                record.getInputType(),
+                record.getMediaType(),
+                record.getKind(),
+                record.getAccuracy(),
+                record.getCreatedAt()
+        );
     }
 }

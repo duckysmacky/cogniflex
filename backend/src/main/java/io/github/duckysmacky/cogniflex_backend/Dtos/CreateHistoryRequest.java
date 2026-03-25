@@ -9,8 +9,11 @@ import jakarta.validation.constraints.Pattern;
 
 public record CreateHistoryRequest(
         @NotBlank
-        @Pattern(regexp = "TEXT|IMAGE|VIDEO")
-        String type,
+        @Pattern(regexp = "TEXT|MEDIA")
+        String inputType,
+
+        @Pattern(regexp = "IMAGE|VIDEO")
+        String mediaType,
 
         @Min(0)
         @Max(1)
