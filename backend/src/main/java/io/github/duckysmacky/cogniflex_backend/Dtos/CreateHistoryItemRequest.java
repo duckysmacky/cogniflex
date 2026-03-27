@@ -3,16 +3,21 @@ package io.github.duckysmacky.cogniflex_backend.Dtos;
 import io.github.duckysmacky.cogniflex_backend.Enums.DetectionKind;
 import io.github.duckysmacky.cogniflex_backend.Enums.InputType;
 import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
 
-import java.time.Instant;
-import java.util.UUID;
-
-public record HistoryItemResponse(
-        UUID id,
+public record CreateHistoryItemRequest(
+        @NotNull
         InputType inputType,
+
         MediaType mediaType,
+
+        @NotNull
         DetectionKind kind,
-        double accuracy,
-        Instant createdAt
+
+        @DecimalMin("0.0")
+        @DecimalMax("1.0")
+        double accuracy
 ) {
 }

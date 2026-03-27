@@ -1,7 +1,14 @@
 package io.github.duckysmacky.cogniflex_backend.Entities;
 
+import io.github.duckysmacky.cogniflex_backend.Converters.DetectionKindConverter;
+import io.github.duckysmacky.cogniflex_backend.Enums.DetectionKind;
+import io.github.duckysmacky.cogniflex_backend.Enums.InputType;
+import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -15,14 +22,17 @@ public class HistoryRecord {
     @Id
     private UUID id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "input_type", nullable = false, length = 16)
-    private String inputType;
+    private InputType inputType;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "media_type", length = 16)
-    private String mediaType;
+    private MediaType mediaType;
 
+    @Convert(converter = DetectionKindConverter.class)
     @Column(nullable = false)
-    private int kind;
+    private DetectionKind kind;
 
     @Column(nullable = false)
     private double accuracy;
@@ -35,9 +45,9 @@ public class HistoryRecord {
 
     public HistoryRecord(
             UUID id,
-            String inputType,
-            String mediaType,
-            int kind,
+            InputType inputType,
+            MediaType mediaType,
+            DetectionKind kind,
             double accuracy,
             Instant createdAt
     ) {
@@ -57,27 +67,27 @@ public class HistoryRecord {
         this.id = id;
     }
 
-    public String getInputType() {
+    public InputType getInputType() {
         return inputType;
     }
 
-    public void setInputType(String inputType) {
+    public void setInputType(InputType inputType) {
         this.inputType = inputType;
     }
 
-    public String getMediaType() {
+    public MediaType getMediaType() {
         return mediaType;
     }
 
-    public void setMediaType(String mediaType) {
+    public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
     }
 
-    public int getKind() {
+    public DetectionKind getKind() {
         return kind;
     }
 
-    public void setKind(int kind) {
+    public void setKind(DetectionKind kind) {
         this.kind = kind;
     }
 

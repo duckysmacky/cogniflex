@@ -2,12 +2,14 @@ package io.github.duckysmacky.cogniflex_backend.Controllers;
 
 import io.github.duckysmacky.cogniflex_backend.Dtos.AnalyzeResultResponse;
 import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
 import io.github.duckysmacky.cogniflex_backend.Services.DetectionService;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/analyze")
@@ -23,15 +25,38 @@ public class DetectionController {
     public ResponseEntity<AnalyzeResultResponse> analyzeText(
             @Valid @RequestBody CreateTextDetectionRequest request
     ) {
-        AnalyzeResultResponse response = detectionService.analyzeText(request);
+        AnalyzeResultResponse response = detectionService.analyzeText(request.text());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/media", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AnalyzeResultResponse> analyzeMedia(
             @RequestPart("file") MultipartFile file
     ) {
-        AnalyzeResultResponse response = detectionService.analyzeMedia(file);
+        MediaType mediaType = resolveMediaType(file);
+        AnalyzeResultResponse response = detectionService.analyzeMedia(mediaType);
         return ResponseEntity.ok(response);
+    }
+
+    private MediaType resolveMediaType(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File is empty");
+        }
+
+        String contentType = file.getContentType();
+
+        if (contentType == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content type is missing");
+        }
+
+        if (contentType.startsWith("image/")) {
+            return MediaType.IMAGE;
+        }
+
+        if (contentType.startsWith("video/")) {
+            return MediaType.VIDEO;
+        }
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported file type");
     }
 }

@@ -1,6 +1,6 @@
 package io.github.duckysmacky.cogniflex_backend.Services;
 
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateHistoryRequest;
+import io.github.duckysmacky.cogniflex_backend.Dtos.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex_backend.Dtos.HistoryItemResponse;
 import io.github.duckysmacky.cogniflex_backend.Entities.HistoryRecord;
 import io.github.duckysmacky.cogniflex_backend.Repositories.HistoryRepository;
@@ -29,8 +29,7 @@ public class HistoryService {
                 .toList();
     }
 
-    public HistoryItemResponse createHistoryItem(CreateHistoryRequest request) {
-        validateRequest(request);
+    public HistoryItemResponse createHistoryItem(CreateHistoryItemRequest request) {
 
         HistoryRecord record = new HistoryRecord(
                 UUID.randomUUID(),
@@ -66,21 +65,7 @@ public class HistoryService {
         historyRepository.deleteById(id);
     }
 
-    private void validateRequest(CreateHistoryRequest request) {
-        if ("TEXT".equals(request.inputType()) && request.mediaType() != null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "mediaType must be null when inputType is TEXT"
-            );
-        }
-
-        if ("MEDIA".equals(request.inputType()) && request.mediaType() == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "mediaType is required when inputType is MEDIA"
-            );
-        }
-    }
+    
 
     private HistoryItemResponse toResponse(HistoryRecord record) {
         return new HistoryItemResponse(

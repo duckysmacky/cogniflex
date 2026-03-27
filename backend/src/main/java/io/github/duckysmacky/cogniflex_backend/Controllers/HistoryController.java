@@ -1,12 +1,15 @@
 package io.github.duckysmacky.cogniflex_backend.Controllers;
 
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateHistoryRequest;
+import io.github.duckysmacky.cogniflex_backend.Dtos.CreateHistoryItemRequest;
+
 import io.github.duckysmacky.cogniflex_backend.Dtos.HistoryItemResponse;
 import io.github.duckysmacky.cogniflex_backend.Services.HistoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.github.duckysmacky.cogniflex_backend.Enums.InputType;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,12 +30,31 @@ public class HistoryController {
     }
 
     @PostMapping
-    public ResponseEntity<HistoryItemResponse> createHistoryItem(
-            @Valid @RequestBody CreateHistoryRequest request
-    ) {
-        HistoryItemResponse response = historyService.createHistoryItem(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+public ResponseEntity<HistoryItemResponse> createHistoryItem(
+        @Valid @RequestBody CreateHistoryItemRequest request
+) {
+    validateCreateHistoryItemRequest(request);
+
+    HistoryItemResponse response = historyService.createHistoryItem(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+}
+
+private void validateCreateHistoryItemRequest(CreateHistoryItemRequest request) {
+    if (request.inputType() == InputType.TEXT && request.mediaType() != null) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "mediaType must be null when inputType is TEXT"
+        );
     }
+
+    if (request.inputType() == InputType.MEDIA && request.mediaType() == null) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "mediaType is required when inputType is MEDIA"
+        );
+    }
+}
+
 
     @GetMapping("/{id}")
     public ResponseEntity<HistoryItemResponse> getHistoryItemById(@PathVariable UUID id) {
