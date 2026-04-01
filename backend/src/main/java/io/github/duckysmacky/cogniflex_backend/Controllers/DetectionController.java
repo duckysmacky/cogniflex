@@ -1,50 +1,62 @@
 package io.github.duckysmacky.cogniflex_backend.Controllers;
+
+import io.github.duckysmacky.cogniflex_backend.Dtos.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
+import io.github.duckysmacky.cogniflex_backend.Services.DetectionService;
 import jakarta.validation.Valid;
-
-import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateImageDetectionResponse;
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionResponse;
-import io.github.duckysmacky.cogniflex_backend.Dtos.DetectionResultResponse;
-
-import io.github.duckysmacky.cogniflex_backend.Services.DetectionService;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/api/detections")
+@RequestMapping("/api/analyze")
 public class DetectionController {
+
     private final DetectionService detectionService;
 
-    public DetectionController(DetectionService detectionService){
+    public DetectionController(DetectionService detectionService) {
         this.detectionService = detectionService;
     }
 
-     @PostMapping("/text")
-    public ResponseEntity<CreateTextDetectionResponse> detectText(
+    @PostMapping("/text")
+    public ResponseEntity<AnalyzeResultResponse> analyzeText(
             @Valid @RequestBody CreateTextDetectionRequest request
     ) {
-        CreateTextDetectionResponse response = detectionService.analyzeText(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CreateImageDetectionResponse> detectImage(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart(value = "sourceUrl", required = false) String sourceUrl
-    ) {
-        CreateImageDetectionResponse response = detectionService.analyzeImage(file, sourceUrl);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<DetectionResultResponse> getDetectionById(@PathVariable UUID id) {
-        DetectionResultResponse response = detectionService.getDetectionById(id);
+        AnalyzeResultResponse response = detectionService.analyzeText(request.text());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/media", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<AnalyzeResultResponse> analyzeMedia(
+            @RequestPart("file") MultipartFile file
+    ) {
+        MediaType mediaType = resolveMediaType(file);
+        AnalyzeResultResponse response = detectionService.analyzeMedia(mediaType);
+        return ResponseEntity.ok(response);
+    }
+
+    private MediaType resolveMediaType(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File is empty");
+        }
+
+        String contentType = file.getContentType();
+
+        if (contentType == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content type is missing");
+        }
+
+        if (contentType.startsWith("image/")) {
+            return MediaType.IMAGE;
+        }
+
+        if (contentType.startsWith("video/")) {
+            return MediaType.VIDEO;
+        }
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported file type");
     }
 }
