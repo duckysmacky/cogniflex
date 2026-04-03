@@ -1,3 +1,15 @@
+torch
+torchvision
+numpy
+pandas
+matplotlib
+scikit-learn 
+ipykernel
+gdown
+pillow 
+pytorchvideo
+opencv
+mediapipe
 flet>=0.9.0
 torch>=2.0.0
 torchvision>=0.15.0
