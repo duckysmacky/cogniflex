@@ -56,5 +56,5 @@ class MultitypePictureDetector:
 
 if __name__ == '__main__':
     detector = MultitypePictureDetector('/Users/iaroslav/Desktop/resnet_general92.pth', '/Users/iaroslav/Desktop/resnet_faces88.pth')
-    prediction = detector.predict_picture('...') #insert some path 
+    prediction = detector.predict_picture('/Users/iaroslav/Desktop/2026-03-23 8.06.30 PM.jpg') #insert some path 
     print(prediction)
