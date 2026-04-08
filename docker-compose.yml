@@ -2,7 +2,7 @@ name: cogniflex
 
 services:
   db:
-    image: postgres:17
+    image: postgres:18
     container_name: cogniflex-db
     ports:
       - "5432:5432"
@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     
   redis:
-    image: redis:7
+    image: redis:8
     container_name: cogniflex-redis
     ports:
       - "6379:6379"
