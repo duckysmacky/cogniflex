@@ -13,16 +13,10 @@ spring:
     hibernate:
       ddl-auto: validate
       open-in-view: false
-    show-sql: true
   flyway:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
-  logging:
-    level:
-      org:
-        hibernate:
-          SQL: debug
 
 server:
   port: 8080
