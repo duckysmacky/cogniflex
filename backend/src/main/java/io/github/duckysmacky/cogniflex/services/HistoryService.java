@@ -1,9 +1,9 @@
-package io.github.duckysmacky.cogniflex.Services;
+package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex.Dtos.CreateHistoryItemRequest;
-import io.github.duckysmacky.cogniflex.Dtos.HistoryItemResponse;
-import io.github.duckysmacky.cogniflex.Entities.HistoryRecord;
-import io.github.duckysmacky.cogniflex.Repositories.HistoryRepository;
+import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
+import io.github.duckysmacky.cogniflex.dto.HistoryItemResponse;
+import io.github.duckysmacky.cogniflex.entities.HistoryRecord;
+import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

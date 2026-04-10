@@ -1,14 +1,14 @@
-package io.github.duckysmacky.cogniflex.Controllers;
+package io.github.duckysmacky.cogniflex.controllers;
 
-import io.github.duckysmacky.cogniflex.Dtos.CreateHistoryItemRequest;
+import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 
-import io.github.duckysmacky.cogniflex.Dtos.HistoryItemResponse;
-import io.github.duckysmacky.cogniflex.Services.HistoryService;
+import io.github.duckysmacky.cogniflex.dto.HistoryItemResponse;
+import io.github.duckysmacky.cogniflex.services.HistoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.github.duckysmacky.cogniflex.Enums.InputType;
+import io.github.duckysmacky.cogniflex.enums.InputType;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;

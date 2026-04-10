@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex.Enums;
+package io.github.duckysmacky.cogniflex.enums;
 
 public enum InputType {
     TEXT,

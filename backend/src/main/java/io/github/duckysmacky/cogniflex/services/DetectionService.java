@@ -1,10 +1,10 @@
-package io.github.duckysmacky.cogniflex.Services;
+package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex.Dtos.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex.Dtos.CreateHistoryItemRequest;
-import io.github.duckysmacky.cogniflex.Enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.Enums.InputType;
-import io.github.duckysmacky.cogniflex.Enums.MediaType;
+import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
+import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.enums.InputType;
+import io.github.duckysmacky.cogniflex.enums.MediaType;
 import org.springframework.stereotype.Service;
 
 @Service

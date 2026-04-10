@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex.Dtos;
+package io.github.duckysmacky.cogniflex.dto;
 
 public record StatusResponse(
         String status,

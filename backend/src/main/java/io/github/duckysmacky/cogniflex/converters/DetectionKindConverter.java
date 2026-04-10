@@ -1,6 +1,6 @@
-package io.github.duckysmacky.cogniflex.Converters;
+package io.github.duckysmacky.cogniflex.converters;
 
-import io.github.duckysmacky.cogniflex.Enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.enums.DetectionKind;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

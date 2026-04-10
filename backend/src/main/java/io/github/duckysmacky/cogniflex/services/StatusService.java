@@ -1,6 +1,6 @@
-package io.github.duckysmacky.cogniflex.Services;
+package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex.Dtos.StatusResponse;
+import io.github.duckysmacky.cogniflex.dto.StatusResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

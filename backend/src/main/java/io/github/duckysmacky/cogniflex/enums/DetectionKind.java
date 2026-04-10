@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex.Enums;
+package io.github.duckysmacky.cogniflex.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

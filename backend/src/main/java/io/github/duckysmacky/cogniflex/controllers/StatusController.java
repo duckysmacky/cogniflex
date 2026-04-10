@@ -1,7 +1,7 @@
-package io.github.duckysmacky.cogniflex.Controllers;
+package io.github.duckysmacky.cogniflex.controllers;
 
-import io.github.duckysmacky.cogniflex.Dtos.StatusResponse;
-import io.github.duckysmacky.cogniflex.Services.StatusService;
+import io.github.duckysmacky.cogniflex.dto.StatusResponse;
+import io.github.duckysmacky.cogniflex.services.StatusService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

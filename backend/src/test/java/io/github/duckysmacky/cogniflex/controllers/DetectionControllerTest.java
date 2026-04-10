@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex.Controllers;
+package io.github.duckysmacky.cogniflex.controllers;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -24,10 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.duckysmacky.cogniflex.Dtos.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex.Dtos.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex.Enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.Services.DetectionService;
+import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.services.DetectionService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(DetectionController.class)

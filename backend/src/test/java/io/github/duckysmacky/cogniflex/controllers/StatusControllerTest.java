@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex.Controllers;
+package io.github.duckysmacky.cogniflex.controllers;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -17,8 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import io.github.duckysmacky.cogniflex.Dtos.StatusResponse;
-import io.github.duckysmacky.cogniflex.Services.StatusService;
+import io.github.duckysmacky.cogniflex.dto.StatusResponse;
+import io.github.duckysmacky.cogniflex.services.StatusService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(StatusController.class)

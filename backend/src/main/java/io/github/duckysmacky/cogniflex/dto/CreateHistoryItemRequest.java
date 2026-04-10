@@ -1,8 +1,8 @@
-package io.github.duckysmacky.cogniflex.Dtos;
+package io.github.duckysmacky.cogniflex.dto;
 
-import io.github.duckysmacky.cogniflex.Enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.Enums.InputType;
-import io.github.duckysmacky.cogniflex.Enums.MediaType;
+import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.enums.InputType;
+import io.github.duckysmacky.cogniflex.enums.MediaType;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;

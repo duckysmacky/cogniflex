@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex.Dtos;
+package io.github.duckysmacky.cogniflex.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
