@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: cogniflex
+  config:
+    import: "optional:file:../.env[.properties]"
+  datasource:
+    url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:cogniflex}"
+    username: "${DB_USER}"
+    password: "${DB_PASSWORD}"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+      open-in-view: false
+    show-sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  logging:
+    level:
+      org:
+        hibernate:
+          SQL: debug
+
+server:
+  port: 8080
