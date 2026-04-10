@@ -21,21 +21,24 @@ public class SecurityConfig {
         return http
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authorizeHttpRequests(auth -> {
-                auth.requestMatchers(
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/status").permitAll()
+                .requestMatchers("/api/analyze/**").permitAll()
+                .requestMatchers(
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html"
-                ).permitAll();
-                auth.anyRequest().permitAll();
-            })
-            .headers(headers ->
-                headers
-                    .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
-                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
+                ).permitAll()
+                // пока у нас нет пользователей для истории, но я все равно так оставлю на будущее
+                .requestMatchers("/api/history/**").authenticated()
+                .anyRequest().denyAll()
+            )
+            .headers(headers -> headers
+                .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
             )
             .build();
     }
