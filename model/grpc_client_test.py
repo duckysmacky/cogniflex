@@ -29,8 +29,10 @@ def test_image(image_path: str):
         )
         
         print("-" * 40)
-        print(f"CLASS:      {response.class_}")
-        print(f"CONFIDENCE: {response.confidence:.4f}")
+        predicted_class = getattr(response, 'class')
+        confidence = response.confidence
+        print(f"CLASS:      {predicted_class}")
+        print(f"CONFIDENCE: {confidence:.4f}")
         print("-" * 40)
         
     except grpc.RpcError as e:

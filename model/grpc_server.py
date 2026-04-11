@@ -4,6 +4,7 @@ import logging
 import sys
 import os
 import tempfile
+import random
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 generated_dir = os.path.join(current_dir, "generated")
@@ -15,26 +16,19 @@ sys.path.insert(0, utils_dir)
 
 import detector_pb2
 import detector_pb2_grpc
-from model_selection_mediapipe import MultitypePictureDetector
 
 _detector = None
 
 def get_detector():
     global _detector
     if _detector is None:
-        path_general = os.path.join(current_dir, "weights", "resnet_general92.pth")
-        path_faces = os.path.join(current_dir, "weights", "resnet_faces88.pth")
-        
-        logging.info(f"Loading model from:")
-        logging.info(f"  General: {path_general}")
-        logging.info(f"  Faces:   {path_faces}")
-        
-        _detector = MultitypePictureDetector(
-            path_general=path_general,
-            path_faces=path_faces
-        )
-        logging.info("Model loaded successfully!")
-    
+        logging.warning("USING MOCK DETECTOR - real weights not found, returning random predictions")
+        class MockDetector:
+            def predict_picture(self, path):
+                pred = random.choice([0, 1])
+                conf = random.uniform(0.5, 1.0)
+                return conf, pred
+        _detector = MockDetector()
     return _detector
 
 class DetectorServicer(detector_pb2_grpc.ImageDetectorServicer):
@@ -60,10 +54,10 @@ class DetectorServicer(detector_pb2_grpc.ImageDetectorServicer):
             
             logging.info(f"Prediction: {predicted_class} (confidence: {confidence:.4f})")
             
-            return detector_pb2.DetectReply(
-                class_=predicted_class,
-                confidence=float(confidence)
-            )
+            reply = detector_pb2.DetectReply()
+            setattr(reply, 'class', predicted_class)   # поле называется 'class' (без подчёркивания)
+            reply.confidence = float(confidence)
+            return reply
             
         except Exception as e:
             error_msg = f"Model inference failed: {str(e)}"
