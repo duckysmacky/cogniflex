@@ -4,8 +4,9 @@ from torchvision import models, transforms
 from PIL import Image
 import mediapipe as mp
 import cv2
-from picture_detection import PictureDetector
-from preprocess_images import IMAGE_TRANSFORM_VAL
+from model.utils.image_utils.preprocess_images import IMAGE_TRANSFORM_VAL
+import io
+import numpy as np
 
 class MultitypePictureDetector:
 
@@ -13,7 +14,10 @@ class MultitypePictureDetector:
 
         self.model_general = models.resnet18(weights=None)
         self.model_general.fc = nn.Linear(self.model_general.fc.in_features, 2)
-        self.model_general.load_state_dict(torch.load(path_general, map_location='cpu'))
+
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        self.model_general.load_state_dict(torch.load(path_general, map_location=self.device))
         self.model_general.eval()
 
         self.model_faces = models.resnet18(weights=None)
@@ -26,16 +30,14 @@ class MultitypePictureDetector:
             model_selection = 0,
             min_detection_confidence = 0.5
         )
-
-    def detect_face(self, image_path) -> bool: #image_bgr = np.ndarray
-        image_bgr = cv2.imread(image_path)
-        result = self.mediapipe_detector.process(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB))
-        return result.detections is not None
     
-    def predict_picture(self, picture_path: str):
-        image_bgr = cv2.imread(picture_path)
+    def predict_picture(self, picture_bytes: bytes):
+        #data type uint-8
+        nparr = np.frombuffer(picture_bytes, np.uint8)
+        
+        image_bgr = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         if image_bgr is None:
-            raise ValueError(f"Cannot read image: {picture_path}")
+            raise ValueError(f"Cannot read image")
         
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
         results = self.mediapipe_detector.process(image_rgb)
@@ -52,9 +54,3 @@ class MultitypePictureDetector:
             confidence = probs[0].max().item()
 
         return confidence, pred
-    
-
-if __name__ == '__main__':
-    detector = MultitypePictureDetector('/Users/iaroslav/Desktop/resnet_general92.pth', '/Users/iaroslav/Desktop/resnet_faces88.pth')
-    prediction = detector.predict_picture('/Users/iaroslav/Desktop/2026-03-23 8.06.30 PM.jpg') #insert some path 
-    print(prediction)

@@ -1,6 +1,6 @@
 import os
 import flet as ft
-from utils.picture_detection import PictureDetector
+from model.utils.image_utils.picture_detection import PictureDetector
 
 def main(page: ft.Page):
     page.title = 'test model'
