@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cogniflex.model;
+
+service PhotoDetector {
+  rpc Detect (PhotoRequest) returns (DetectReply);
+}
+
+message PhotoRequest {
+  bytes image_data = 1;
+}
+
+message DetectReply {
+  string class = 1;
+  float confidence = 2;
+}

@@ -1,16 +1,27 @@
-torch
-torchvision
+# gRPC
+grpcio==1.60.0
+grpcio-tools==1.60.0
+protobuf==4.25.3
+
+# ML models
+torch==2.11.0
+torchvision==0.26.0
+mediapipe==0.10.9
+
+# Image/Video processing
+opencv-python==4.13.0.92
+pillow==12.2.0
+pytorchvideo
+
+# Data processing
 numpy
 pandas
 matplotlib
-scikit-learn 
+scikit-learn
 ipykernel
-gdown
-pillow 
-pytorchvideo
-opencv
-mediapipe
+
+# GUI (для image_analyzer_gui.py)
 flet>=0.9.0
-torch>=2.0.0
-torchvision>=0.15.0
-Pillow>=9.5.0
+
+# Utilities
+gdown

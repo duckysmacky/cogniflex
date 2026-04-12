@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cogniflex.model;
+
+service TextDetector {
+  rpc Detect (TextRequest) returns (DetectReply);
+}
+
+message TextRequest {
+  string text = 1;
+}
+
+message DetectReply {
+  string class = 1;
+  float confidence = 2;
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package cogniflex.model;
+
+service VideoDetector {
+  rpc Detect (VideoRequest) returns (DetectReply);
+}
+
+message VideoRequest {
+  bytes video_data = 1;
+}
+
+message DetectReply {
+  string class = 1;
+  float confidence = 2;
+}
