@@ -16,7 +16,7 @@
 
 ```bash
 cd ml-service
-py -3.10 ml_grpc_server.py
+py -3.10 server.py
 ```
 
 Сервер запускается на порту **50051** и предоставляет три метода:
@@ -123,7 +123,7 @@ py -3.10 -m grpc_tools.protoc -I./proto --python_out=./generated --grpc_python_o
 
 ### Изменение лимита на сервере
 
-В файле `ml_grpc_server.py` в функции `serve()`:
+В файле `server.py` в функции `serve()`:
 
 ```python
 server = grpc.server(
