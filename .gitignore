@@ -8,3 +8,5 @@ venv
 node_modules
 
 .env
+
+ml-service/generated/
