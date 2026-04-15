@@ -9,7 +9,7 @@
 - **Python 3.10** (обязательно, mediapipe не работает с Python 3.14)
 - Установка зависимостей:
 ```bash
-  py -3.10 -m pip install -r model/requirements.txt
+  py -3.10 -m pip install -r ml-service/requirements.txt
 ```
 
 ## Запуск сервера
