@@ -5,6 +5,7 @@ import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.stereotype.Service;
 
 import io.github.duckysmacky.cogniflex.dto.StatusResponse;
+import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
 
 import java.time.Instant;
 
@@ -13,6 +14,9 @@ public class StatusService {
 
     @Autowired
     private ApplicationAvailability availability;
+
+    @Autowired
+    HistoryRepository historyRepository;
 
     private ModelAvailabilityService model_availability;
 
