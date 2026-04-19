@@ -5,7 +5,6 @@ import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.stereotype.Service;
 
 import io.github.duckysmacky.cogniflex.dto.StatusResponse;
-import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
 
 import java.time.Instant;
 
@@ -16,21 +15,14 @@ public class StatusService {
     private ApplicationAvailability availability;
 
     @Autowired
-    HistoryRepository historyRepository;
-
-    private ModelAvailabilityService model_availability;
-
-    public StatusService()
-    {
-        this.model_availability = new ModelAvailabilityService();
-    }
+    private ModelAvailabilityService modelAvailabilityService;
 
     public StatusResponse getStatus() {
 
         return new StatusResponse(
-                availability.getLivenessState().toString() == "CORRECT" ? "UP" : "DOWN",
-                availability.getReadinessState().toString() == "ACCEPTING_TRAFFIC" ? "UP" : "DOWN",
-                model_availability.getStatus(),
+                availability.getLivenessState().toString(),
+                availability.getReadinessState().toString(),
+                modelAvailabilityService.getStatus(),
                 Instant.now().toString()
         );
     }

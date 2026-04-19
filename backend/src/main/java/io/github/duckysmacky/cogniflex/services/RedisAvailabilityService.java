@@ -1,5 +1,6 @@
 package io.github.duckysmacky.cogniflex.services;
 
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.stereotype.Service;
@@ -19,15 +20,15 @@ public class RedisAvailabilityService {
                 try {
                     Long size = connection.dbSize();
                     return size != null ? size.toString() : null;
-                } catch (Exception e)
+                } catch (RedisConnectionFailureException e)
                 {
                     throw e;
                 }
             });
             return "CONNECTED";
-        } catch (Exception e)
+        } catch (RedisConnectionFailureException e)
         {
-            return "CONNECTION_REFUSED";
+            return "CONNECTION REFUSED";
         }
     }
 }

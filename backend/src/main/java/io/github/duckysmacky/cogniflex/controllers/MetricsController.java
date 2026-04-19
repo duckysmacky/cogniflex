@@ -1,16 +1,14 @@
 package io.github.duckysmacky.cogniflex.controllers;
 
 import io.github.duckysmacky.cogniflex.dto.MetricsResponse;
-import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
+import io.github.duckysmacky.cogniflex.services.DatabaseAvailabilityService;
 import io.github.duckysmacky.cogniflex.services.ModelAvailabilityService;
 
 import io.github.duckysmacky.cogniflex.services.RedisAvailabilityService;
 
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +27,7 @@ public class MetricsController {
     private RedisAvailabilityService redisAvailabilityService;
 
     @Autowired
-    private HistoryRepository historyRepository;
+    private DatabaseAvailabilityService databaseAvailabilityService;
 
     @Autowired
     private ModelAvailabilityService modelAvailabilityService;
@@ -71,13 +69,7 @@ public class MetricsController {
         AtomicReference<String> redis_error = new AtomicReference<>("");
         model_callback_timer.record(() -> {modelAvailabilityService.getStatus();});
         db_callback_timer.record(()-> {
-            try {
-                historyRepository.findById(new UUID(0, 0));
-            } catch (DataAccessException e)
-            {
-                db_error.set("CONNECTION_REFUSED");
-            }
-            
+            db_error.set(databaseAvailabilityService.getStatus());
         });
         redis_callback_timer.record(() -> {
             redis_error.set(redisAvailabilityService.getStatus());
@@ -86,8 +78,8 @@ public class MetricsController {
         String db_callback = String.valueOf(getLastMeasurement(db_callback_timer.measure()).getValue());
         String redis_callback = String.valueOf(getLastMeasurement(redis_callback_timer.measure()).getValue());
         return new MetricsResponse(
-            db_error.get() != "CONNECTION_REFUSED" ? db_callback : "CONNECTION_REFUSED",
-            redis_error.get() != "CONNECTION_REFUSED" ? redis_callback : "CONNECTION_REFUSED",
+            db_error.get() != "CONNECTION REFUSED" ? db_callback : "CONNECTION REFUSED",
+            redis_error.get() != "CONNECTION REFUSED" ? redis_callback : "CONNECTION REFUSED",
             model_callback
         );
     }
