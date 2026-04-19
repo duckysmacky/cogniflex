@@ -3,6 +3,8 @@ package io.github.duckysmacky.cogniflex.services;
 import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
 
 import java.util.UUID;
+
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +18,12 @@ public class DatabaseAvailabilityService {
 
     public String getStatus()
     {
-        return historyRepository.findById(new UUID(0, 0)).toString();
+        try {
+            historyRepository.count();
+            return "CONNECTED";
+        } catch (DataAccessException e)
+        {
+            return "CONNECTION REFUSED";
+        }
     }
-
 }
