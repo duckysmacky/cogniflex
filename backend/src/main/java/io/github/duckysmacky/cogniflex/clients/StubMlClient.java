@@ -1,8 +1,8 @@
-package io.github.duckysmacky.cogniflex_backend.Clients;
+package io.github.duckysmacky.cogniflex.clients;
 
-import io.github.duckysmacky.cogniflex_backend.Dtos.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex_backend.Enums.DetectionKind;
-import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
+import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.enums.MediaType;
 import org.springframework.stereotype.Service;
 
 @Service

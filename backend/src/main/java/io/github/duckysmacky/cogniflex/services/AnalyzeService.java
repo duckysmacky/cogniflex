@@ -1,11 +1,11 @@
-package io.github.duckysmacky.cogniflex_backend.Services;
+package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex_backend.Clients.MLClient;
-import io.github.duckysmacky.cogniflex_backend.Dtos.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateHistoryItemRequest;
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex_backend.Enums.InputType;
-import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
+import io.github.duckysmacky.cogniflex.clients.MLClient;
+import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
+import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex.enums.InputType;
+import io.github.duckysmacky.cogniflex.enums.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

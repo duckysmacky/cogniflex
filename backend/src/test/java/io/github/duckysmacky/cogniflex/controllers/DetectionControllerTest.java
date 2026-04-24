@@ -1,4 +1,4 @@
-package io.github.duckysmacky.cogniflex_backend.Controllers;
+package io.github.duckysmacky.cogniflex.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -22,10 +22,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.duckysmacky.cogniflex_backend.Dtos.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex_backend.Enums.DetectionKind;
-import io.github.duckysmacky.cogniflex_backend.Services.AnalyzeService;
+import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(DetectionController.class)

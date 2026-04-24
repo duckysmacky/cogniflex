@@ -1,8 +1,8 @@
-package io.github.duckysmacky.cogniflex_backend.Controllers;
+package io.github.duckysmacky.cogniflex.controllers;
 
-import io.github.duckysmacky.cogniflex_backend.Dtos.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex_backend.Dtos.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex_backend.Services.AnalyzeService;
+import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
