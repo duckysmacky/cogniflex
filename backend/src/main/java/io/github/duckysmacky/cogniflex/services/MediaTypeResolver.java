@@ -1,6 +1,6 @@
-package io.github.duckysmacky.cogniflex_backend.Services;
+package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex_backend.Enums.MediaType;
+import io.github.duckysmacky.cogniflex.enums.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
