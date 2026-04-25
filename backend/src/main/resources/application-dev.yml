@@ -1,14 +1,27 @@
 spring:
   jpa:
     show-sql: true
-  logging:
-    level:
-      org:
-        hibernate:
-          SQL: debug
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
+      springframework:
+        security: debug
+        web:
+          cors: TRACE
+      
+app:
+  cors:
+      allowed-origins-patterns: "*"
+      allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]
+      allowed-headers: ["*"]
+      allow-credentials: true
 
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
+    
