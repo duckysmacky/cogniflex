@@ -7,3 +7,9 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+app:
+  cors:
+    allowed-origins-patterns: "*" # пока так
+    allowed-methods: [GET, POST, OPTIONS]
+    allowed-headers: ["Content-Type", "Authorization"]
