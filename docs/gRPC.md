@@ -49,7 +49,6 @@ py -3.10 tests/test_text_client.py "текст для анализа"
 ### AnalyzePhoto — Анализ изображения
 
 |Параметр|Значение|
-|---|---|
 |Вход|`bytes image_data` (JPEG, PNG, WebP, до 100 МБ)|
 |Выход|`class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)|
 |Статус|Реальная модель (ResNet18 + MediaPipe)|
@@ -57,18 +56,55 @@ py -3.10 tests/test_text_client.py "текст для анализа"
 ### AnalyzeVideo — Анализ видео
 
 |Параметр|Значение|
-|---|---|
 |Вход|`bytes video_data` (MP4, AVI, MOV, до 100 МБ)|
 |Выход|`class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)|
 |Статус|Заглушка (случайные предсказания)|
 
 ### AnalyzeText — Анализ текста
 
-| Параметр | Значение                                                |
-| -------- | ------------------------------------------------------- |
-| Вход     | `string text`                                           |
-| Выход    | `class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0) |
-| Статус   | Заглушка (случайные предсказания)                       |
+| Параметр|Значение|
+| Вход|`string text`|
+| Выход|`class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)|
+| Статус|Заглушка (случайные предсказания)|
+
+## Логирование
+
+Сервер выводит подробные логи о каждом запросе. Формат логов:
+
+### Запуск сервера
+
+```bash
+============================================================
+[INFO] ML Analyzer gRPC Server
+[INFO] Port: 50051
+[INFO] Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText
+[INFO] Max message size: 100 MB (104857600 bytes)
+============================================================
+```
+
+### Входящий запрос (на примере фото)
+
+```bash
+============================================================
+[INFO] [Photo] New request received
+[INFO] [Photo] Peer: ipv4:127.0.0.1:54321
+[INFO] [Photo] Data size: 1424924 bytes (1.36 MB)
+[INFO] [Photo] Saved to temp file: C:\Users\...\tmp123.jpg
+[INFO] [Photo] Inference completed in 0.432s
+[INFO] [Photo] Result: class=ai, confidence=0.9969
+[INFO] [Photo] Temp file deleted: C:\Users\...\tmp123.jpg
+```
+
+### Что означают поля логов
+
+[Photo/Video/Text] - Тип запроса
+Peer - Адрес клиента, отправившего запрос
+Data size - Размер полученных данных в байтах и МБ
+Saved to temp file - Путь к временному файлу
+Inference completed in - Время выполнения анализа
+Result - Итоговый класс и уверенность
+Temp file deleted - Подтверждение удаления временного файла
+
 
 ## Proto
 
