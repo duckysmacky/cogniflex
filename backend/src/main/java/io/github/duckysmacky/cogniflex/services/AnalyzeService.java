@@ -6,12 +6,12 @@ import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.enums.InputType;
 import io.github.duckysmacky.cogniflex.enums.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -56,7 +56,11 @@ public class AnalyzeService {
 
         MediaType mediaType = mediaTypeResolver.resolve(file);
         byte[] content = readBytes(file);
-        AnalyzeResultResponse response = mlClient.analyzeMedia(mediaType, content);
+
+        AnalyzeResultResponse response = switch (mediaType) {
+            case IMAGE -> mlClient.analyzeImage(content);
+            case VIDEO -> mlClient.analyzeVideo(content);
+        };
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
                 InputType.MEDIA,
@@ -65,7 +69,7 @@ public class AnalyzeService {
                 response.accuracy()
         ));
 
-        logElapsed("media", startedAt);
+        logElapsed(mediaType.name().toLowerCase(), startedAt);
         return response;
     }
 

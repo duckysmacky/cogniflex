@@ -2,13 +2,17 @@ syntax = "proto3";
 
 package cogniflex.ml;
 
+option java_multiple_files = true;
+option java_package = "io.github.duckysmacky.cogniflex.grpc";
+option java_outer_classname = "MlAnalyzerProto";
+
 service MLAnalyzer {
-  rpc AnalyzePhoto (PhotoRequest) returns (AnalyzeReply);
+  rpc AnalyzeImage (ImageRequest) returns (AnalyzeReply);
   rpc AnalyzeVideo (VideoRequest) returns (AnalyzeReply);
   rpc AnalyzeText (TextRequest) returns (AnalyzeReply);
 }
 
-message PhotoRequest {
+message ImageRequest {
   bytes image_data = 1;
 }
 
@@ -21,6 +25,6 @@ message TextRequest {
 }
 
 message AnalyzeReply {
-  string class = 1;
+  string label = 1;
   float confidence = 2;
 }

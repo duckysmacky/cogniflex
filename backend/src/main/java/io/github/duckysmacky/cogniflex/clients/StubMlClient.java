@@ -2,10 +2,11 @@ package io.github.duckysmacky.cogniflex.clients;
 
 import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
 import io.github.duckysmacky.cogniflex.enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.enums.MediaType;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile("stub-ml")
 public class StubMlClient implements MLClient {
 
     @Override
@@ -20,11 +21,12 @@ public class StubMlClient implements MLClient {
     }
 
     @Override
-    public AnalyzeResultResponse analyzeMedia(MediaType mediaType, byte[] content) {
-        if (mediaType == MediaType.IMAGE) {
-            return new AnalyzeResultResponse(DetectionKind.AI_GENERATED, 0.67);
-        }
+    public AnalyzeResultResponse analyzeImage(byte[] imageContent) {
+        return new AnalyzeResultResponse(DetectionKind.AI_GENERATED, 0.67);
+    }
 
+    @Override
+    public AnalyzeResultResponse analyzeVideo(byte[] videoContent) {
         return new AnalyzeResultResponse(DetectionKind.AI_GENERATED, 0.63);
     }
 }
