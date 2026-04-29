@@ -2,8 +2,6 @@ package io.github.duckysmacky.cogniflex.services;
 
 import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
 
-import java.util.UUID;
-
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 

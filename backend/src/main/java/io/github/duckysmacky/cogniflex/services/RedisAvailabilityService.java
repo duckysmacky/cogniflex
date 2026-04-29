@@ -16,19 +16,20 @@ public class RedisAvailabilityService {
 
     public String getStatus() {
         try {
-            Object res = redisOperations.execute((RedisCallback<Object>) connection -> {
-                try {
-                    Long size = connection.dbSize();
-                    return size != null ? size.toString() : null;
-                } catch (RedisConnectionFailureException e)
-                {
-                    throw e;
-                }
+            String ping = redisOperations.execute((RedisCallback<String>) connection -> {
+                    return connection.ping();
             });
-            return "CONNECTED";
+            if (ping.equals("PONG"))
+            {
+                return "CONNECTED";
+            }
+            return "REDIS ERROR";
         } catch (RedisConnectionFailureException e)
         {
             return "CONNECTION REFUSED";
+        } catch (Exception e) 
+        {
+            return "REDIS ERROR";
         }
     }
 }
