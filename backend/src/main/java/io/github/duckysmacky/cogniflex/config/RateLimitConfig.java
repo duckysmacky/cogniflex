@@ -12,8 +12,12 @@ import io.github.duckysmacky.cogniflex.services.RateLimitInterceptor;
 @Profile("prod")
 public class RateLimitConfig implements WebMvcConfigurer {
     
-    @Autowired
-    private RateLimitInterceptor rateLimitInterceptor;
+    private final RateLimitInterceptor rateLimitInterceptor;
+    
+    RateLimitConfig(RateLimitInterceptor rateLimitInterceptor)
+    {
+        this.rateLimitInterceptor = rateLimitInterceptor;
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry)
