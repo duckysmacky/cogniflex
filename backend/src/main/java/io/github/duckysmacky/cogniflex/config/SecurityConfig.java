@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll()
                 .requestMatchers("/api/status").permitAll()
                 .requestMatchers("/api/analyze/**").permitAll()
+                .requestMatchers("/api/metrics").permitAll()
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
