@@ -27,8 +27,8 @@ class AIDetectionDataset(Dataset):
         return len(self.labels)
     
     def __getitem__(self, idx):
-        text = self.texts[idx]
-        label = self.labels[idx]
+        text = self.texts.iloc[idx]
+        label = self.labels.iloc[idx]
 
         input_ids, attention_mask = tokenize_texts([text], self.tokenizer, self.max_length)
         return {
