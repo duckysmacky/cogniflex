@@ -21,9 +21,8 @@ class AIDetectionDataset(Dataset):
         self.encodings = tokenizer(
             texts.tolist(),
             truncation = True,
-            padding = False,
+            padding = True,
             max_length = max_length,
-            return_tensors = 'pt'
         )
         self.labels = labels.tolist()
 
@@ -34,7 +33,7 @@ class AIDetectionDataset(Dataset):
         return {
             'input_ids': self.encodings['input_ids'][idx],
             'attention_mask': self.encodings['attention_mask'][idx],
-            'labels': self.labels[idx]
+            'labels': torch.tensor(self.labels[idx], dtype=torch.long)
         }
 
 class RoBERTaDetector(nn.Module):
