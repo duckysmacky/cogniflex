@@ -7,7 +7,7 @@ def tokenize_texts(texts, tokenizer, max_length = 512):
 
     encodings = tokenizer(
         texts,
-        trancuation = True,
+        truncation = True,
         padding = 'max_length',
         max_length = max_length,
         return_tensors = 'pt'
@@ -18,23 +18,23 @@ def tokenize_texts(texts, tokenizer, max_length = 512):
 class AIDetectionDataset(Dataset):
 
     def __init__(self, texts, labels, tokenizer, max_length=512):
-        self.texts = texts
-        self.labels = labels
-        self.tokenizer = tokenizer
-        self.max_length = max_length
+        self.encodings = tokenizer(
+            texts.tolist(),
+            truncation = True,
+            padding = False,
+            max_length = max_length,
+            return_tensors = 'pt'
+        )
+        self.labels = labels.tolist()
 
     def __len__(self):
         return len(self.labels)
     
     def __getitem__(self, idx):
-        text = self.texts.iloc[idx]
-        label = self.labels.iloc[idx]
-
-        input_ids, attention_mask = tokenize_texts([text], self.tokenizer, self.max_length)
         return {
-            'input_ids': input_ids.squeeze(0), #[1, 512] -> 1
-            'attention_mask': attention_mask.squeeze(0),
-            'labels': torch.tensor(label, dtype=torch.long)
+            'input_ids': self.encodings['input_ids'][idx],
+            'attention_mask': self.encodings['attention_mask'][idx],
+            'labels': self.labels[idx]
         }
 
 class RoBERTaDetector(nn.Module):
@@ -54,6 +54,6 @@ class RoBERTaDetector(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         output = self.roberta(input_ids, attention_mask=attention_mask)
-        cls_vector = output.last_hidden_state[: , 0, : ]
+        cls_vector = output.last_hidden_state[:, 0, :]
         logits = self.classifier(cls_vector)
         return logits
