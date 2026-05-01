@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package cogniflex.ml;
+
+service MLAnalyzer {
+  rpc AnalyzePhoto (PhotoRequest) returns (AnalyzeReply);
+  rpc AnalyzeVideo (VideoRequest) returns (AnalyzeReply);
+  rpc AnalyzeText (TextRequest) returns (AnalyzeReply);
+}
+
+message PhotoRequest {
+  bytes image_data = 1;
+}
+
+message VideoRequest {
+  bytes video_data = 1;
+}
+
+message TextRequest {
+  string text = 1;
+}
+
+message AnalyzeReply {
+  string class = 1;
+  float confidence = 2;
+}
