@@ -15,7 +15,7 @@ public class MLGrpcProperties {
     private String host = "localhost";
 
     @Min(1)
-    private int port = 6565;
+    private int port = 50051;
 
     private Duration timeout = Duration.ofSeconds(5);
 

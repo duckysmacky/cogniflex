@@ -14,6 +14,7 @@ spring:
 ml:
   grpc:
     host: ${ML_GRPC_HOST:localhost}
-    port: ${ML_GRPC_PORT:6565}
+    port: ${ML_GRPC_PORT:50051}
     timeout: ${ML_GRPC_TIMEOUT:5s}
     plaintext: ${ML_GRPC_PLAINTEXT:true}
+
