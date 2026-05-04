@@ -1,3 +1,5 @@
-.npy
-.pth
+*.npy
+*.pth
+*.csv
 kaggle_experiments
+models_torch
