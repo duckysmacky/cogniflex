@@ -7,22 +7,24 @@ import cv2
 from model.utils.image_utils.preprocess_images import IMAGE_TRANSFORM_VAL
 import io
 import numpy as np
+from safetensors.torch import load_file
 
 class MultitypePictureDetector:
 
     def __init__(self, path_general:str, path_faces:str):
 
-        self.model_general = models.resnet18(weights=None)
-        self.model_general.fc = nn.Linear(self.model_general.fc.in_features, 2)
-
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        
-        self.model_general.load_state_dict(torch.load(path_general, map_location=self.device))
+        #model general loading
+        self.model_general = models.resnet18(weights=None)
+        self.model_general.fc = nn.Linear(self.model_general.fc.in_features, 2)        
+        self.model_general.load_state_dict(load_file(path_general, map_location=self.device))
+        self.model_general.to(self.device)
         self.model_general.eval()
-
+        #model faces loading
         self.model_faces = models.resnet18(weights=None)
         self.model_faces.fc = nn.Linear(self.model_faces.fc.in_features, 2)
-        self.model_faces.load_state_dict(torch.load(path_faces, map_location='cpu'))
+        self.model_faces.load_state_dict(load_file(path_faces, map_location=self.device))
+        self.model_faces.to(self.device)
         self.model_faces.eval()
 
         mp_face_detector = mp.solutions.face_detection
@@ -44,7 +46,7 @@ class MultitypePictureDetector:
         is_face_detected = results.detections is not None
 
         image_pil = Image.fromarray(image_rgb)
-        image_tensor = IMAGE_TRANSFORM_VAL(image_pil).unsqueeze(0)  # [1, 3, 224, 224]
+        image_tensor = IMAGE_TRANSFORM_VAL(image_pil).unsqueeze(0).to(self.device)  # [1, 3, 224, 224]
 
         with torch.no_grad():
             model = self.model_faces if is_face_detected else self.model_general
@@ -54,3 +56,6 @@ class MultitypePictureDetector:
             confidence = probs[0].max().item()
 
         return confidence, pred
+    
+    def __del__(self):
+        self.mediapipe_detector.close()

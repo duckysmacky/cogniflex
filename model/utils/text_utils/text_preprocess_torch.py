@@ -2,6 +2,10 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer, AutoModel
 import torch.nn as nn
+from safetensors.torch import load_file
+import os
+
+MODEL_ID = "FacebookAI/roberta-base"
 
 def tokenize_texts(texts, tokenizer, max_length = 512):
 
@@ -56,3 +60,8 @@ class RoBERTaDetector(nn.Module):
         cls_vector = output.last_hidden_state[:, 0, :]
         logits = self.classifier(cls_vector)
         return logits
+        
+
+#тестирование загрузки
+if __name__ == '__main__':
+    model = RoBERTaDetector(MODEL_ID)
