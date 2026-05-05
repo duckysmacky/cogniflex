@@ -5,17 +5,12 @@ import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
 import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
 import io.github.duckysmacky.cogniflex.enums.DetectionKind;
 import io.github.duckysmacky.cogniflex.grpc.AnalyzeReply;
-import io.github.duckysmacky.cogniflex.grpc.ImageRequest;
 import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
+import io.github.duckysmacky.cogniflex.grpc.PhotoRequest;
 import io.github.duckysmacky.cogniflex.grpc.TextRequest;
 import io.github.duckysmacky.cogniflex.grpc.VideoRequest;
-import io.grpc.CallOptions;
-import io.grpc.ManagedChannel;
-import io.grpc.MethodDescriptor;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
-import io.grpc.protobuf.ProtoUtils;
-import io.grpc.stub.ClientCalls;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -30,26 +25,14 @@ import java.util.function.Supplier;
 public class MLGrpcClient implements MLClient {
 
     private static final Logger log = LoggerFactory.getLogger(MLGrpcClient.class);
-    private static final String SERVICE_NAME = "cogniflex.ml.MLAnalyzer";
 
-    private static final MethodDescriptor<ImageRequest, AnalyzeReply> ANALYZE_PHOTO_METHOD =
-            MethodDescriptor.<ImageRequest, AnalyzeReply>newBuilder()
-                    .setType(MethodDescriptor.MethodType.UNARY)
-                    .setFullMethodName(MethodDescriptor.generateFullMethodName(SERVICE_NAME, "AnalyzePhoto"))
-                    .setRequestMarshaller(ProtoUtils.marshaller(ImageRequest.getDefaultInstance()))
-                    .setResponseMarshaller(ProtoUtils.marshaller(AnalyzeReply.getDefaultInstance()))
-                    .build();
-
-    private final ManagedChannel channel;
     private final MLAnalyzerGrpc.MLAnalyzerBlockingStub baseStub;
     private final MLGrpcProperties properties;
 
     public MLGrpcClient(
-            ManagedChannel channel,
             MLAnalyzerGrpc.MLAnalyzerBlockingStub baseStub,
             MLGrpcProperties properties
     ) {
-        this.channel = channel;
         this.baseStub = baseStub;
         this.properties = properties;
     }
@@ -71,22 +54,14 @@ public class MLGrpcClient implements MLClient {
 
     @Override
     public AnalyzeResultResponse analyzeImage(byte[] imageContent) {
-        ImageRequest request = ImageRequest.newBuilder()
+        PhotoRequest request = PhotoRequest.newBuilder()
                 .setImageData(ByteString.copyFrom(imageContent))
                 .build();
 
         AnalyzeReply reply = execute(
                 "AnalyzePhoto",
                 "bytes=" + imageContent.length,
-                () -> ClientCalls.blockingUnaryCall(
-                        channel,
-                        ANALYZE_PHOTO_METHOD,
-                        CallOptions.DEFAULT.withDeadlineAfter(
-                                properties.getTimeout().toMillis(),
-                                TimeUnit.MILLISECONDS
-                        ),
-                        request
-                )
+                () -> stubWithTimeout().analyzePhoto(request)
         );
 
         return mapReply(reply);
@@ -134,7 +109,7 @@ public class MLGrpcClient implements MLClient {
     }
 
     private AnalyzeResultResponse mapReply(AnalyzeReply reply) {
-        DetectionKind kind = mapLabel(reply.getLabel());
+        DetectionKind kind = mapClass(reply.getClass_());
         double accuracy = reply.getConfidence();
 
         if (accuracy < 0.0 || accuracy > 1.0) {
@@ -147,15 +122,15 @@ public class MLGrpcClient implements MLClient {
         return new AnalyzeResultResponse(kind, accuracy);
     }
 
-    private DetectionKind mapLabel(String label) {
-        String normalizedLabel = label.trim().toLowerCase(Locale.ROOT);
+    private DetectionKind mapClass(String rawClass) {
+        String normalizedClass = rawClass.trim().toLowerCase(Locale.ROOT);
 
-        return switch (normalizedLabel) {
+        return switch (normalizedClass) {
             case "human", "real" -> DetectionKind.HUMAN;
             case "ai", "ai_generated", "generated", "fake" -> DetectionKind.AI_GENERATED;
             default -> throw new ResponseStatusException(
                     HttpStatus.BAD_GATEWAY,
-                    "Unknown label returned by ML service: " + label
+                    "Unknown class returned by ML service: " + rawClass
             );
         };
     }
