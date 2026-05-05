@@ -7,12 +7,12 @@ option java_package = "io.github.duckysmacky.cogniflex.grpc";
 option java_outer_classname = "MlAnalyzerProto";
 
 service MLAnalyzer {
-  rpc AnalyzeImage (ImageRequest) returns (AnalyzeReply);
+  rpc AnalyzePhoto (PhotoRequest) returns (AnalyzeReply);
   rpc AnalyzeVideo (VideoRequest) returns (AnalyzeReply);
   rpc AnalyzeText (TextRequest) returns (AnalyzeReply);
 }
 
-message ImageRequest {
+message PhotoRequest {
   bytes image_data = 1;
 }
 
@@ -25,6 +25,6 @@ message TextRequest {
 }
 
 message AnalyzeReply {
-  string label = 1;
+  string class = 1;
   float confidence = 2;
 }
