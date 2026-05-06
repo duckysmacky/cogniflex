@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-inter: 'Inter', sans-serif;
+
+  --text-2xs: 0.625rem;
+  --text-3xs: 0.5rem;
+
+  --color-black: #0a0e1a;
+  --color-accent: #0d9ddf;
+  --color-dark-blue: #1a202f;
+  --color-gray: #8c8f97;
+  --color-green: #1d9e75;
+  --color-red: #e24b4a;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+button:enabled {
+  cursor: pointer;
+}
