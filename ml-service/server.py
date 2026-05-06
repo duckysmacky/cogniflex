@@ -73,7 +73,7 @@ if not generate_proto():
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
 
-from model_selection_mediapipe import MultitypePictureDetector
+from model_selection import MultitypePictureDetector
 
 _photo_detector = None
 _video_detector = None
@@ -288,11 +288,15 @@ def serve():
     logging.info(f"Port: {GRPC_PORT}")
     logging.info(f"Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText")
     logging.info(f"Max message size: {GRPC_MAX_MESSAGE_MB} MB ({max_message_length_bytes} bytes)")
-    logging.info("Waiting for requests...")
     logging.info("=" * 60)
     
     server.start()
-    server.wait_for_termination()
+    
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        logging.info("Shutting down server...")
+        os._exit(0)
 
 if __name__ == "__main__":
     serve()
