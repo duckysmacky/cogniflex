@@ -6,67 +6,131 @@ import os
 import tempfile
 import random
 import time
+import subprocess
+import platform
+import configparser
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(current_dir)
 generated_dir = os.path.join(current_dir, "generated")
-utils_dir = os.path.join(os.path.dirname(current_dir), "model", "utils")
-weights_dir = os.path.join(os.path.dirname(current_dir), "model", "weights")
+proto_dir = os.path.join(current_dir, "proto")
+utils_dir = os.path.join(project_root, "model", "utils")
+weights_dir = os.path.join(project_root, "model", "weights")
 
 sys.path.insert(0, generated_dir)
+sys.path.insert(0, current_dir)
 sys.path.insert(0, utils_dir)
+sys.path.insert(0, project_root)
+
+config = configparser.ConfigParser()
+config.read(os.path.join(current_dir, 'config.cfg'))
+
+GRPC_PORT = config.get('grpc', 'port', fallback='50051')
+GRPC_MAX_MESSAGE_MB = config.getint('grpc', 'max_message_mb', fallback=100)
+
+def generate_proto():
+    proto_file = os.path.join(proto_dir, "ml_analyzer.proto")
+    if not os.path.exists(proto_file):
+        logging.error(f"Proto file not found: {proto_file}")
+        return False
+    
+    os.makedirs(generated_dir, exist_ok=True)
+    
+    pb2_file = os.path.join(generated_dir, "ml_analyzer_pb2.py")
+    pb2_grpc_file = os.path.join(generated_dir, "ml_analyzer_pb2_grpc.py")
+    
+    if os.path.exists(pb2_file) and os.path.exists(pb2_grpc_file):
+        proto_mtime = os.path.getmtime(proto_file)
+        pb2_mtime = os.path.getmtime(pb2_file)
+        if pb2_mtime > proto_mtime:
+            logging.info("Proto files are up to date, skipping generation")
+            return True
+    
+    logging.info("Generating gRPC files from proto...")
+    try:
+        subprocess.run([
+            sys.executable, "-m", "grpc_tools.protoc",
+            f"-I{proto_dir}",
+            f"--python_out={generated_dir}",
+            f"--grpc_python_out={generated_dir}",
+            proto_file
+        ], check=True)
+        logging.info("gRPC files generated successfully")
+        return True
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to generate gRPC files: {e}")
+        return False
+
+if not generate_proto():
+    logging.error("Cannot start server without generated proto files")
+    sys.exit(1)
 
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
 
+from model_selection_mediapipe import MultitypePictureDetector
+
 _photo_detector = None
-
-def get_photo_detector():
-    global _photo_detector
-    if _photo_detector is None:
-        from model_selection_mediapipe import MultitypePictureDetector
-        
-        path_general = os.path.join(weights_dir, "resnet_general92.pth")
-        path_faces = os.path.join(weights_dir, "resnet_faces88.pth")
-        
-        logging.info("Loading photo detection models...")
-        logging.info(f"  General: {path_general}")
-        logging.info(f"  Faces:   {path_faces}")
-        
-        _photo_detector = MultitypePictureDetector(
-            path_general=path_general,
-            path_faces=path_faces
-        )
-        logging.info("Photo models loaded successfully!")
-    
-    return _photo_detector
-
 _video_detector = None
-
-def get_video_detector():
-    global _video_detector
-    if _video_detector is None:
-        logging.warning("USING MOCK VIDEO DETECTOR - returning random predictions")
-        class MockVideoDetector:
-            def predict_video(self, path):
-                pred = random.choice([0, 1])
-                conf = random.uniform(0.5, 1.0)
-                return conf, pred
-        _video_detector = MockVideoDetector()
-    return _video_detector
-
 _text_detector = None
 
-def get_text_detector():
+def load_photo_model():
+    global _photo_detector
+    path_general = os.path.join(weights_dir, "resnet_general92.pth")
+    path_faces = os.path.join(weights_dir, "resnet_faces88.pth")
+    
+    logging.info("Loading photo detection models...")
+    logging.info(f"  General: {path_general}")
+    logging.info(f"  Faces:   {path_faces}")
+    
+    _photo_detector = MultitypePictureDetector(
+        path_general=path_general,
+        path_faces=path_faces
+    )
+    logging.info("Photo models loaded successfully!")
+
+def load_video_model():
+    global _video_detector
+    logging.warning("USING MOCK VIDEO DETECTOR - returning random predictions")
+    class MockVideoDetector:
+        def predict_video(self, path):
+            pred = random.choice([0, 1])
+            conf = random.uniform(0.5, 1.0)
+            return conf, pred
+    _video_detector = MockVideoDetector()
+    logging.info("Video detector ready (mock)")
+
+def load_text_model():
     global _text_detector
-    if _text_detector is None:
-        logging.warning("USING MOCK TEXT DETECTOR - returning random predictions")
-        class MockTextDetector:
-            def predict_text(self, text):
-                pred = random.choice([0, 1])
-                conf = random.uniform(0.5, 1.0)
-                return conf, pred
-        _text_detector = MockTextDetector()
-    return _text_detector
+    logging.warning("USING MOCK TEXT DETECTOR - returning random predictions")
+    class MockTextDetector:
+        def predict_text(self, text):
+            pred = random.choice([0, 1])
+            conf = random.uniform(0.5, 1.0)
+            return conf, pred
+    _text_detector = MockTextDetector()
+    logging.info("Text detector ready (mock)")
+
+def preload_models():
+    logging.info("Preloading all models...")
+    start = time.time()
+    
+    with futures.ThreadPoolExecutor(max_workers=3) as executor:
+        future_photo = executor.submit(load_photo_model)
+        future_video = executor.submit(load_video_model)
+        future_text = executor.submit(load_text_model)
+        
+        futures_list = [future_photo, future_video, future_text]
+        for f in futures.as_completed(futures_list):
+            f.result()
+    
+    elapsed = time.time() - start
+    logging.info(f"All models loaded in {elapsed:.3f}s")
 
 class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
     
@@ -92,8 +156,7 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
         start_time = time.time()
         
         try:
-            detector = get_photo_detector()
-            confidence, pred = detector.predict_picture(tmp_path)
+            confidence, pred = _photo_detector.predict_picture(tmp_path)
             predicted_class = "human" if pred == 0 else "ai"
             elapsed = time.time() - start_time
             
@@ -140,8 +203,7 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
         start_time = time.time()
         
         try:
-            detector = get_video_detector()
-            confidence, pred = detector.predict_video(tmp_path)
+            confidence, pred = _video_detector.predict_video(tmp_path)
             predicted_class = "human" if pred == 0 else "ai"
             elapsed = time.time() - start_time
             
@@ -184,8 +246,7 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
         start_time = time.time()
         
         try:
-            detector = get_text_detector()
-            confidence, pred = detector.predict_text(text)
+            confidence, pred = _text_detector.predict_text(text)
             predicted_class = "human" if pred == 0 else "ai"
             elapsed = time.time() - start_time
             
@@ -206,8 +267,9 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
             return ml_analyzer_pb2.AnalyzeReply()
 
 def serve():
-    max_message_length_mb = 100
-    max_message_length_bytes = max_message_length_mb * 1024 * 1024
+    max_message_length_bytes = GRPC_MAX_MESSAGE_MB * 1024 * 1024
+    
+    preload_models()
     
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=10),
@@ -217,13 +279,15 @@ def serve():
         ]
     )
     ml_analyzer_pb2_grpc.add_MLAnalyzerServicer_to_server(MLAnalyzerServicer(), server)
-    server.add_insecure_port("[::]:50051")
+    server.add_insecure_port(f"[::]:{GRPC_PORT}")
     
     logging.info("=" * 60)
     logging.info("ML Analyzer gRPC Server")
-    logging.info("Port: 50051")
-    logging.info("Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText")
-    logging.info(f"Max message size: {max_message_length_mb} MB ({max_message_length_bytes} bytes)")
+    logging.info(f"Python: {sys.version}")
+    logging.info(f"Platform: {platform.system()} {platform.release()}")
+    logging.info(f"Port: {GRPC_PORT}")
+    logging.info(f"Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText")
+    logging.info(f"Max message size: {GRPC_MAX_MESSAGE_MB} MB ({max_message_length_bytes} bytes)")
     logging.info("Waiting for requests...")
     logging.info("=" * 60)
     
@@ -231,8 +295,4 @@ def serve():
     server.wait_for_termination()
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s [%(levelname)s] %(message)s"
-    )
     serve()
