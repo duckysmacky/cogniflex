@@ -1,5 +1,5 @@
-import { ANALYZE_RESULTS_MAP } from '@/components/analyze-section/analyze-result/constants';
 import { AnalyzeKind, type TAnalyzeResult } from '@/entities/analyze';
+import { ANALYZE_RESULTS_MAP } from '@/sections/analyze/components/analyze-result/constants';
 import type { Nullable } from '@/types/common';
 import { IconLoader2 } from '@tabler/icons-react';
 import { twMerge } from 'tailwind-merge';

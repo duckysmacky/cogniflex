@@ -1,10 +1,18 @@
 import { Switch } from '@/components/ui';
 import { IconSettings } from '@tabler/icons-react';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 
 export const Header = () => {
   const [isActive, setIsActive] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleSettingsIconClick = () => {
+    const path = location.pathname === '/' ? '/settings' : '/';
+    navigate(path);
+  };
 
   return (
     <header className="flex flex-row items-center justify-between px-5 py-4">
@@ -21,7 +29,12 @@ export const Header = () => {
           {isActive ? 'Активно' : 'Неактивно'}
         </p>
         <Switch checked={isActive} onCheck={setIsActive} />
-        <IconSettings className="text-gray" size={16} />
+        <IconSettings
+          onClick={handleSettingsIconClick}
+          role="button"
+          className="text-gray cursor-pointer"
+          size={16}
+        />
       </div>
     </header>
   );

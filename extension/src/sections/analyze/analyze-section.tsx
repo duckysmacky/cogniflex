@@ -1,7 +1,7 @@
 import { api } from '@/api';
-import { AnalyzeResult } from '@/components/analyze-section/analyze-result';
 import { Button, Divider, TextArea } from '@/components/ui';
 import type { TAnalyzeResult } from '@/entities/analyze';
+import { AnalyzeResult } from '@/sections/analyze/components/analyze-result';
 import type { Nullable } from '@/types/common';
 import { formatFileSize, getFileExtension } from '@/utils';
 import { IconMovie, IconPaperclip, IconPhoto, IconQuestionMark, IconX } from '@tabler/icons-react';
