@@ -40,7 +40,7 @@ export const TextArea = ({
       <div
         onClick={handleContainerClick}
         className={twMerge(
-          'bg-dark-blue border-gray/30 flex cursor-text flex-row gap-1 rounded-lg border px-3 py-2 transition-all focus-within:border-white',
+          'bg-dark-blue border-gray/30 flex cursor-text gap-1 rounded-lg border px-3 py-2 transition-all focus-within:border-white',
           disabled && 'bg-gray/30 border-none',
           textAreaContainerClassName,
         )}

@@ -1,6 +1,6 @@
 export const Footer = () => {
   return (
-    <div className="flex flex-row justify-between px-5 py-3">
+    <div className="flex justify-between px-5 py-3">
       <a href="" className="text-2xs text-gray">
         О расширении
       </a>

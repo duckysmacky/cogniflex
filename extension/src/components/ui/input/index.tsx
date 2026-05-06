@@ -40,22 +40,32 @@ export const Input = ({
       <div
         onClick={handleContainerClick}
         className={twMerge(
-          'bg-dark-blue border-gray/30 flex cursor-text flex-row items-center gap-1 rounded-lg border px-3 py-2 transition-all group-focus:border-white peer-focus:border-white focus-within:border-white',
+          'bg-dark-blue border-gray/30 flex cursor-text items-center gap-1 rounded-lg border px-3 py-2 transition-all group-focus:border-white peer-focus:border-white focus-within:border-white',
           disabled && 'bg-gray/30 border-none',
+          isError && 'border-red',
           inputContainerClassName,
         )}
       >
         {startAdornment && startAdornment({ isError })}
         <input
           disabled={disabled}
-          className="placeholder-gray disabled:text-gray text-xs outline-none"
+          className="placeholder-gray disabled:text-gray flex-1 text-xs outline-none"
           ref={inputRef}
           id={inputId}
           {...rest}
         />
         {endAdornment && endAdornment({ isError })}
       </div>
-      {helperText && <span className="text-3xs text-gray font-medium">{helperText}</span>}
+      {helperText && (
+        <span
+          className={twMerge(
+            'text-3xs text-gray font-medium transition-colors',
+            isError && 'text-red',
+          )}
+        >
+          {helperText}
+        </span>
+      )}
     </div>
   );
 };

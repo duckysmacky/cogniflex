@@ -1,0 +1,2 @@
+export const MIN_TEXT_LENGTH_MIN = 100;
+export const MIN_TEXT_LENGTH_DEFAULT = 1000;

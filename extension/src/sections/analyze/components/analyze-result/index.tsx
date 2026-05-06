@@ -29,7 +29,7 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
 
     if (isAnalyzing) {
       return (
-        <div className="text-gray flex flex-row items-center gap-2">
+        <div className="text-gray flex items-center gap-2">
           <IconLoader2 size={16} className="animate-spin" />
           <span className="text-xs font-semibold">Активно работаем...</span>
         </div>
@@ -65,5 +65,5 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
     return <span className="text-gray text-xs font-semibold">Здесь будет результат</span>;
   };
 
-  return <div className="flex flex-row justify-center px-5 py-4">{getContent()}</div>;
+  return <div className="flex justify-center px-5 py-4">{getContent()}</div>;
 };
