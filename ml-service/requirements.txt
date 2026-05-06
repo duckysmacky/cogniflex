@@ -1,7 +1,8 @@
-grpcio>=1.60.0
-grpcio-tools>=1.60.0
-protobuf>=4.25.0
-torch>=2.0.0
-torchvision>=0.15.0
-opencv-python>=4.8.0
-pillow>=10.0.0
+grpcio>=1.71.0
+grpcio-tools>=1.71.0
+protobuf>=6.31.1
+pyyaml>=6.0.2
+torch>=2.7.1
+torchvision>=0.22.1
+opencv-python>=4.11.0.86
+pillow>=11.2.1

@@ -8,7 +8,7 @@ import random
 import time
 import subprocess
 import platform
-import configparser
+import yaml
 
 logging.basicConfig(
     level=logging.INFO,
@@ -27,11 +27,11 @@ sys.path.insert(0, current_dir)
 sys.path.insert(0, utils_dir)
 sys.path.insert(0, project_root)
 
-config = configparser.ConfigParser()
-config.read(os.path.join(current_dir, 'config.cfg'))
+with open(os.path.join(current_dir, 'config.yaml'), 'r') as f:
+    config = yaml.safe_load(f)
 
-GRPC_PORT = config.get('grpc', 'port', fallback='50051')
-GRPC_MAX_MESSAGE_MB = config.getint('grpc', 'max_message_mb', fallback=100)
+GRPC_PORT = str(config['grpc'].get('port', 50051))
+GRPC_MAX_MESSAGE_MB = int(config['grpc'].get('max_message_mb', 100))
 
 def generate_proto():
     proto_file = os.path.join(proto_dir, "ml_analyzer.proto")
@@ -73,7 +73,7 @@ if not generate_proto():
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
 
-from model_selection_mediapipe import MultitypePictureDetector
+from model_selection import MultitypePictureDetector
 
 _photo_detector = None
 _video_detector = None
@@ -292,7 +292,12 @@ def serve():
     logging.info("=" * 60)
     
     server.start()
-    server.wait_for_termination()
+    
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        logging.info("Shutting down server...")
+        os._exit(0)
 
 if __name__ == "__main__":
     serve()
