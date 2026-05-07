@@ -15,6 +15,7 @@
     "ts:check": "tsc"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@tabler/icons-react": "^3.40.0",
     "@tailwindcss/vite": "^4.2.2",
     "axios": "^1.15.0",
@@ -22,8 +23,13 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-dropzone": "^15.0.0",
+    "react-hook-form": "^7.75.0",
+    "react-router-dom": "^7.15.0",
     "tailwind-merge": "^3.5.0",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.2",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.13",
+    "zustand-chrome-storage": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
