@@ -1,99 +1,173 @@
 import { ApiProxyKey, apiProxyRequest } from '@/api';
 import { AnalyzeKind } from '@/entities/analyze';
 import { MIN_TEXT_LENGTH_DEFAULT } from '@/sections';
-import type { AbstractObject } from '@/types';
+import type { AbstractObject, Nullable } from '@/types';
+import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
 
 type Settings = { detectEnabled: boolean; minTextLength: number };
 
-const ANALYZE_DELAY_MS = 1500;
+const SKIP_TAGS = ['script', 'style', 'noscript', 'iframe', 'svg', 'canvas'];
 
-const CANDIDATE_CLASS = '_cogniflex_candidate';
-const HAS_TOOLTIP_CLASS = '_cogniflex_has-tooltip';
+const ANALYZE_DELAY_MS = 1000;
+
+const CANDIDATE_ATTR = 'data-cogniflex-candidate';
+const TOOLTIP_VISIBLE_ATTR = 'data-cogniflex-tooltip-visible';
+const HIGHLIGHT_ATTR = 'data-cogniflex-shadow';
+const TOOLTIP_EL_ID = '_cogniflex_tooltip';
 
 const STORAGE_SETTINGS_KEY = 'settings-storage';
-
 const INTERSECTION_OBSERVER_THRESHOLD = 0.5;
 
+const HIGHLIGHT_AI = '0 0 0 2px rgba(239, 68, 68, 0.6)';
+const HIGHLIGHT_HUMAN = '0 0 0 2px rgba(38, 197, 94, 0.6)';
+
 const analyzedElements = new WeakMap<
-  Element,
-  {
-    text: string;
-    kind: AnalyzeKind;
-    accuracy: number;
-  }
+  HTMLElement,
+  { text: string; kind: AnalyzeKind; accuracy: number }
 >();
 
 const pendingTimers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
 
 let intersectionObserver: IntersectionObserver | null = null;
 let currentMinTextLength = MIN_TEXT_LENGTH_DEFAULT;
+let tooltipEl: HTMLElement | null = null;
+let stylesInjected = false;
 
-function injectStyles() {
+let currentHoveredElement: HTMLElement | null = null;
+
+let tooltipUpdateCleanup: Nullable<() => void> = null;
+
+function createTooltip() {
+  const host = document.createElement('div');
+  host.style.cssText =
+    'all:initial;position:fixed;top:0;left:0;z-index:2147483647;pointer-events:none;';
+
+  const shadow = host.attachShadow({ mode: 'closed' });
+
   const style = document.createElement('style');
   style.textContent = `
-    .${CANDIDATE_CLASS} {
-      position: relative;
-    }
-
-    .${CANDIDATE_CLASS}::after {
-      content: "";
+    #${TOOLTIP_EL_ID} {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      transition: background-color 0.2s ease-in-out;
-    }
-
-    .${CANDIDATE_CLASS}:hover::after {
-      background: rgba(255, 255, 0, 0.05);
-    }
-
-    .${CANDIDATE_CLASS}:hover::before {
-      top: -40px;
-    }
-
-    .${CANDIDATE_CLASS}::before {
-      opacity: 0.5;
-      transition: top 0.2s ease-in-out;
-      content: "Проверяем..";
-      position: absolute;
-      top: -15px;
-      left: 0;
       padding: 4px 8px;
       border-radius: 6px;
       font-size: 12px;
       font-family: sans-serif;
-      z-index: 100000000;
-      pointer-events: none;
       color: #fff;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(2px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(3px);
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.1s ease;
     }
-
-    .${CANDIDATE_CLASS}.${HAS_TOOLTIP_CLASS}::before {
+    #${TOOLTIP_EL_ID}[${TOOLTIP_VISIBLE_ATTR}] {
       opacity: 1;
-      content: attr(data-content);
     }
+    [${CANDIDATE_ATTR}]
   `;
-  document.head.appendChild(style);
+
+  tooltipEl = document.createElement('div');
+  tooltipEl.id = TOOLTIP_EL_ID;
+
+  shadow.appendChild(style);
+  shadow.appendChild(tooltipEl);
+  document.documentElement.appendChild(host);
 }
-function attachTooltip(element: HTMLElement, accuracy: number, kind: AnalyzeKind) {
-  removeTooltip(element);
 
-  const tooltipContent = `${kind === AnalyzeKind.AI ? '🤖' : '✅'} ${Math.round(accuracy * 100)}%`;
-  element.setAttribute('data-content', tooltipContent);
-  element.classList.add(HAS_TOOLTIP_CLASS);
-}
-
-const removeTooltip = (element: Element) => element.classList.remove(HAS_TOOLTIP_CLASS);
-
-function parseSettingsValue(storageValue: unknown) {
-  if (!storageValue) {
-    return {};
+async function updateTooltipPosition() {
+  if (!currentHoveredElement || !tooltipEl) {
+    return;
   }
 
+  const { x, y } = await computePosition(currentHoveredElement, tooltipEl, {
+    placement: 'top-end',
+    middleware: [offset(8), flip(), shift({ padding: 5 })],
+  });
+  Object.assign(tooltipEl.style, {
+    left: `${x}px`,
+    top: `${y}px`,
+  });
+}
+
+function showTooltip(element: HTMLElement) {
+  if (!tooltipEl) return;
+  const data = analyzedElements.get(element);
+  if (!data) return;
+
+  tooltipUpdateCleanup?.();
+
+  currentHoveredElement = element;
+
+  const icon = data.kind === AnalyzeKind.AI ? '🤖' : '✅';
+  tooltipEl.textContent = `${icon} ${Math.round(data.accuracy * 100)}%`;
+
+  tooltipEl.setAttribute(TOOLTIP_VISIBLE_ATTR, '');
+
+  tooltipUpdateCleanup = autoUpdate(element, tooltipEl, updateTooltipPosition);
+}
+
+function hideTooltip() {
+  currentHoveredElement = null;
+  tooltipEl?.removeAttribute(TOOLTIP_VISIBLE_ATTR);
+  tooltipUpdateCleanup?.();
+  tooltipUpdateCleanup = null;
+}
+
+function highlightElement(element: HTMLElement, kind: AnalyzeKind) {
+  if (!element.hasAttribute(HIGHLIGHT_ATTR)) {
+    element.setAttribute(HIGHLIGHT_ATTR, element.style.boxShadow);
+  }
+
+  const shadow = kind === AnalyzeKind.AI ? HIGHLIGHT_AI : HIGHLIGHT_HUMAN;
+  const existingShadow = element.style.boxShadow;
+  element.style.boxShadow = existingShadow ? `${existingShadow}, ${shadow}` : shadow;
+}
+
+function removeHighlight(element: HTMLElement) {
+  if (!element.hasAttribute(HIGHLIGHT_ATTR)) {
+    return;
+  }
+
+  element.style.boxShadow = element.getAttribute(HIGHLIGHT_ATTR) ?? '';
+  element.removeAttribute(HIGHLIGHT_ATTR);
+}
+
+function attachHoverListeners() {
+  document.addEventListener(
+    'mouseover',
+    (e) => {
+      const target = (e.target as HTMLElement).closest(`[${CANDIDATE_ATTR}]`);
+      if (target && analyzedElements.has(target as HTMLElement)) {
+        showTooltip(target as HTMLElement);
+      } else {
+        hideTooltip();
+      }
+    },
+    { passive: true },
+  );
+
+  document.addEventListener(
+    'mouseout',
+    (e) => {
+      const target = (e.target as HTMLElement).closest(`[${CANDIDATE_ATTR}]`);
+      if (target && analyzedElements.has(target as HTMLElement)) {
+        hideTooltip();
+      }
+    },
+    { passive: true },
+  );
+}
+
+function injectStyles() {
+  if (!stylesInjected) {
+    createTooltip();
+    attachHoverListeners();
+    stylesInjected = true;
+  }
+}
+
+function parseSettingsValue(storageValue: unknown) {
+  if (!storageValue) return {};
   if (typeof storageValue === 'string') {
     try {
       return JSON.parse(storageValue).state || {};
@@ -101,21 +175,29 @@ function parseSettingsValue(storageValue: unknown) {
       return {};
     }
   }
-
   return (storageValue as AbstractObject).state ?? {};
 }
 
-// Функция для получения настроек из хранилища
-async function getSettings() {
-  return new Promise<Settings>((resolve) => {
+async function getSettings(): Promise<Settings> {
+  return new Promise((resolve) => {
     chrome.storage.local.get(STORAGE_SETTINGS_KEY, (result) => {
-      const settings = parseSettingsValue(result[STORAGE_SETTINGS_KEY]);
+      const s = parseSettingsValue(result[STORAGE_SETTINGS_KEY]);
       resolve({
-        detectEnabled: settings.detectEnabled ?? false,
-        minTextLength: settings.minTextLength ?? MIN_TEXT_LENGTH_DEFAULT,
+        detectEnabled: s.detectEnabled ?? false,
+        minTextLength: s.minTextLength ?? MIN_TEXT_LENGTH_DEFAULT,
       });
     });
   });
+}
+
+function isTextCandidate(element: Element, minTextLength: number) {
+  const tag = element.tagName.toLowerCase();
+  return (
+    !SKIP_TAGS.includes(tag) &&
+    element.children.length === 0 &&
+    element.textContent &&
+    element.textContent.trim().length > minTextLength
+  );
 }
 
 function clearPendingTimer(element: HTMLElement) {
@@ -132,29 +214,23 @@ function markCandidate(element: HTMLElement) {
 
   const cached = analyzedElements.get(element);
   if (cached && cached.text === text) {
-    element.classList.add(CANDIDATE_CLASS);
-    attachTooltip(element, cached.accuracy, cached.kind);
+    highlightElement(element, cached.kind);
     return;
   }
 
-  if (pendingTimers.has(element)) return;
+  element.setAttribute(CANDIDATE_ATTR, '');
 
-  element.classList.add(CANDIDATE_CLASS);
+  if (pendingTimers.has(element)) return;
 
   const timer = setTimeout(() => {
     clearPendingTimer(element);
     apiProxyRequest(ApiProxyKey.ANALYZE_TEXT, text, (response) => {
-      if (!element.classList.contains(CANDIDATE_CLASS)) return;
-
       if (response.success) {
         const { accuracy, kind } = response.data.data;
         analyzedElements.set(element, { accuracy, kind, text });
-        attachTooltip(element, accuracy, kind);
-      } else {
-        unmarkCandidate(element);
+        highlightElement(element, kind);
       }
     }).catch((e) => {
-      unmarkCandidate(element);
       console.error(e instanceof Error ? e.message : e);
     });
   }, ANALYZE_DELAY_MS);
@@ -164,38 +240,17 @@ function markCandidate(element: HTMLElement) {
 
 function unmarkCandidate(element: HTMLElement) {
   clearPendingTimer(element);
-  removeTooltip(element);
-  element.classList.remove(CANDIDATE_CLASS);
-}
-
-function unmarkPendingCandidates() {
-  document.querySelectorAll(`.${CANDIDATE_CLASS}`).forEach((element) => {
-    // все помеченные кандидаты точно pending.
-    //  убираем только если ещё не проанализирован
-    if (!analyzedElements.has(element)) {
-      unmarkCandidate(element as HTMLElement);
-    }
-  });
+  removeHighlight(element);
 }
 
 function unmarkAllCandidates() {
-  document.querySelectorAll(`.${CANDIDATE_CLASS}`).forEach((element) => {
-    unmarkCandidate(element as HTMLElement);
-  });
-}
-
-function isTextCandidate(element: Element, minTextLength: number) {
-  return (
-    element.children.length === 0 &&
-    element.textContent &&
-    element.textContent.trim().length > minTextLength
-  );
+  document
+    .querySelectorAll(`[${CANDIDATE_ATTR}]`)
+    .forEach((el) => unmarkCandidate(el as HTMLElement));
 }
 
 function createIntersectionObserver() {
-  if (intersectionObserver) {
-    intersectionObserver.disconnect();
-  }
+  intersectionObserver?.disconnect();
 
   intersectionObserver = new IntersectionObserver(
     (entries) => {
@@ -205,27 +260,23 @@ function createIntersectionObserver() {
         if (entry.isIntersecting) {
           markCandidate(entry.target);
         } else {
-          unmarkCandidate(entry.target);
+          clearPendingTimer(entry.target);
         }
       });
     },
-    {
-      threshold: INTERSECTION_OBSERVER_THRESHOLD,
-    },
+    { threshold: INTERSECTION_OBSERVER_THRESHOLD },
   );
 }
 
 function observeCandidateElements(minTextLength: number) {
-  unmarkPendingCandidates();
   intersectionObserver?.disconnect();
   createIntersectionObserver();
 
-  const elements = document.querySelectorAll('*');
-  elements.forEach((element) => {
-    const cached = analyzedElements.get(element);
+  document.querySelectorAll('*').forEach((element) => {
+    // восстанавливаем подсветку для уже проанализированных
+    const cached = analyzedElements.get(element as HTMLElement);
     if (cached) {
-      element.classList.add(CANDIDATE_CLASS);
-      attachTooltip(element as HTMLElement, cached.accuracy, cached.kind);
+      highlightElement(element as HTMLElement, cached.kind);
     }
 
     if (isTextCandidate(element, minTextLength)) {
@@ -274,11 +325,9 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     return;
   }
 
-  // изменился порог длины — переобходим элементы, но кэш сохраняем
   if (prev.minTextLength !== next.minTextLength) {
     currentMinTextLength = next.minTextLength ?? MIN_TEXT_LENGTH_DEFAULT;
     observeCandidateElements(currentMinTextLength);
-    return;
   }
 });
 
