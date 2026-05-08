@@ -2,7 +2,7 @@ import { api } from '@/api';
 import { Button, Divider, TextArea } from '@/components/ui';
 import type { TAnalyzeResult } from '@/entities/analyze';
 import { AnalyzeResult } from '@/sections/analyze/components/analyze-result';
-import type { Nullable } from '@/types/common';
+import type { Nullable } from '@/types';
 import { formatFileSize, getFileExtension } from '@/utils';
 import { IconMovie, IconPaperclip, IconPhoto, IconQuestionMark, IconX } from '@tabler/icons-react';
 import { AxiosError } from 'axios';

@@ -1,18 +1,4 @@
-import { apiInstance } from '@/api/instance';
-import type { AnalyzeMediaResponse, AnalyzeTextResponse } from '@/api/types';
-
-export const api = {
-  analyze: {
-    analyzeText: (text: string) =>
-      apiInstance.post<AnalyzeTextResponse>('/api/analyze/text', { text }),
-    analyzeMedia: (file: File) => {
-      const formData = new FormData();
-      formData.append('file', file);
-      return apiInstance.post<AnalyzeMediaResponse>('/api/analyze/media', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-    },
-  },
-};
+export * from './api';
+export * from './instance';
+export * from './proxy';
+export * from './types';
