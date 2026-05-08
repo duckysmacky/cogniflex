@@ -150,8 +150,13 @@ function markCandidate(element: HTMLElement) {
         const { accuracy, kind } = response.data.data;
         analyzedElements.set(element, { accuracy, kind, text });
         attachTooltip(element, accuracy, kind);
+      } else {
+        unmarkCandidate(element);
       }
-    }).catch((e) => console.error(e instanceof Error ? e.message : e));
+    }).catch((e) => {
+      unmarkCandidate(element);
+      console.error(e instanceof Error ? e.message : e);
+    });
   }, ANALYZE_DELAY_MS);
 
   pendingTimers.set(element, timer);
