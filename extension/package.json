@@ -4,22 +4,36 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "env:dev": "cp .env.dev .env",
+    "start": "vite",
+    "start:dev": "yarn env:dev && yarn start",
     "build": " vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "ts:check": "tsc",
-    "preview": "vite preview"
+    "ts:check": "tsc"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tabler/icons-react": "^3.40.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "axios": "^1.15.0",
     "normalize.css": "^8.0.1",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "react-dropzone": "^15.0.0",
+    "react-hook-form": "^7.75.0",
+    "react-router-dom": "^7.15.0",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.2",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.13",
+    "zustand-chrome-storage": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
+    "@crxjs/vite-plugin": "^2.0.0-beta.33",
     "@eslint/js": "^9.39.4",
     "@rolldown/plugin-babel": "^0.2.0",
     "@types/babel__core": "^7.20.5",
@@ -36,6 +50,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
     "prettier": "3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^8.0.0"

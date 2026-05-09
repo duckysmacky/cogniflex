@@ -1,121 +1,151 @@
 # Cogniflex ML gRPC API
 
+  
 Документация по использованию gRPC сервиса для анализа изображений, видео и текста.
 
+  
 ---
 
+  
 ## Требования
 
-- **Python 3.10** (обязательно, mediapipe не работает с Python 3.14)
 - Установка зависимостей:
+
 ```bash
-  py -3.10 -m pip install -r ml-service/requirements.txt
+  py -3.10 -m pip install -r ml-service/requirements.txt
 ```
 
 ## Запуск сервера
 
+  
 ```bash
 cd ml-service
-py -3.10 server.py
+python server.py
 ```
-
+  
 Сервер запускается на порту **50051** и предоставляет три метода:
 
 - `AnalyzePhoto` — анализ изображений
-    
 - `AnalyzeVideo` — анализ видео
-    
 - `AnalyzeText` — анализ текста
+  
 
 ## Тестирование
 
 >Выполнять в **другом** окне терминала, только после запуска сервера.
 
+  
 ```bash
 cd ml-service
 # Фото
-py -3.10 tests/test_photo_client.py "путь_к_изображению"
+python tests/test_photo_client.py "путь_к_изображению"
 # Видео
-py -3.10 tests/test_video_client.py "путь_к_видео"
+python tests/test_video_client.py "путь_к_видео"
 # Текст
-py -3.10 tests/test_text_client.py "текст для анализа"
+python tests/test_text_client.py "текст для анализа"
 ```
-
-## API
-
-**Порт:** `50051`  
-**Сервис:** `MLAnalyzer`
+  
 
 ### AnalyzePhoto — Анализ изображения
 
-|Параметр|Значение|
-|---|---|
-|Вход|`bytes image_data` (JPEG, PNG, WebP, до 100 МБ)|
-|Выход|`class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)|
-|Статус|Реальная модель (ResNet18 + MediaPipe)|
 
+Параметр | Значение
+Вход | `bytes image_data` (JPEG, PNG, WebP, до 100 МБ)
+Выход | `class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)
+Статус | Реальная модель (ResNet18 + OpenCV Haar Cascade)
+  
 ### AnalyzeVideo — Анализ видео
 
-|Параметр|Значение|
-|---|---|
-|Вход|`bytes video_data` (MP4, AVI, MOV, до 100 МБ)|
-|Выход|`class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)|
-|Статус|Заглушка (случайные предсказания)|
-
+Параметр | Значение
+Вход | `bytes video_data` (MP4, AVI, MOV, до 100 МБ)
+Выход | `class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)
+Статус | Заглушка (случайные предсказания)
+  
 ### AnalyzeText — Анализ текста
 
-| Параметр | Значение                                                |
-| -------- | ------------------------------------------------------- |
-| Вход     | `string text`                                           |
-| Выход    | `class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0) |
-| Статус   | Заглушка (случайные предсказания)                       |
+Параметр | Значение
+Вход | `string text`
+Выход | `class` (`"human"` \| `"ai"`), `confidence` (0.0 - 1.0)
+Статус | Заглушка (случайные предсказания)
+  
+## Логирование
+  
+Сервер выводит подробные логи о каждом запросе. Формат логов:
+  
+#### Запуск сервера
+
+```bash
+============================================================
+[INFO] ML Analyzer gRPC Server
+[INFO] Python: sys.version
+[INFO] Platform: {platform.system()} {platform.release()}
+[INFO] Port: 50051
+[INFO] Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText
+[INFO] Max message size: 100 MB (104857600 bytes)
+[INFO] Waiting for requests...
+============================================================
+```
+
+#### Входящий запрос (на примере фото)
+
+```bash
+============================================================
+[INFO] [Photo] New request received
+[INFO] [Photo] Peer: ipv4:127.0.0.1:54321
+[INFO] [Photo] Data size: 1424924 bytes (1.36 MB)
+[INFO] [Photo] Saved to temp file: C:\Users\...\tmp123.jpg
+[INFO] [Photo] Inference completed in 0.432s
+[INFO] [Photo] Result: class=ai, confidence=0.9969
+[INFO] [Photo] Temp file deleted: C:\Users\...\tmp123.jpg
+```
+  
+### Что означают поля логов
+  
+[Photo/Video/Text] - Тип запроса
+Peer - Адрес клиента, отправившего запрос
+Data size - Размер полученных данных в байтах и МБ
+Saved to temp file - Путь к временному файлу
+Inference completed in - Время выполнения анализа
+Result - Итоговый класс и уверенность
+Temp file deleted - Подтверждение удаления временного файла
+  
 
 ## Proto
+  
 
 ```protobuf
 syntax = "proto3";
 package cogniflex.ml;
 service MLAnalyzer {
-  rpc AnalyzePhoto (PhotoRequest) returns (AnalyzeReply);
-  rpc AnalyzeVideo (VideoRequest) returns (AnalyzeReply);
-  rpc AnalyzeText (TextRequest) returns (AnalyzeReply);
+  rpc AnalyzePhoto (PhotoRequest) returns (AnalyzeReply);
+  rpc AnalyzeVideo (VideoRequest) returns (AnalyzeReply);
+  rpc AnalyzeText (TextRequest) returns (AnalyzeReply);
 }
 message PhotoRequest {
-  bytes image_data = 1;
+  bytes image_data = 1;
 }
 message VideoRequest {
-  bytes video_data = 1;
+  bytes video_data = 1;
 }
 message TextRequest {
-  string text = 1;
+  string text = 1;
 }
 message AnalyzeReply {
-  string class = 1;
-  float confidence = 2;
+  string class = 1;
+  float confidence = 2;
 }
 ```
-
+  
 ## Модели для фото
-
+  
 `MultitypePictureDetector` автоматически выбирает подходящую модель:
+  
+Модель | Файл | Точность | Назначение
+General | `resnet_general92.pth` | 92% | Обычные изображения
+Faces | `resnet_faces88.pth` | 88% | Изображения с лицами  
+Выбор модели происходит автоматически с помощью **OpenCV Haar Cascade Face Detection**.
 
-|Модель|Файл|Точность|Назначение|
-|---|---|---|---|
-|General|`resnet_general92.pth`|92%|Обычные изображения|
-|Faces|`resnet_faces88.pth`|88%|Изображения с лицами|
-
-Выбор модели происходит автоматически с помощью **MediaPipe Face Detection**.
-
----
-
-## Генерация gRPC файлов
-
-При изменении `ml_analyzer.proto` необходимо перегенерировать Python-код:
-
-```bash
-cd \cogniflex\ml-service
-py -3.10 -m grpc_tools.protoc -I./proto --python_out=./generated --grpc_python_out=./generated ./proto/ml_analyzer.proto
-```
+---  
 
 ## Лимиты на размер сообщений
 
@@ -123,40 +153,10 @@ py -3.10 -m grpc_tools.protoc -I./proto --python_out=./generated --grpc_python_o
 
 ### Изменение лимита на сервере
 
-В файле `server.py` в функции `serve()`:
+В файле ml-service/config.yaml :
 
 ```python
-server = grpc.server(
-    futures.ThreadPoolExecutor(max_workers=10),
-    options=[
-        ('grpc.max_send_message_length', 200 * 1024 * 1024),     # 200 МБ
-        ('grpc.max_receive_message_length', 200 * 1024 * 1024),  # 200 МБ
-    ]
-)
+grpc:
+  port: 50051
+  max_message_mb: 100
 ```
-
-### Изменение лимита в клиенте
-
-В тестовых файлах:
-
-```python
-channel = grpc.insecure_channel(
-    "localhost:50051",
-    options=[
-        ('grpc.max_send_message_length', 200 * 1024 * 1024),
-        ('grpc.max_receive_message_length', 200 * 1024 * 1024),
-    ]
-)
-```
-
-### Расчёт размера
-
-|Размер|Формула|
-|---|---|
-|10 МБ|`10 * 1024 * 1024`|
-|50 МБ|`50 * 1024 * 1024`|
-|100 МБ|`100 * 1024 * 1024`|
-|200 МБ|`200 * 1024 * 1024`|
-|500 МБ|`500 * 1024 * 1024`|
-|1 ГБ|`1024 * 1024 * 1024`|
-...

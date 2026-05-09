@@ -15,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +30,7 @@ import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(DetectionController.class)
+@ActiveProfiles("test")
 public class DetectionControllerTest {
 
     @Autowired
