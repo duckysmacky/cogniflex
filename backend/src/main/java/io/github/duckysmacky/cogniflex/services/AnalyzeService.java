@@ -56,7 +56,11 @@ public class AnalyzeService {
 
         MediaType mediaType = mediaTypeResolver.resolve(file);
         byte[] content = readBytes(file);
-        AnalyzeResultResponse response = mlClient.analyzeMedia(mediaType, content);
+
+        AnalyzeResultResponse response = switch (mediaType) {
+            case IMAGE -> mlClient.analyzeImage(content);
+            case VIDEO -> mlClient.analyzeVideo(content);
+        };
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
                 InputType.MEDIA,
@@ -65,7 +69,7 @@ public class AnalyzeService {
                 response.accuracy()
         ));
 
-        logElapsed("media", startedAt);
+        logElapsed(mediaType.name().toLowerCase(), startedAt);
         return response;
     }
 

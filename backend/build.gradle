@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '4.0.2'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.google.protobuf' version '0.9.5'
 }
 
 group = 'io.github.duckysmacky'
@@ -18,6 +19,11 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	grpcVersion = '1.72.0'
+	protobufVersion = '4.31.1'
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'
@@ -26,16 +32,56 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
 	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+	implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+	implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+	implementation "io.grpc:grpc-stub:${grpcVersion}"
+	compileOnly "javax.annotation:javax.annotation-api:1.3.2"
+
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'com.bucket4j:bucket4j_jdk17-core:8.16.1'
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'com.bucket4j:bucket4j_jdk17-core:8.16.1'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+	testImplementation "io.grpc:grpc-inprocess:${grpcVersion}"
+
 	testRuntimeOnly 'com.h2database:h2'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+
+sourceSets {
+	main {
+		proto {
+			srcDir '../ml-service/proto'
+		}
+	}
+}
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:${protobufVersion}"
+	}
+	plugins {
+		grpc {
+			artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+		}
+	}
+	generateProtoTasks {
+		all().configureEach { task ->
+			task.plugins {
+				grpc {}
+			}
+		}
+	}
 }
 
 tasks.named('test') {

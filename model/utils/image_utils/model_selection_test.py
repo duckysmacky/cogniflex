@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from preprocess_images import IMAGE_TRANSFORM_VAL
 
-class MultitypePictureDetector:
+class MultitypePictureDetector_test:
 
     def __init__(self, path_general: str, path_faces: str):
         self.model_general = models.resnet18(weights=None)
@@ -56,3 +56,9 @@ class MultitypePictureDetector:
             confidence = probs[0].max().item()
 
         return confidence, pred
+    
+
+if __name__ == '__main__':
+    detector = MultitypePictureDetector('/Users/iaroslav/Desktop/resnet_general92.pth', '/Users/iaroslav/Desktop/resnet_faces88.pth')
+    prediction = detector.predict_picture('/Users/iaroslav/Desktop/2026-03-23 8.06.30 PM.jpg') #insert some path 
+    print(prediction)

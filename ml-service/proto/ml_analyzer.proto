@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package cogniflex.ml;
 
+option java_multiple_files = true;
+option java_package = "io.github.duckysmacky.cogniflex.grpc";
+option java_outer_classname = "MlAnalyzerProto";
+
 service MLAnalyzer {
   rpc AnalyzePhoto (PhotoRequest) returns (AnalyzeReply);
   rpc AnalyzeVideo (VideoRequest) returns (AnalyzeReply);

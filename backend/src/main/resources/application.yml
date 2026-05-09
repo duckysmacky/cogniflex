@@ -20,3 +20,11 @@ spring:
 
 server:
   port: ${SERVER_PORT:8080}
+
+grpc:
+  ml-service:
+    host: ${ML_GRPC_HOST}
+    port: ${ML_GRPC_PORT}
+    timeout: ${ML_GRPC_TIMEOUT:5s}
+    plaintext: ${ML_GRPC_PLAINTEXT:true}
+
