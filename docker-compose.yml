@@ -26,9 +26,7 @@ services:
       - cogniflex-network
 
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    build: backend/
     image: cogniflex-backend:latest
     container_name: cogniflex-backend
     ports:

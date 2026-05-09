@@ -11,10 +11,12 @@ spring:
       open-in-view: false
   flyway:
     enabled: false
-ml:
-  grpc:
+grpc:
+  ml-service:
     host: ${ML_GRPC_HOST:localhost}
     port: ${ML_GRPC_PORT:50051}
     timeout: ${ML_GRPC_TIMEOUT:5s}
     plaintext: ${ML_GRPC_PLAINTEXT:true}
+
+
 

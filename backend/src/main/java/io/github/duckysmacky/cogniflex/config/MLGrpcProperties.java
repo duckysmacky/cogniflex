@@ -2,20 +2,22 @@ package io.github.duckysmacky.cogniflex.config;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 
 @Validated
-@ConfigurationProperties(prefix = "ml.grpc")
+@ConfigurationProperties(prefix = "grpc.ml-service")
 public class MLGrpcProperties {
 
     @NotBlank
-    private String host = "localhost";
+    private String host;
 
+    @NotNull
     @Min(1)
-    private int port = 50051;
+    private Integer port;
 
     private Duration timeout = Duration.ofSeconds(5);
 
@@ -29,11 +31,11 @@ public class MLGrpcProperties {
         this.host = host;
     }
 
-    public int getPort() {
+    public Integer getPort() {
         return port;
     }
 
-    public void setPort(int port) {
+    public void setPort(Integer port) {
         this.port = port;
     }
 

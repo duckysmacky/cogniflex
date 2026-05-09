@@ -114,7 +114,7 @@ public class MLGrpcClient implements MLClient {
 
         if (accuracy < 0.0 || accuracy > 1.0) {
             throw new ResponseStatusException(
-                    HttpStatus.BAD_GATEWAY,
+                    HttpStatus.INTERNAL_SERVER_ERROR,
                     "ML service returned invalid confidence: " + accuracy
             );
         }
