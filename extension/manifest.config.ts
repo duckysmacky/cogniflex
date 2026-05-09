@@ -10,10 +10,14 @@ export default defineManifest({
   },
   permissions: ['scripting', 'activeTab', 'storage'],
   host_permissions: ['<all_urls>'],
+  background: {
+    service_worker: './src/background.js',
+    type: 'module',
+  },
   content_scripts: [
     {
       matches: ['<all_urls>'],
-      js: ['./content.js'],
+      js: ['./src/content.js'],
       run_at: 'document_idle',
     },
   ],
