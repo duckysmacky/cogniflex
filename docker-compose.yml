@@ -45,6 +45,19 @@ services:
     networks:
       - cogniflex-network
 
+  ml-service:
+    build:
+      context: ./ml-service     # Путь к папке с сервисом от корня
+      dockerfile: Dockerfile    # Имя файла
+    image: cogniflex-ml-service:latest  # Как ты и просил
+    container_name: ml-service
+    ports:
+      - "50051:50051"           # Пробрасываем gRPC порт
+    environment:
+      - PORT=50051
+    networks:
+      - cogniflex-network
+
 networks:
   cogniflex-network:
     driver: bridge
