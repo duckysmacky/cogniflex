@@ -6,14 +6,17 @@ import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.enums.InputType;
 import io.github.duckysmacky.cogniflex.enums.MediaType;
+import io.github.duckysmacky.cogniflex.hashing.Hasher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class AnalyzeService {
@@ -23,29 +26,56 @@ public class AnalyzeService {
     private final MLClient mlClient;
     private final HistoryService historyService;
     private final MediaTypeResolver mediaTypeResolver;
+    private final AnalysisCacheService analysisCacheService;
+    private final Hasher<String> textHasher;
+    private final Hasher<byte[]> photoHasher;
+    private final Hasher<byte[]> videoHasher;
 
     public AnalyzeService(
             MLClient mlClient,
             HistoryService historyService,
-            MediaTypeResolver mediaTypeResolver
+            MediaTypeResolver mediaTypeResolver,
+            AnalysisCacheService analysisCacheService,
+            @Qualifier("textHasher") Hasher<String> textHasher,
+            @Qualifier("photoHasher") Hasher<byte[]> photoHasher,
+            @Qualifier("videoHasher") Hasher<byte[]> videoHasher
     ) {
         this.mlClient = mlClient;
         this.historyService = historyService;
         this.mediaTypeResolver = mediaTypeResolver;
+        this.analysisCacheService = analysisCacheService;
+        this.textHasher = textHasher;
+        this.photoHasher = photoHasher;
+        this.videoHasher = videoHasher;
     }
 
     public AnalyzeResultResponse analyzeText(CreateTextDetectionRequest request) {
         long startedAt = System.nanoTime();
 
         String normalizedText = normalizeText(request.text());
-        AnalyzeResultResponse response = mlClient.analyzeText(normalizedText);
+        String contentHash = textHasher.hash(normalizedText);
 
-        historyService.createHistoryItem(new CreateHistoryItemRequest(
+        Optional<AnalyzeResultResponse> cachedResponse = analysisCacheService.findCachedResult(
                 InputType.TEXT,
                 null,
-                response.kind(),
-                response.accuracy()
-        ));
+                textHasher.algorithm(),
+                contentHash
+        );
+
+        if (cachedResponse.isPresent()) {
+            logCacheHit("text", contentHash, startedAt);
+            return cachedResponse.get();
+        }
+
+        AnalyzeResultResponse response = mlClient.analyzeText(normalizedText);
+
+        saveAnalysisResult(
+                InputType.TEXT,
+                null,
+                textHasher.algorithm(),
+                contentHash,
+                response
+        );
 
         logElapsed("text", startedAt);
         return response;
@@ -56,21 +86,66 @@ public class AnalyzeService {
 
         MediaType mediaType = mediaTypeResolver.resolve(file);
         byte[] content = readBytes(file);
+        Hasher<byte[]> hasher = resolveMediaHasher(mediaType);
+        String contentHash = hasher.hash(content);
+
+        Optional<AnalyzeResultResponse> cachedResponse = analysisCacheService.findCachedResult(
+                InputType.MEDIA,
+                mediaType,
+                hasher.algorithm(),
+                contentHash
+        );
+
+        if (cachedResponse.isPresent()) {
+            logCacheHit(mediaType.name().toLowerCase(), contentHash, startedAt);
+            return cachedResponse.get();
+        }
 
         AnalyzeResultResponse response = switch (mediaType) {
             case IMAGE -> mlClient.analyzeImage(content);
             case VIDEO -> mlClient.analyzeVideo(content);
         };
 
-        historyService.createHistoryItem(new CreateHistoryItemRequest(
+        saveAnalysisResult(
                 InputType.MEDIA,
+                mediaType,
+                hasher.algorithm(),
+                contentHash,
+                response
+        );
+
+        logElapsed(mediaType.name().toLowerCase(), startedAt);
+        return response;
+    }
+
+    private void saveAnalysisResult(
+            InputType inputType,
+            MediaType mediaType,
+            String hashAlgorithm,
+            String contentHash,
+            AnalyzeResultResponse response
+    ) {
+        analysisCacheService.saveResult(
+                inputType,
+                mediaType,
+                hashAlgorithm,
+                contentHash,
+                response
+        );
+
+        historyService.createHistoryItem(new CreateHistoryItemRequest(
+                inputType,
                 mediaType,
                 response.kind(),
                 response.accuracy()
         ));
+    }
 
-        logElapsed(mediaType.name().toLowerCase(), startedAt);
-        return response;
+    private Hasher<byte[]> resolveMediaHasher(MediaType mediaType) {
+        return switch (mediaType) {
+            case IMAGE -> photoHasher;
+            case VIDEO -> videoHasher;
+        };
     }
 
     private String normalizeText(String text) {
@@ -93,6 +168,11 @@ public class AnalyzeService {
                     ex
             );
         }
+    }
+
+    private void logCacheHit(String analysisType, String contentHash, long startedAt) {
+        long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000;
+        log.info("{} analysis cache hit for hash {} in {} ms", analysisType, contentHash, elapsedMs);
     }
 
     private void logElapsed(String analysisType, long startedAt) {
