@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import io.github.duckysmacky.cogniflex.hashing.Hasher;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 
 import java.io.IOException;
 
@@ -23,16 +26,27 @@ public class AnalyzeService {
     private final MLClient mlClient;
     private final HistoryService historyService;
     private final MediaTypeResolver mediaTypeResolver;
+    private final Hasher<String> textHasher;
+    private final Hasher<byte[]> photoHasher;
+    private final Hasher<byte[]> videoHasher;
+
 
     public AnalyzeService(
             MLClient mlClient,
             HistoryService historyService,
-            MediaTypeResolver mediaTypeResolver
+            MediaTypeResolver mediaTypeResolver,
+            @Qualifier("textHasher") Hasher<String> textHasher,
+            @Qualifier("photoHasher") Hasher<byte[]> photoHasher,
+            @Qualifier("videoHasher") Hasher<byte[]> videoHasher
     ) {
         this.mlClient = mlClient;
         this.historyService = historyService;
         this.mediaTypeResolver = mediaTypeResolver;
+        this.textHasher = textHasher;
+        this.photoHasher = photoHasher;
+        this.videoHasher = videoHasher;
     }
+
 
     public AnalyzeResultResponse analyzeText(CreateTextDetectionRequest request) {
         long startedAt = System.nanoTime();
