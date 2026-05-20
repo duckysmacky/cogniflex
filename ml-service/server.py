@@ -27,11 +27,27 @@ sys.path.insert(0, current_dir)
 sys.path.insert(0, utils_dir)
 sys.path.insert(0, project_root)
 
-with open(os.path.join(current_dir, 'config.yaml'), 'r') as f:
+def load_env_file(path):
+    if not os.path.exists(path):
+        return
+
+    with open(path, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+
+load_env_file(os.path.join(project_root, ".env"))
+
+with open(os.path.join(current_dir, "config.yaml"), "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
-GRPC_PORT = str(config['grpc'].get('port', 50051))
-GRPC_MAX_MESSAGE_MB = int(config['grpc'].get('max_message_mb', 100))
+GRPC_HOST = os.getenv("GRPC_HOST", "[::]")
+GRPC_PORT = os.getenv("GRPC_PORT", "50051")
+GRPC_MAX_MESSAGE_MB = int(config["app"].get("max_message_mb", 100))
 
 def generate_proto():
     proto_file = os.path.join(proto_dir, "ml_analyzer.proto")
@@ -279,13 +295,13 @@ def serve():
         ]
     )
     ml_analyzer_pb2_grpc.add_MLAnalyzerServicer_to_server(MLAnalyzerServicer(), server)
-    server.add_insecure_port(f"[::]:{GRPC_PORT}")
+    server.add_insecure_port(f"{GRPC_HOST}:{GRPC_PORT}")
     
     logging.info("=" * 60)
     logging.info("ML Analyzer gRPC Server")
     logging.info(f"Python: {sys.version}")
     logging.info(f"Platform: {platform.system()} {platform.release()}")
-    logging.info(f"Port: {GRPC_PORT}")
+    logging.info(f"Bind address: {GRPC_HOST}:{GRPC_PORT}")
     logging.info(f"Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText")
     logging.info(f"Max message size: {GRPC_MAX_MESSAGE_MB} MB ({max_message_length_bytes} bytes)")
     logging.info("Waiting for requests...")

@@ -1,8 +1,8 @@
 spring:
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
   datasource:
     url: "jdbc:h2:mem:cogniflex-test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE"
     driver-class-name: org.h2.Driver
@@ -19,8 +19,12 @@ grpc:
   ml-service:
     host: ${ML_GRPC_HOST:localhost}
     port: ${ML_GRPC_PORT:50051}
-    timeout: ${ML_GRPC_TIMEOUT:5s}
-    plaintext: ${ML_GRPC_PLAINTEXT:true}
+    timeout: 5s
+    plaintext: true
 
-
-
+app:
+  cors:
+    allowed-origins-patterns: "*"
+    allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]
+    allowed-headers: ["*"]
+    allow-credentials: true

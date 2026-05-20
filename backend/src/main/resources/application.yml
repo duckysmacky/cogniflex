@@ -2,12 +2,18 @@ spring:
   application:
     name: cogniflex
   config:
-    import: "optional:file:../.env[.properties]"
+    import:
+      - "optional:file:.env[.properties]"
+      - "optional:file:../.env[.properties]"
   datasource:
     url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:cogniflex}"
     username: "${DB_USER}"
     password: "${DB_PASSWORD}"
     driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: "${REDIS_HOST:localhost}"
+      port: "${REDIS_PORT:6379}"
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -19,12 +25,11 @@ spring:
     locations: classpath:db/migration
 
 server:
-  port: ${SERVER_PORT:8080}
+  port: "${BACKEND_PORT:8080}"
 
 grpc:
   ml-service:
-    host: ${ML_GRPC_HOST}
-    port: ${ML_GRPC_PORT}
-    timeout: ${ML_GRPC_TIMEOUT:5s}
-    plaintext: ${ML_GRPC_PLAINTEXT:true}
-
+    host: ${ML_SERVICE_HOST:localhost}
+    port: ${ML_SERVICE_PORT:50051}
+    timeout: 5s
+    plaintext: true

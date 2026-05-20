@@ -1,3 +1,2 @@
-grpc:
-  port: 50051
+app:
   max_message_mb: 100

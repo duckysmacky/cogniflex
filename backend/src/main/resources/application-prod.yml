@@ -10,6 +10,7 @@ springdoc:
 
 app:
   cors:
-    allowed-origins-patterns: "*" # пока так
+    allowed-origins-patterns: "*"
     allowed-methods: [GET, POST, OPTIONS]
     allowed-headers: ["Content-Type", "Authorization"]
+    allow-credentials: true

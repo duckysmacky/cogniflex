@@ -14,14 +14,13 @@ logging:
       
 app:
   cors:
-      allowed-origins-patterns: "*"
-      allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]
-      allowed-headers: ["*"]
-      allow-credentials: true
+    allowed-origins-patterns: "*"
+    allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]
+    allowed-headers: ["*"]
+    allow-credentials: true
 
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
-    

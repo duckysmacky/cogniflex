@@ -1,11 +1,14 @@
 import grpc
 import sys
 import os
+import yaml
+from common import load_env_file
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'generated'))
 
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
+
 
 def test_video(video_path):
     if not os.path.exists(video_path):
@@ -17,12 +20,18 @@ def test_video(video_path):
     
     print(f"Sending {len(video_bytes)} bytes to Video analyzer...")
     
+    config_path = os.path.join(os.path.dirname(__file__), "..", "config.yaml")
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = yaml.safe_load(f)
+
+    target = f"{os.getenv('ML_GRPC_HOST', 'localhost')}:{os.getenv('ML_GRPC_PORT', '50051')}"
+    max_message_length_bytes = int(config["grpc"].get("max_message_mb", 100)) * 1024 * 1024
     channel = grpc.insecure_channel(
-    "localhost:50051",
-    options=[
-        ('grpc.max_send_message_length', 100 * 1024 * 1024),
-        ('grpc.max_receive_message_length', 100 * 1024 * 1024),
-    ]
+        target,
+        options=[
+            ('grpc.max_send_message_length', max_message_length_bytes),
+            ('grpc.max_receive_message_length', max_message_length_bytes),
+        ]
     )
     stub = ml_analyzer_pb2_grpc.MLAnalyzerStub(channel)
     
@@ -47,4 +56,5 @@ if __name__ == "__main__":
         print("Usage: python test_video_client.py <path_to_video>")
         sys.exit(1)
     
+    load_env_file(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
     test_video(sys.argv[1])

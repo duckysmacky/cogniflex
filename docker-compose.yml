@@ -1,11 +1,9 @@
-name: cogniflex
+name: Cogniflex
 
 services:
   db:
     image: postgres:18
     container_name: cogniflex-db
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -13,53 +11,50 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
-      - cogniflex-network
+      - backend-network
 
   redis:
     image: redis:8
     container_name: cogniflex-redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - cogniflex-network
+      - backend-network
 
   backend:
     build: backend/
     image: cogniflex-backend:latest
     container_name: cogniflex-backend
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:${BACKEND_PORT:-8080}"
+    env_file:
+      - .env
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - DB_HOST=db
-      - DB_PORT=${DB_PORT}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - ML_GRPC_HOST=${ML_GRPC_HOST:-host.docker.internal}
-      - ML_GRPC_PORT=${ML_GRPC_PORT:-50051}
-      - SERVER_PORT=8080
+      - REDIS_HOST=redis
+      - ML_SERVICE_HOST=ml-service
     depends_on:
       - db
+      - redis
+      - ml-service
     networks:
-      - cogniflex-network
+      - backend-network
+      - analysis-network
 
   ml-service:
-    build:
-      context: ./ml-service     # Путь к папке с сервисом от корня
-      dockerfile: Dockerfile    # Имя файла
-    image: cogniflex-ml-service:latest  # Как ты и просил
-    container_name: ml-service
-    ports:
-      - "50051:50051"           # Пробрасываем gRPC порт
-    environment:
-      - PORT=50051
+    build: ./ml-service
+    image: cogniflex-ml-service:latest
+    container_name: cogniflex-ml-service
+    env_file:
+      - .env
     networks:
-      - cogniflex-network
+      - analysis-network
 
 networks:
-  cogniflex-network:
+  backend-network:
+    driver: bridge
+  analysis-network:
     driver: bridge
 
 volumes:
