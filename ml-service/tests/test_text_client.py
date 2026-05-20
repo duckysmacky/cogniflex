@@ -1,16 +1,19 @@
 import grpc
 import sys
 import os
+from common import load_env_file
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'generated'))
 
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
 
+
 def test_text(text):
     print(f"Sending text: {text[:50]}...")
     
-    channel = grpc.insecure_channel("localhost:50051")
+    target = f"{os.getenv('ML_GRPC_HOST', 'localhost')}:{os.getenv('ML_GRPC_PORT', '50051')}"
+    channel = grpc.insecure_channel(target)
     stub = ml_analyzer_pb2_grpc.MLAnalyzerStub(channel)
     
     try:
@@ -34,4 +37,5 @@ if __name__ == "__main__":
         print("Usage: python test_text_client.py \"your text here\"")
         sys.exit(1)
     
+    load_env_file(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
     test_text(sys.argv[1])

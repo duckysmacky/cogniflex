@@ -1,11 +1,9 @@
-name: cogniflex
+name: Cogniflex
 
 services:
   db:
     image: postgres:18
     container_name: cogniflex-db
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -13,40 +11,63 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
-      - cogniflex-network
+      - backend-network
+    restart: unless-stopped
 
   redis:
     image: redis:8
     container_name: cogniflex-redis
-    ports:
-      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - cogniflex-network
+      - backend-network
+    restart: unless-stopped
 
   backend:
-    build: backend/
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     image: cogniflex-backend:latest
     container_name: cogniflex-backend
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:${BACKEND_PORT:-8080}"
+    env_file:
+      - .env
     environment:
+      - SPRING_PROFILES_ACTIVE=prod
       - DB_HOST=db
-      - DB_PORT=${DB_PORT}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - ML_GRPC_HOST=${ML_GRPC_HOST:-host.docker.internal}
-      - ML_GRPC_PORT=${ML_GRPC_PORT:-50051}
-      - SERVER_PORT=8080
+      - REDIS_HOST=redis
+      - ML_SERVICE_HOST=ml-service
+    volumes:
+      - ./backend/src/main/resources:/app/config:ro
     depends_on:
       - db
+      - redis
+      - ml-service
     networks:
-      - cogniflex-network
+      - backend-network
+      - analysis-network
+    restart: unless-stopped
+
+  ml-service:
+    build:
+      context: .
+      dockerfile: ml-service/Dockerfile
+    image: cogniflex-ml-service:latest
+    container_name: cogniflex-ml-service
+    env_file:
+      - .env
+    volumes:
+      - ./ml-service/config.yaml:/app/ml-service/config.yaml:ro
+      - ./ml-service/weights:/app/ml-service/weights:ro
+    networks:
+      - analysis-network
+    restart: unless-stopped
 
 networks:
-  cogniflex-network:
+  backend-network:
+    driver: bridge
+  analysis-network:
     driver: bridge
 
 volumes:

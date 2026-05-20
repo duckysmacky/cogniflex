@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "env:dev": "cp .env.dev .env",
     "start": "vite",
-    "start:dev": "yarn env:dev && yarn start",
+    "start:dev": "yarn start",
     "build": " vite build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

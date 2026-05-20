@@ -8,5 +8,13 @@ venv
 node_modules
 
 .env
+.DS_Store
 
 ml-service/generated/
+
+**.pth
+**.safetensors
+
+!ml-service/weights/.gitkeep
+!model/artifacts/.gitkeep
+!model/artifacts/**/.gitkeep

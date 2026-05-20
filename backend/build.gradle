@@ -57,11 +57,10 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-
 sourceSets {
 	main {
 		proto {
-			srcDir '../ml-service/proto'
+			srcDir '../proto'
 		}
 	}
 }

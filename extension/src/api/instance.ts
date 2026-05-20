@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 
 export const apiInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080',
 });
 
 apiInstance.interceptors.response.use(

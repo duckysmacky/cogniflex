@@ -1,3 +1,7 @@
-grpc:
-  port: 50051
+app:
   max_message_mb: 100
+
+models:
+  image:
+    general_weights: weights/resnet_general92.pth
+    faces_weights: weights/resnet_faces88.pth
