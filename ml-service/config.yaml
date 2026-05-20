@@ -5,3 +5,6 @@ models:
   image:
     general_weights: weights/resnet_general92.pth
     faces_weights: weights/resnet_faces88.pth
+  text:
+    model_weights: weights/model_texts.safetensors
+    model_name: roberta-base
