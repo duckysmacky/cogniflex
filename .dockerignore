@@ -1,0 +1,14 @@
+.git
+.github
+**/.gradle
+**/.gradle-home
+**/.gradle-user-home
+**/build
+**/node_modules
+**/release
+**/.idea
+frontend
+extension
+docs
+model/notebooks
+model/build

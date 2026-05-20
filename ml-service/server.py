@@ -18,7 +18,7 @@ logging.basicConfig(
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(current_dir)
 generated_dir = os.path.join(current_dir, "generated")
-proto_dir = os.path.join(current_dir, "proto")
+proto_dir = os.path.join(project_root, "proto")
 utils_dir = os.path.join(project_root, "model", "utils")
 weights_dir = os.path.join(project_root, "model", "weights")
 

@@ -1,20 +1,23 @@
 FROM python:3.10-slim
 
-WORKDIR /app
+WORKDIR /app/ml-service
 
 ENV PYTHONUNBUFFERED=1
 
-COPY requirements.txt .
+COPY ml-service/requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY ml-service/ .
+COPY proto ../proto
+COPY model ../model
 
-RUN python -m grpc_tools.protoc \
-    -I./proto \
-    --python_out=. \
-    --grpc_python_out=. \
-    ./proto/*.proto
+RUN mkdir -p generated && \
+    python -m grpc_tools.protoc \
+    -I../proto \
+    --python_out=./generated \
+    --grpc_python_out=./generated \
+    ../proto/*.proto
 
 CMD ["python", "server.py"]

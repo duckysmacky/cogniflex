@@ -12,6 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql
     networks:
       - backend-network
+    restart: unless-stopped
 
   redis:
     image: redis:8
@@ -20,9 +21,12 @@ services:
       - redis_data:/data
     networks:
       - backend-network
+    restart: unless-stopped
 
   backend:
-    build: backend/
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     image: cogniflex-backend:latest
     container_name: cogniflex-backend
     ports:
@@ -41,15 +45,19 @@ services:
     networks:
       - backend-network
       - analysis-network
+    restart: unless-stopped
 
   ml-service:
-    build: ./ml-service
+    build:
+      context: .
+      dockerfile: ml-service/Dockerfile
     image: cogniflex-ml-service:latest
     container_name: cogniflex-ml-service
     env_file:
       - .env
     networks:
       - analysis-network
+    restart: unless-stopped
 
 networks:
   backend-network:
