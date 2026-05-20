@@ -11,7 +11,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY ml-service/ .
 COPY proto ../proto
-COPY model ../model
 
 RUN mkdir -p generated && \
     python -m grpc_tools.protoc \
@@ -20,4 +19,4 @@ RUN mkdir -p generated && \
     --grpc_python_out=./generated \
     ../proto/*.proto
 
-CMD ["python", "server.py"]
+CMD ["python", "main.py"]

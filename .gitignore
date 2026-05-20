@@ -8,5 +8,9 @@ venv
 node_modules
 
 .env
+.DS_Store
 
 ml-service/generated/
+
+**.pth
+**.safetensors
