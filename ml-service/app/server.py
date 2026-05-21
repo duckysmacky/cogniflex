@@ -64,7 +64,7 @@ def _preload_models(settings):
     with futures.ThreadPoolExecutor(max_workers=3) as executor:
         future_photo = executor.submit(_load_photo_model, settings)
         future_video = executor.submit(_load_video_model)
-        future_text = executor.submit(_load_text_model)
+        future_text = executor.submit(_load_text_model, settings)
 
         photo_detector = future_photo.result()
         video_detector = future_video.result()
@@ -95,8 +95,16 @@ def _load_video_model():
     return detector
 
 
-def _load_text_model():
-    logging.warning("USING MOCK TEXT DETECTOR - returning random predictions")
-    detector = MockTextDetector()
-    logging.info("Text detector ready (mock)")
+def _load_text_model(settings):
+    from app.detectors.text_detector import TextDetector
+    
+    text_config = settings.text_model
+    logging.info("Loading text detection model (RoBERTa)...")
+    logging.info("  Model: %s", text_config.model_weights)
+    
+    detector = TextDetector(
+        model_weights_path=str(text_config.model_weights),
+        model_name=text_config.model_name
+    )
+    logging.info("Text model loaded successfully!")
     return detector
