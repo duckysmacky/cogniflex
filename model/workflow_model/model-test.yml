@@ -1,0 +1,39 @@
+name: model-test
+	 
+on:
+  push:
+    paths:
+      - "model/**"
+      - ".github/workflows/model-test.yml"
+  pull_request:
+    paths:
+      - "model/**"
+      - ".github/workflows/model-test.yml"
+  workflow_dispatch:
+
+permissions: 
+  contents: read
+
+jobs:
+  test:
+    name: Run model test
+    runs-on: ubuntu-latest
+		
+    steps:
+      - name: check out repository
+        uses: actions/checkout@v4
+			
+      - name: set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9.6"
+          cache: 'pip'
+
+      - name: install dependencies
+        run: |
+          pip install torch transformers safetensors
+			
+      - name: run model validation
+        env:
+          PYTHONPATH: .
+        run: python model/workflow_model/validate_model.py
