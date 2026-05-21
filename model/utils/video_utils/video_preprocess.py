@@ -1,7 +1,8 @@
 import cv2
 import torch
+from torchvision import transforms
 from PIL import Image
-from model.training.image.preprocess_images import IMAGE_TRANSFORM_VAL
+from ..image_utils.preprocess_images import IMAGE_TRANSFORM_VAL
 from torch.utils.data import Dataset
 
 
@@ -71,3 +72,6 @@ class VideoDataset(Dataset):
         label = self.labels[index]
 
         return video, label
+    
+def preprocess_video_prod() -> list:
+    pass

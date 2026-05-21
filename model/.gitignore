@@ -3,3 +3,4 @@
 *.csv
 kaggle_experiments
 models_torch
+*.DS_store
