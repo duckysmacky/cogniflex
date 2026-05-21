@@ -19,9 +19,16 @@ class ImageModelSettings:
 
 
 @dataclass(frozen=True)
+class TextModelSettings:
+    model_weights: Path
+    model_name: str
+
+
+@dataclass(frozen=True)
 class Settings:
     grpc: GrpcSettings
     image_model: ImageModelSettings
+    text_model: TextModelSettings
 
 
 def load_env_file(path: Path) -> None:
@@ -52,6 +59,7 @@ def load_settings(service_root: Path, project_root: Path) -> Settings:
         config = yaml.safe_load(f)
 
     image_config = config["models"]["image"]
+    text_config = config["models"]["text"]
 
     return Settings(
         grpc=GrpcSettings(
@@ -62,5 +70,9 @@ def load_settings(service_root: Path, project_root: Path) -> Settings:
         image_model=ImageModelSettings(
             general_weights=_resolve_service_path(service_root, image_config["general_weights"]),
             faces_weights=_resolve_service_path(service_root, image_config["faces_weights"]),
+        ),
+        text_model=TextModelSettings(
+            model_weights=_resolve_service_path(service_root, text_config["model_weights"]),
+            model_name=text_config.get("model_name", "roberta-base"),
         ),
     )

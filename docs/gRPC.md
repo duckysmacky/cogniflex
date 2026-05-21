@@ -78,6 +78,9 @@ models:
   image:
     general_weights: weights/resnet_general92.pth
     faces_weights: weights/resnet_faces88.pth
+  text:
+    model_weights: weights/model_texts.safetensors
+    model_name: roberta-base
 ```
 
 Пути к весам относительные от директории `ml-service/`.
@@ -151,7 +154,7 @@ python tests/test_text_client.py "текст для анализа"
 | --- | --- |
 | Вход | `string text` |
 | Выход | `class` (`"human"` или `"ai"`), `confidence` (`0.0` - `1.0`) |
-| Статус | Заглушка, возвращает случайные предсказания |
+| General | `model_texts.safetensors` | текст |
 
 ## Лимит размера сообщений
 
