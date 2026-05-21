@@ -55,6 +55,8 @@ services:
       dockerfile: ml-service/Dockerfile
     image: cogniflex-ml-service:latest
     container_name: cogniflex-ml-service
+    ports:
+      - "50051:50051"
     env_file:
       - .env
     volumes:
