@@ -1,5 +1,6 @@
 package io.github.duckysmacky.cogniflex.services;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -7,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@Profile("!test")
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final RateLimiterService rateLimiter;

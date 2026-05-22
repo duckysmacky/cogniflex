@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import io.github.duckysmacky.cogniflex.config.RateLimitProperties;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan(basePackageClasses = RateLimitProperties.class)
 public class CogniflexApplication {
 
     public static void main(String[] args) {

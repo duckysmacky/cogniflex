@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import io.github.bucket4j.Bandwidth;
@@ -11,6 +12,7 @@ import io.github.bucket4j.Bucket;
 import io.github.duckysmacky.cogniflex.config.RateLimitProperties;
 
 @Service
+@Profile("!test")
 public class InMemoryRateLimitService implements RateLimiterService {
 
     private final RateLimitProperties properties;
