@@ -63,8 +63,16 @@ public class AnalyzeService {
         );
 
         if (cachedResponse.isPresent()) {
+            AnalyzeResultResponse response = cachedResponse.get();
+
+            recordHistoryItem(
+                    InputType.TEXT,
+                    null,
+                    response
+            );
+
             logCacheHit("text", contentHash, startedAt);
-            return cachedResponse.get();
+            return response;
         }
 
         AnalyzeResultResponse response = mlClient.analyzeText(normalizedText);
@@ -97,8 +105,16 @@ public class AnalyzeService {
         );
 
         if (cachedResponse.isPresent()) {
+            AnalyzeResultResponse response = cachedResponse.get();
+
+            recordHistoryItem(
+                    InputType.MEDIA,
+                    mediaType,
+                    response
+            );
+
             logCacheHit(mediaType.name().toLowerCase(), contentHash, startedAt);
-            return cachedResponse.get();
+            return response;
         }
 
         AnalyzeResultResponse response = switch (mediaType) {
@@ -133,6 +149,14 @@ public class AnalyzeService {
                 response
         );
 
+        recordHistoryItem(inputType, mediaType, response);
+    }
+
+    private void recordHistoryItem(
+            InputType inputType,
+            MediaType mediaType,
+            AnalyzeResultResponse response
+    ) {
         historyService.createHistoryItem(new CreateHistoryItemRequest(
                 inputType,
                 mediaType,

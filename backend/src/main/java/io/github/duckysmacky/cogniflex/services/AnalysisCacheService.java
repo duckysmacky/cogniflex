@@ -49,7 +49,6 @@ public class AnalysisCacheService {
         return record.map(this::toResponse);
     }
 
-    @Transactional
     public void saveResult(
             InputType inputType,
             MediaType mediaType,
@@ -72,7 +71,7 @@ public class AnalysisCacheService {
         );
 
         try {
-            analysisCacheRepository.save(record);
+            analysisCacheRepository.saveAndFlush(record);
         } catch (DataIntegrityViolationException ex) {
             log.debug("Analysis cache record already exists for hash {}", contentHash, ex);
         }
