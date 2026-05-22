@@ -1,49 +1,104 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows:
-      - Publish Images
-    types:
-      - completed
+  push:
+    tags:
+      - 'v*.*.*'
 
 permissions:
-  actions: read
   contents: write
+  packages: write
 
 jobs:
   release:
-    name: Build extension and create release
+    name: Create release
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
     timeout-minutes: 30
 
     steps:
-      - name: Download publish metadata
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RUN_ID: ${{ github.event.workflow_run.id }}
-        run: gh run download "${RUN_ID}" --name publish-metadata --dir .
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Read publish metadata
+      - name: Validate release tag
         id: metadata
         shell: bash
         run: |
           set -euo pipefail
-          cat publish-metadata.env >> "$GITHUB_OUTPUT"
 
-      - name: Stop for non-release publish
-        if: steps.metadata.outputs.is_release != 'true'
-        run: echo "Published images were not produced by a release tag."
+          if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+(\.[0-9]+){2,3}$ ]]; then
+            echo "Tag '${GITHUB_REF_NAME}' must look like v1.2.3 or v1.2.3.4" >&2
+            exit 1
+          fi
 
-      - name: Check out repository
-        if: steps.metadata.outputs.is_release == 'true'
-        uses: actions/checkout@v4
+          git fetch origin master:refs/remotes/origin/master --tags
+          tag_commit="$(git rev-list -n 1 "${GITHUB_REF_NAME}")"
+          master_commit="$(git rev-parse origin/master)"
+          if [[ "${tag_commit}" != "${master_commit}" ]]; then
+            echo "Tag '${GITHUB_REF_NAME}' must point to the current origin/master commit" >&2
+            exit 1
+          fi
+
+          owner="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          version="${GITHUB_REF_NAME#v}"
+          image_prefix="ghcr.io/${owner}"
+
+          echo "registry_username=${owner}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "backend_image_sha=${image_prefix}/cogniflex-backend:${tag_commit}" >> "$GITHUB_OUTPUT"
+          echo "backend_image_version=${image_prefix}/cogniflex-backend:${version}" >> "$GITHUB_OUTPUT"
+          echo "ml_service_image_sha=${image_prefix}/cogniflex-ml-service:${tag_commit}" >> "$GITHUB_OUTPUT"
+          echo "ml_service_image_version=${image_prefix}/cogniflex-ml-service:${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wait for published SHA images
+        env:
+          BACKEND_IMAGE_SHA: ${{ steps.metadata.outputs.backend_image_sha }}
+          ML_SERVICE_IMAGE_SHA: ${{ steps.metadata.outputs.ml_service_image_sha }}
+        run: |
+          set -euo pipefail
+
+          for image in "${BACKEND_IMAGE_SHA}" "${ML_SERVICE_IMAGE_SHA}"; do
+            for attempt in {1..30}; do
+              if docker buildx imagetools inspect "${image}" >/dev/null 2>&1; then
+                break
+              fi
+
+              if [[ "${attempt}" == "30" ]]; then
+                echo "Timed out waiting for ${image}" >&2
+                exit 1
+              fi
+
+              sleep 10
+            done
+          done
+
+      - name: Tag release images
+        env:
+          BACKEND_IMAGE_SHA: ${{ steps.metadata.outputs.backend_image_sha }}
+          BACKEND_IMAGE_VERSION: ${{ steps.metadata.outputs.backend_image_version }}
+          ML_SERVICE_IMAGE_SHA: ${{ steps.metadata.outputs.ml_service_image_sha }}
+          ML_SERVICE_IMAGE_VERSION: ${{ steps.metadata.outputs.ml_service_image_version }}
+        run: |
+          docker buildx imagetools create \
+            --tag "${BACKEND_IMAGE_VERSION}" \
+            "${BACKEND_IMAGE_SHA}"
+
+          docker buildx imagetools create \
+            --tag "${ML_SERVICE_IMAGE_VERSION}" \
+            "${ML_SERVICE_IMAGE_SHA}"
 
       - name: Set up Node.js
-        if: steps.metadata.outputs.is_release == 'true'
         uses: actions/setup-node@v4
         with:
           node-version-file: extension/.nvmrc
@@ -51,7 +106,6 @@ jobs:
           cache-dependency-path: extension/yarn.lock
 
       - name: Build extension
-        if: steps.metadata.outputs.is_release == 'true'
         working-directory: extension
         env:
           EXTENSION_VERSION: ${{ steps.metadata.outputs.version }}
@@ -60,22 +114,17 @@ jobs:
           yarn build
 
       - name: Create GitHub release
-        if: steps.metadata.outputs.is_release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.metadata.outputs.version }}
           BACKEND_IMAGE: ${{ steps.metadata.outputs.backend_image_version }}
-          BACKEND_DIGEST: ${{ steps.metadata.outputs.backend_digest }}
           ML_SERVICE_IMAGE: ${{ steps.metadata.outputs.ml_service_image_version }}
-          ML_SERVICE_DIGEST: ${{ steps.metadata.outputs.ml_service_digest }}
         run: |
           cat > release-notes.md <<EOF
           Docker images:
 
           - Backend: \`${BACKEND_IMAGE}\`
-            - Digest: \`${BACKEND_DIGEST}\`
           - ML service: \`${ML_SERVICE_IMAGE}\`
-            - Digest: \`${ML_SERVICE_DIGEST}\`
 
           Extension build:
 

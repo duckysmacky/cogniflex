@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    tags:
-      - 'v*.*.*'
   workflow_dispatch:
 
 concurrency:
@@ -22,14 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       backend_image_latest: ${{ steps.metadata.outputs.backend_image_latest }}
-      backend_image_version: ${{ steps.metadata.outputs.backend_image_version }}
+      backend_image_sha: ${{ steps.metadata.outputs.backend_image_sha }}
       backend_tags: ${{ steps.metadata.outputs.backend_tags }}
-      is_release: ${{ steps.metadata.outputs.is_release }}
       ml_service_image_latest: ${{ steps.metadata.outputs.ml_service_image_latest }}
-      ml_service_image_version: ${{ steps.metadata.outputs.ml_service_image_version }}
+      ml_service_image_sha: ${{ steps.metadata.outputs.ml_service_image_sha }}
       ml_service_tags: ${{ steps.metadata.outputs.ml_service_tags }}
       registry_username: ${{ steps.metadata.outputs.registry_username }}
-      version: ${{ steps.metadata.outputs.version }}
 
     steps:
       - name: Check out repository
@@ -46,52 +42,22 @@ jobs:
           owner="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
           image_prefix="ghcr.io/${owner}"
 
-          is_release="false"
-          version=""
-
-          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
-            if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+(\.[0-9]+){2,3}$ ]]; then
-              echo "Tag '${GITHUB_REF_NAME}' must look like v1.2.3 or v1.2.3.4" >&2
-              exit 1
-            fi
-
-            git fetch origin master:refs/remotes/origin/master --tags
-            tag_commit="$(git rev-list -n 1 "${GITHUB_REF_NAME}")"
-            master_commit="$(git rev-parse origin/master)"
-            if [[ "${tag_commit}" != "${master_commit}" ]]; then
-              echo "Tag '${GITHUB_REF_NAME}' must point to the current origin/master commit" >&2
-              exit 1
-            fi
-
-            is_release="true"
-            version="${GITHUB_REF_NAME#v}"
-          fi
-
           echo "registry_username=${owner}" >> "$GITHUB_OUTPUT"
-          echo "is_release=${is_release}" >> "$GITHUB_OUTPUT"
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "backend_image_latest=${image_prefix}/cogniflex-backend:latest" >> "$GITHUB_OUTPUT"
+          echo "backend_image_sha=${image_prefix}/cogniflex-backend:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "ml_service_image_latest=${image_prefix}/cogniflex-ml-service:latest" >> "$GITHUB_OUTPUT"
+          echo "ml_service_image_sha=${image_prefix}/cogniflex-ml-service:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
           {
             echo "backend_tags<<EOF"
             echo "${image_prefix}/cogniflex-backend:latest"
-            if [[ "${is_release}" == "true" ]]; then
-              echo "${image_prefix}/cogniflex-backend:${version}"
-            fi
+            echo "${image_prefix}/cogniflex-backend:${GITHUB_SHA}"
             echo "EOF"
             echo "ml_service_tags<<EOF"
             echo "${image_prefix}/cogniflex-ml-service:latest"
-            if [[ "${is_release}" == "true" ]]; then
-              echo "${image_prefix}/cogniflex-ml-service:${version}"
-            fi
+            echo "${image_prefix}/cogniflex-ml-service:${GITHUB_SHA}"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
-
-          if [[ "${is_release}" == "true" ]]; then
-            echo "backend_image_version=${image_prefix}/cogniflex-backend:${version}" >> "$GITHUB_OUTPUT"
-            echo "ml_service_image_version=${image_prefix}/cogniflex-ml-service:${version}" >> "$GITHUB_OUTPUT"
-          fi
 
   build-images:
     name: Build and publish Docker images
@@ -150,24 +116,20 @@ jobs:
         env:
           BACKEND_DIGEST: ${{ needs.build-images.outputs.backend_digest }}
           BACKEND_IMAGE_LATEST: ${{ needs.prepare.outputs.backend_image_latest }}
-          BACKEND_IMAGE_VERSION: ${{ needs.prepare.outputs.backend_image_version }}
-          IS_RELEASE: ${{ needs.prepare.outputs.is_release }}
+          BACKEND_IMAGE_SHA: ${{ needs.prepare.outputs.backend_image_sha }}
           ML_SERVICE_DIGEST: ${{ needs.build-images.outputs.ml_service_digest }}
           ML_SERVICE_IMAGE_LATEST: ${{ needs.prepare.outputs.ml_service_image_latest }}
-          ML_SERVICE_IMAGE_VERSION: ${{ needs.prepare.outputs.ml_service_image_version }}
+          ML_SERVICE_IMAGE_SHA: ${{ needs.prepare.outputs.ml_service_image_sha }}
           REGISTRY_USERNAME: ${{ needs.prepare.outputs.registry_username }}
-          VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           {
             echo "backend_digest=${BACKEND_DIGEST}"
             echo "backend_image_latest=${BACKEND_IMAGE_LATEST}"
-            echo "backend_image_version=${BACKEND_IMAGE_VERSION}"
-            echo "is_release=${IS_RELEASE}"
+            echo "backend_image_sha=${BACKEND_IMAGE_SHA}"
             echo "ml_service_digest=${ML_SERVICE_DIGEST}"
             echo "ml_service_image_latest=${ML_SERVICE_IMAGE_LATEST}"
-            echo "ml_service_image_version=${ML_SERVICE_IMAGE_VERSION}"
+            echo "ml_service_image_sha=${ML_SERVICE_IMAGE_SHA}"
             echo "registry_username=${REGISTRY_USERNAME}"
-            echo "version=${VERSION}"
           } > publish-metadata.env
 
       - name: Upload publish metadata
