@@ -5,8 +5,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.BDDMockito.given;
 
-import java.time.Instant;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,6 @@ import io.github.duckysmacky.cogniflex.services.StatusService;
 @WebMvcTest(StatusController.class)
 @ActiveProfiles("test")
 public class StatusControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -36,12 +33,16 @@ public class StatusControllerTest {
     @WithMockUser(username = "user")
     public void checkOutputStatusIsOk()
     throws Exception {
-            given(service.getStatus()).willReturn(new StatusResponse("UP", "UP", "NOT_CONNECTED_YET", Instant.now().toString()));
-            mockMvc.perform(get("/api/status")
+        given(service.getStatus())
+            .willReturn(new StatusResponse("UP", "UP", "AVAILABLE", "AVAILABLE", "AVAILABLE"));
+
+        mockMvc.perform(get("/api/backendHealth")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.status").value("UP"))
-            .andExpect(jsonPath("$.backend").value("UP"))
-            .andExpect(jsonPath("$.model").value("NOT_CONNECTED_YET"));
+            .andExpect(jsonPath("$.backendHealth").value("UP"))
+            .andExpect(jsonPath("$.backendStatus").value("UP"))
+            .andExpect(jsonPath("$.MLServiceStatus").value("AVAILABLE"))
+            .andExpect(jsonPath("$.databaseStatus").value("AVAILABLE"))
+            .andExpect(jsonPath("$.redisStatus").value("AVAILABLE"));
     }
 }

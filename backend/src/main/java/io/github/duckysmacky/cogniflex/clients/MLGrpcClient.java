@@ -128,7 +128,7 @@ public class MLGrpcClient implements MLClient {
         } catch (StatusRuntimeException ex) {
             long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000;
             log.error(
-                    "ML service call failed: {} in {} ms, status={}",
+                    "ML service call failed: {} in {} ms, backendHealth={}",
                     operation,
                     elapsedMs,
                     ex.getStatus().getCode(),
