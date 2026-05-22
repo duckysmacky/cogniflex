@@ -14,3 +14,10 @@ app:
     allowed-methods: [GET, POST, OPTIONS]
     allowed-headers: ["Content-Type", "Authorization"]
     allow-credentials: true
+  rate-limit:
+    active: false
+    path-patterns: 
+      - /app/analyze/**
+    capacity: 100
+    refill-greedy-capacity: 100
+    refill-greedy-duration-seconds: 60

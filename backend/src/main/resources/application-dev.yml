@@ -18,6 +18,13 @@ app:
     allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]
     allowed-headers: ["*"]
     allow-credentials: true
+  rate-limit:
+    active: false
+    path-patterns: 
+      - /app/analyze/**
+    capacity: 100
+    refill-greedy-capacity: 100
+    refill-greedy-duration-seconds: 60
 
 springdoc:
   api-docs:
