@@ -55,7 +55,9 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
           </div>
 
           <div className="flex flex-col items-center gap-0.5">
-            <span className="text-3xl font-semibold">{analyzeResult.accuracy * 100}%</span>
+            <span className="text-3xl font-semibold">
+              {Math.round(analyzeResult.accuracy * 100)}%
+            </span>
             <span className="text-2xs text-gray">Уверенность</span>
           </div>
         </div>

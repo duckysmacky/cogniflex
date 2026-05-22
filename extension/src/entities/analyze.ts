@@ -4,7 +4,7 @@ export type TAnalyzeResult = {
 };
 
 export const AnalyzeKind = {
-  REAL: '0',
-  AI: '1',
+  REAL: 0,
+  AI: 1,
 } as const;
 export type AnalyzeKind = (typeof AnalyzeKind)[keyof typeof AnalyzeKind];

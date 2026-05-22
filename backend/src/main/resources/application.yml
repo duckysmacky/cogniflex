@@ -35,5 +35,5 @@ grpc:
   ml-service:
     host: ${ML_SERVICE_HOST:localhost}
     port: ${ML_SERVICE_PORT:50051}
-    timeout: 5s
+    timeout: 30s
     plaintext: true
