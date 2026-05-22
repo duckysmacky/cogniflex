@@ -22,7 +22,7 @@ def serve(service_root: Path, project_root: Path):
     photo_detector, video_detector, text_detector = _preload_models(settings)
 
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10),
+        futures.ThreadPoolExecutor(max_workers=1),
         options=[
             ("grpc.max_send_message_length", max_message_length_bytes),
             ("grpc.max_receive_message_length", max_message_length_bytes),
@@ -107,4 +107,9 @@ def _load_text_model(settings):
         model_name=text_config.model_name
     )
     logging.info("Text model loaded successfully!")
+    
+    logging.info("Warming up text model...")
+    detector.predict_text("warmup")
+    logging.info("Warmup done")
+    
     return detector

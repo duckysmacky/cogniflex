@@ -2,10 +2,13 @@ import logging
 import os
 import tempfile
 import time
+import threading
 
 import grpc
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
+
+_inference_lock = threading.Lock()
 
 
 class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
@@ -40,7 +43,8 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
         start_time = time.time()
 
         try:
-            confidence, pred = self.photo_detector.predict_picture(tmp_path)
+            with _inference_lock:
+                confidence, pred = self.photo_detector.predict_picture(tmp_path)
             return _reply_from_prediction("Photo", start_time, confidence, pred)
         except Exception as e:
             _set_internal_error(context, "Photo", start_time, e)
@@ -76,7 +80,8 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
         start_time = time.time()
 
         try:
-            confidence, pred = self.video_detector.predict_video(tmp_path)
+            with _inference_lock:
+                confidence, pred = self.video_detector.predict_video(tmp_path)
             return _reply_from_prediction("Video", start_time, confidence, pred)
         except Exception as e:
             _set_internal_error(context, "Video", start_time, e)
@@ -104,7 +109,8 @@ class MLAnalyzerServicer(ml_analyzer_pb2_grpc.MLAnalyzerServicer):
         start_time = time.time()
 
         try:
-            confidence, pred = self.text_detector.predict_text(text)
+            with _inference_lock:
+                confidence, pred = self.text_detector.predict_text(text)
             return _reply_from_prediction("Text", start_time, confidence, pred)
         except Exception as e:
             _set_internal_error(context, "Text", start_time, e)
