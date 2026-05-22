@@ -15,7 +15,7 @@ public class StatusController {
         this.statusService = statusService;
     }
 
-    @GetMapping("/api/status")
+    @GetMapping("/api/backendHealth")
     public ResponseEntity<StatusResponse> getStatus() {
         return ResponseEntity.ok(statusService.getStatus());
     }
