@@ -65,7 +65,7 @@ public class AnalyzeService {
                     response
             );
 
-            logCacheHit("text", contentHash, startedAt);
+            logCacheHit("text", contentHash.value(), startedAt);
             return response;
         }
 
@@ -74,8 +74,8 @@ public class AnalyzeService {
         saveAnalysisResult(
                 InputType.TEXT,
                 null,
-                textHasher.algorithm(),
-                contentHash,
+                contentHash.algorithm(),
+                contentHash.value(),
                 response
         );
 
@@ -106,7 +106,7 @@ public class AnalyzeService {
                     response
             );
 
-            logCacheHit(mediaType.name().toLowerCase(), contentHash, startedAt);
+            logCacheHit(mediaType.name().toLowerCase(), contentHash.value(), startedAt);
             return response;
         }
 
@@ -118,8 +118,8 @@ public class AnalyzeService {
         saveAnalysisResult(
                 InputType.MEDIA,
                 mediaType,
-                hasher.algorithm(),
-                contentHash,
+                contentHash.algorithm(),
+                contentHash.value(),
                 response
         );
 

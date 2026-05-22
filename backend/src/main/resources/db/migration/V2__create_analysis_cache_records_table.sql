@@ -1,5 +1,3 @@
-create type detection_kind as enum ('HUMAN', 'AI_GENERATED');
-
 create table analysis_cache_records (
     id uuid primary key,
     input_type varchar(16) not null,
