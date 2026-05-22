@@ -11,6 +11,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -30,8 +32,9 @@ public class HistoryRecord {
     @Column(name = "media_type", length = 16)
     private MediaType mediaType;
 
-    @Convert(converter = DetectionKindConverter.class)
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false, columnDefinition = "detection_kind")
     private DetectionKind kind;
 
     @Column(nullable = false)
