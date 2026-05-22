@@ -21,8 +21,9 @@ def serve(service_root: Path, project_root: Path):
 
     photo_detector, video_detector, text_detector = _preload_models(settings)
 
+    workers = min(32, (os.cpu_count() or 1) * 4)
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=10),
+        futures.ThreadPoolExecutor(max_workers=workers),
         options=[
             ("grpc.max_send_message_length", max_message_length_bytes),
             ("grpc.max_receive_message_length", max_message_length_bytes),
@@ -40,11 +41,8 @@ def serve(service_root: Path, project_root: Path):
     logging.info("Platform: %s %s", platform.system(), platform.release())
     logging.info("Bind address: %s:%s", settings.grpc.host, settings.grpc.port)
     logging.info("Endpoints: AnalyzePhoto, AnalyzeVideo, AnalyzeText")
-    logging.info(
-        "Max message size: %s MB (%s bytes)",
-        settings.grpc.max_message_mb,
-        max_message_length_bytes,
-    )
+    logging.info("Workers: %s", workers)
+    logging.info("Max message size: %s MB (%s bytes)", settings.grpc.max_message_mb, max_message_length_bytes)
     logging.info("Waiting for requests...")
     logging.info("=" * 60)
 
@@ -77,9 +75,6 @@ def _preload_models(settings):
 
 def _load_photo_model(settings):
     logging.info("Loading photo detection models...")
-    logging.info("  General: %s", settings.image_model.general_weights)
-    logging.info("  Faces:   %s", settings.image_model.faces_weights)
-
     detector = MultitypePictureDetector(
         path_general=str(settings.image_model.general_weights),
         path_faces=str(settings.image_model.faces_weights),
@@ -89,22 +84,20 @@ def _load_photo_model(settings):
 
 
 def _load_video_model():
-    logging.warning("USING MOCK VIDEO DETECTOR - returning random predictions")
-    detector = MockVideoDetector()
-    logging.info("Video detector ready (mock)")
-    return detector
+    logging.warning("USING MOCK VIDEO DETECTOR")
+    return MockVideoDetector()
 
 
 def _load_text_model(settings):
     from app.detectors.text_detector import TextDetector
     
-    text_config = settings.text_model
     logging.info("Loading text detection model (RoBERTa)...")
-    logging.info("  Model: %s", text_config.model_weights)
-    
     detector = TextDetector(
-        model_weights_path=str(text_config.model_weights),
-        model_name=text_config.model_name
+        model_weights_path=str(settings.text_model.model_weights),
+        model_name=settings.text_model.model_name
     )
     logging.info("Text model loaded successfully!")
+    logging.info("Warming up text model...")
+    detector.predict_text("warmup")
+    logging.info("Warmup done")
     return detector

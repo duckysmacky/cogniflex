@@ -27,7 +27,7 @@ class RoBERTaDetector(nn.Module):
 class TextDetector:
     def __init__(self, model_weights_path: str, model_name: str = 'roberta-base'):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir='weights/roberta_cache')
         self.model = RoBERTaDetector(model_name, dropout_rate=0.3)
 
         from safetensors.torch import load_file

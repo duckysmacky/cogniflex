@@ -1,13 +1,13 @@
 import grpc
 import sys
 import os
-from common import load_env_file
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'generated'))
 
 import ml_analyzer_pb2
 import ml_analyzer_pb2_grpc
 
+MAX_MESSAGE_LENGTH = 100 * 1024 * 1024
 
 def test_photo(image_path):
     if not os.path.exists(image_path):
@@ -19,8 +19,14 @@ def test_photo(image_path):
     
     print(f"Sending {len(image_bytes)} bytes to Photo analyzer...")
     
-    target = f"{os.getenv('ML_GRPC_HOST', 'localhost')}:{os.getenv('ML_GRPC_PORT', '50051')}"
-    channel = grpc.insecure_channel(target)
+    channel = grpc.insecure_channel(
+        "localhost:50051",
+        options=[
+            ('grpc.max_send_message_length', MAX_MESSAGE_LENGTH),
+            ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH),
+            ('grpc.max_metadata_size', MAX_MESSAGE_LENGTH),
+        ]
+    )
     stub = ml_analyzer_pb2_grpc.MLAnalyzerStub(channel)
     
     try:
@@ -44,5 +50,4 @@ if __name__ == "__main__":
         print("Usage: python test_photo_client.py <path_to_image>")
         sys.exit(1)
     
-    load_env_file(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
     test_photo(sys.argv[1])
