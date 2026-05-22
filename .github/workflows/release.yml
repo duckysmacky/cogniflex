@@ -162,4 +162,5 @@ jobs:
             "extension/release/cogniflex-extension-${VERSION}.zip" \
             --title "Cogniflex ${VERSION}" \
             --notes-file release-notes.md \
+            --draft \
             --verify-tag
