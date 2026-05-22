@@ -1,9 +1,11 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 
+const extensionVersion = process.env.EXTENSION_VERSION ?? '0.0.0';
+
 export default defineManifest({
   manifest_version: 3,
   name: 'Cogniflex',
-  version: '1.0.0',
+  version: extensionVersion,
   description: 'ИИ-детектор текста, видео и изображений в реальном времени.',
   action: {
     default_popup: 'index.html',
