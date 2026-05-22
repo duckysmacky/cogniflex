@@ -6,6 +6,7 @@ on:
       - 'v*.*.*'
 
 permissions:
+  actions: read
   contents: write
   packages: write
 
@@ -45,6 +46,7 @@ jobs:
           image_prefix="ghcr.io/${owner}"
 
           echo "registry_username=${owner}" >> "$GITHUB_OUTPUT"
+          echo "tag_commit=${tag_commit}" >> "$GITHUB_OUTPUT"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "backend_image_sha=${image_prefix}/cogniflex-backend:${tag_commit}" >> "$GITHUB_OUTPUT"
           echo "backend_image_version=${image_prefix}/cogniflex-backend:${version}" >> "$GITHUB_OUTPUT"
@@ -61,7 +63,43 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Wait for published SHA images
+      - name: Wait for Publish Images workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG_COMMIT: ${{ steps.metadata.outputs.tag_commit }}
+        run: |
+          set -euo pipefail
+
+          run_id=""
+
+          for attempt in {1..90}; do
+            run_id="$(
+              gh run list \
+                --repo "${GH_REPO}" \
+                --workflow "Publish Images" \
+                --branch master \
+                --commit "${TAG_COMMIT}" \
+                --json databaseId \
+                --jq '.[0].databaseId // ""'
+            )"
+
+            if [[ -n "${run_id}" ]]; then
+              break
+            fi
+
+            sleep 20
+          done
+
+          if [[ -z "${run_id}" ]]; then
+            echo "Could not find a Publish Images run for commit ${TAG_COMMIT}" >&2
+            exit 1
+          fi
+
+          echo "Waiting for Publish Images run ${run_id}"
+          gh run watch "${run_id}" --repo "${GH_REPO}" --exit-status --interval 30
+
+      - name: Verify published SHA images
         env:
           BACKEND_IMAGE_SHA: ${{ steps.metadata.outputs.backend_image_sha }}
           ML_SERVICE_IMAGE_SHA: ${{ steps.metadata.outputs.ml_service_image_sha }}
@@ -69,18 +107,7 @@ jobs:
           set -euo pipefail
 
           for image in "${BACKEND_IMAGE_SHA}" "${ML_SERVICE_IMAGE_SHA}"; do
-            for attempt in {1..30}; do
-              if docker buildx imagetools inspect "${image}" >/dev/null 2>&1; then
-                break
-              fi
-
-              if [[ "${attempt}" == "30" ]]; then
-                echo "Timed out waiting for ${image}" >&2
-                exit 1
-              fi
-
-              sleep 10
-            done
+            docker buildx imagetools inspect "${image}" >/dev/null
           done
 
       - name: Tag release images
