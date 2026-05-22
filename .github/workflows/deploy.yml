@@ -26,8 +26,9 @@ jobs:
       - name: Download publish metadata
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           RUN_ID: ${{ github.event.workflow_run.id }}
-        run: gh run download "${RUN_ID}" --name publish-metadata --dir .
+        run: gh run download "${RUN_ID}" --repo "${GH_REPO}" --name publish-metadata --dir .
 
       - name: Read publish metadata
         id: metadata
