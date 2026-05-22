@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
 import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
 import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.exceptions.ServiceUnavailableException;
 import io.github.duckysmacky.cogniflex.grpc.AnalyzeReply;
 import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
 import io.github.duckysmacky.cogniflex.grpc.PhotoRequest;
@@ -23,15 +24,14 @@ import java.util.function.Supplier;
 
 @Service
 public class MLGrpcClient implements MLClient {
-
     private static final Logger log = LoggerFactory.getLogger(MLGrpcClient.class);
 
     private final MLAnalyzerGrpc.MLAnalyzerBlockingStub baseStub;
     private final MLGrpcProperties properties;
 
     public MLGrpcClient(
-            MLAnalyzerGrpc.MLAnalyzerBlockingStub baseStub,
-            MLGrpcProperties properties
+        MLAnalyzerGrpc.MLAnalyzerBlockingStub baseStub,
+        MLGrpcProperties properties
     ) {
         this.baseStub = baseStub;
         this.properties = properties;
@@ -40,13 +40,23 @@ public class MLGrpcClient implements MLClient {
     @Override
     public AnalyzeResultResponse analyzeText(String normalizedText) {
         TextRequest request = TextRequest.newBuilder()
-                .setText(normalizedText)
-                .build();
+            .setText(normalizedText)
+            .build();
 
         AnalyzeReply reply = execute(
-                "AnalyzeText",
-                "textLength=" + normalizedText.length(),
-                () -> stubWithTimeout().analyzeText(request)
+            "AnalyzeText",
+            "textLength=" + normalizedText.length(),
+            () -> {
+                try {
+                    return stubWithTimeout().analyzeText(request);
+                } catch (StatusRuntimeException e) {
+                    if (e.getStatus().getCode() == Status.Code.DEADLINE_EXCEEDED) {
+                        throw new ServiceUnavailableException("ML service hit a timeout during AnalyzeText request");
+                    }
+
+                    throw e;
+                }
+            }
         );
 
         return mapReply(reply);
@@ -55,13 +65,23 @@ public class MLGrpcClient implements MLClient {
     @Override
     public AnalyzeResultResponse analyzeImage(byte[] imageContent) {
         PhotoRequest request = PhotoRequest.newBuilder()
-                .setImageData(ByteString.copyFrom(imageContent))
-                .build();
+            .setImageData(ByteString.copyFrom(imageContent))
+            .build();
 
         AnalyzeReply reply = execute(
-                "AnalyzePhoto",
-                "bytes=" + imageContent.length,
-                () -> stubWithTimeout().analyzePhoto(request)
+            "AnalyzePhoto",
+            "bytes=" + imageContent.length,
+            () -> {
+                try {
+                    return stubWithTimeout().analyzePhoto(request);
+                } catch (StatusRuntimeException e) {
+                    if (e.getStatus().getCode() == Status.Code.DEADLINE_EXCEEDED) {
+                        throw new ServiceUnavailableException("ML service hit a timeout during AnalyzePhoto request");
+                    }
+
+                    throw e;
+                }
+            }
         );
 
         return mapReply(reply);
@@ -70,13 +90,23 @@ public class MLGrpcClient implements MLClient {
     @Override
     public AnalyzeResultResponse analyzeVideo(byte[] videoContent) {
         VideoRequest request = VideoRequest.newBuilder()
-                .setVideoData(ByteString.copyFrom(videoContent))
-                .build();
+            .setVideoData(ByteString.copyFrom(videoContent))
+            .build();
 
         AnalyzeReply reply = execute(
-                "AnalyzeVideo",
-                "bytes=" + videoContent.length,
-                () -> stubWithTimeout().analyzeVideo(request)
+            "AnalyzeVideo",
+            "bytes=" + videoContent.length,
+            () -> {
+                try {
+                    return stubWithTimeout().analyzeVideo(request);
+                } catch (StatusRuntimeException e) {
+                    if (e.getStatus().getCode() == Status.Code.DEADLINE_EXCEEDED) {
+                        throw new ServiceUnavailableException("ML service hit a timeout during AnalyzeVideo request");
+                    }
+
+                    throw e;
+                }
+            }
         );
 
         return mapReply(reply);
