@@ -6,7 +6,7 @@ import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.enums.InputType;
 import io.github.duckysmacky.cogniflex.enums.MediaType;
-import io.github.duckysmacky.cogniflex.hashing.Hasher;
+import io.github.duckysmacky.cogniflex.dto.ContentHash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,39 +27,33 @@ public class AnalyzeService {
     private final HistoryService historyService;
     private final MediaTypeResolver mediaTypeResolver;
     private final AnalysisCacheService analysisCacheService;
-    private final Hasher<String> textHasher;
-    private final Hasher<byte[]> photoHasher;
-    private final Hasher<byte[]> videoHasher;
+    private final ContentHashService contentHashService;
 
     public AnalyzeService(
             MLClient mlClient,
             HistoryService historyService,
             MediaTypeResolver mediaTypeResolver,
             AnalysisCacheService analysisCacheService,
-            @Qualifier("textHasher") Hasher<String> textHasher,
-            @Qualifier("photoHasher") Hasher<byte[]> photoHasher,
-            @Qualifier("videoHasher") Hasher<byte[]> videoHasher
+            ContentHashService contentHashService
     ) {
         this.mlClient = mlClient;
         this.historyService = historyService;
         this.mediaTypeResolver = mediaTypeResolver;
         this.analysisCacheService = analysisCacheService;
-        this.textHasher = textHasher;
-        this.photoHasher = photoHasher;
-        this.videoHasher = videoHasher;
+        this.contentHashService = contentHashService;
     }
 
     public AnalyzeResultResponse analyzeText(CreateTextDetectionRequest request) {
         long startedAt = System.nanoTime();
 
         String normalizedText = normalizeText(request.text());
-        String contentHash = textHasher.hash(normalizedText);
+        ContentHash contentHash = contentHashService.hashText(normalizedText);
 
         Optional<AnalyzeResultResponse> cachedResponse = analysisCacheService.findCachedResult(
                 InputType.TEXT,
                 null,
-                textHasher.algorithm(),
-                contentHash
+                contentHash.algorithm(),
+                contentHash.value()
         );
 
         if (cachedResponse.isPresent()) {
@@ -94,14 +88,13 @@ public class AnalyzeService {
 
         MediaType mediaType = mediaTypeResolver.resolve(file);
         byte[] content = readBytes(file);
-        Hasher<byte[]> hasher = resolveMediaHasher(mediaType);
-        String contentHash = hasher.hash(content);
+        ContentHash contentHash = contentHashService.hashMedia(mediaType, content);
 
         Optional<AnalyzeResultResponse> cachedResponse = analysisCacheService.findCachedResult(
                 InputType.MEDIA,
                 mediaType,
-                hasher.algorithm(),
-                contentHash
+                contentHash.algorithm(),
+                contentHash.value()
         );
 
         if (cachedResponse.isPresent()) {
@@ -163,13 +156,6 @@ public class AnalyzeService {
                 response.kind(),
                 response.accuracy()
         ));
-    }
-
-    private Hasher<byte[]> resolveMediaHasher(MediaType mediaType) {
-        return switch (mediaType) {
-            case IMAGE -> photoHasher;
-            case VIDEO -> videoHasher;
-        };
     }
 
     private String normalizeText(String text) {
