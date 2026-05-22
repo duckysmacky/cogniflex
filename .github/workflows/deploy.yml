@@ -1,92 +1,40 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Publish Images
+    types:
+      - completed
 
 concurrency:
   group: production-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
+  actions: read
   contents: read
-  packages: write
 
 jobs:
   deploy:
-    name: Build, publish, and deploy
+    name: Deploy application
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    if: github.event.workflow_run.conclusion == 'success'
+    timeout-minutes: 30
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - name: Download publish metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: gh run download "${RUN_ID}" --name publish-metadata --dir .
 
-      - name: Derive registry username
-        id: vars
+      - name: Read publish metadata
+        id: metadata
+        shell: bash
         run: |
-          owner="$(printf '%s' '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
-          echo "registry_username=${owner}" >> "$GITHUB_OUTPUT"
-
-      - name: Detect image changes
-        id: changes
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            backend:
-              - 'backend/**'
-              - 'proto/**'
-              - 'docker-compose.yml'
-              - '.dockerignore'
-            ml_service:
-              - 'ml-service/**'
-              - 'proto/**'
-              - 'docker-compose.yml'
-              - '.dockerignore'
-
-      - name: Set up Docker Buildx
-        if: steps.changes.outputs.backend == 'true' || steps.changes.outputs.ml_service == 'true'
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        if: steps.changes.outputs.backend == 'true' || steps.changes.outputs.ml_service == 'true'
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push backend image
-        if: steps.changes.outputs.backend == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: backend/Dockerfile
-          push: true
-          cache-from: type=gha,scope=backend
-          cache-to: type=gha,mode=max,scope=backend
-          tags: |
-            ghcr.io/${{ steps.vars.outputs.registry_username }}/cogniflex-backend:latest
-            ghcr.io/${{ steps.vars.outputs.registry_username }}/cogniflex-backend:${{ github.sha }}
-
-      - name: Build and push ML service image
-        if: steps.changes.outputs.ml_service == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ml-service/Dockerfile
-          push: true
-          cache-from: type=gha,scope=ml-service
-          cache-to: type=gha,mode=max,scope=ml-service
-          tags: |
-            ghcr.io/${{ steps.vars.outputs.registry_username }}/cogniflex-ml-service:latest
-            ghcr.io/${{ steps.vars.outputs.registry_username }}/cogniflex-ml-service:${{ github.sha }}
-
-      - name: Skip image builds
-        if: steps.changes.outputs.backend != 'true' && steps.changes.outputs.ml_service != 'true'
-        run: echo "No image-related changes detected, reusing latest published images."
+          set -euo pipefail
+          cat publish-metadata.env >> "$GITHUB_OUTPUT"
 
       - name: Deploy application over SSH
         uses: appleboy/ssh-action@v1.2.5
@@ -100,6 +48,6 @@ jobs:
             export APP_DIR="${{ secrets.SERVER_DEPLOY_PATH }}"
             export DEPLOY_BRANCH="master"
             export REGISTRY="ghcr.io"
-            export REGISTRY_USERNAME="${{ steps.vars.outputs.registry_username }}"
+            export REGISTRY_USERNAME="${{ steps.metadata.outputs.registry_username }}"
             export REGISTRY_TOKEN="${{ secrets.SERVER_REGISTRY_TOKEN }}"
             bash "$APP_DIR/deploy.sh"

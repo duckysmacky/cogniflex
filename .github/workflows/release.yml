@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows:
+      - Publish Images
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  release:
+    name: Build extension and create release
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
+    timeout-minutes: 30
+
+    steps:
+      - name: Download publish metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: gh run download "${RUN_ID}" --name publish-metadata --dir .
+
+      - name: Read publish metadata
+        id: metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat publish-metadata.env >> "$GITHUB_OUTPUT"
+
+      - name: Stop for non-release publish
+        if: steps.metadata.outputs.is_release != 'true'
+        run: echo "Published images were not produced by a release tag."
+
+      - name: Check out repository
+        if: steps.metadata.outputs.is_release == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Set up Node.js
+        if: steps.metadata.outputs.is_release == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: extension/.nvmrc
+          cache: yarn
+          cache-dependency-path: extension/yarn.lock
+
+      - name: Build extension
+        if: steps.metadata.outputs.is_release == 'true'
+        working-directory: extension
+        env:
+          EXTENSION_VERSION: ${{ steps.metadata.outputs.version }}
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+
+      - name: Create GitHub release
+        if: steps.metadata.outputs.is_release == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.metadata.outputs.version }}
+          BACKEND_IMAGE: ${{ steps.metadata.outputs.backend_image_version }}
+          BACKEND_DIGEST: ${{ steps.metadata.outputs.backend_digest }}
+          ML_SERVICE_IMAGE: ${{ steps.metadata.outputs.ml_service_image_version }}
+          ML_SERVICE_DIGEST: ${{ steps.metadata.outputs.ml_service_digest }}
+        run: |
+          cat > release-notes.md <<EOF
+          Docker images:
+
+          - Backend: \`${BACKEND_IMAGE}\`
+            - Digest: \`${BACKEND_DIGEST}\`
+          - ML service: \`${ML_SERVICE_IMAGE}\`
+            - Digest: \`${ML_SERVICE_DIGEST}\`
+
+          Extension build:
+
+          - \`cogniflex-extension-${VERSION}.zip\`
+          EOF
+
+          gh release create "v${VERSION}" \
+            "extension/release/cogniflex-extension-${VERSION}.zip" \
+            --title "Cogniflex ${VERSION}" \
+            --notes-file release-notes.md \
+            --verify-tag
