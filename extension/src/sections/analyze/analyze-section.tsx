@@ -51,7 +51,10 @@ export const AnalyzeSection = () => {
     fileInputRef.current?.click();
   };
 
-  const resetFile = () => setFile(null);
+  const handleResetFileClick = () => {
+    setFile(null);
+    setResult(null);
+  };
 
   const runAnalysis = async () => {
     setIsAnalyzing(true);
@@ -89,7 +92,7 @@ export const AnalyzeSection = () => {
               </span>
             </div>
 
-            <button onClick={resetFile}>
+            <button onClick={handleResetFileClick}>
               <IconX className="text-gray" size={20} />
             </button>
           </div>

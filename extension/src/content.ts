@@ -200,6 +200,30 @@ function isTextCandidate(element: Element, minTextLength: number) {
   );
 }
 
+function isMediaCandidate(element: Element) {
+  if (element instanceof HTMLImageElement) {
+    return !!element.currentSrc || !!element.src;
+  }
+
+  if (element instanceof HTMLVideoElement) {
+    return !!element.currentSrc || !!element.src;
+  }
+
+  return false;
+}
+
+function getMediaUrl(element: Element) {
+  if (element instanceof HTMLImageElement) {
+    return element.currentSrc || element.src;
+  }
+
+  if (element instanceof HTMLVideoElement) {
+    return element.currentSrc || element.src;
+  }
+
+  return '';
+}
+
 function clearPendingTimer(element: HTMLElement) {
   const timer = pendingTimers.get(element);
   if (timer) {
@@ -209,11 +233,15 @@ function clearPendingTimer(element: HTMLElement) {
 }
 
 function markCandidate(element: HTMLElement) {
+  const isMedia = isMediaCandidate(element);
   const text = element.textContent?.trim();
-  if (!text) return;
+  const mediaUrl = isMedia ? getMediaUrl(element) : '';
+  const cacheKey = isMedia ? mediaUrl : text;
+
+  if (!cacheKey) return;
 
   const cached = analyzedElements.get(element);
-  if (cached && cached.text === text) {
+  if (cached && cached.text === cacheKey) {
     highlightElement(element, cached.kind);
     return;
   }
@@ -222,17 +250,30 @@ function markCandidate(element: HTMLElement) {
 
   if (pendingTimers.has(element)) return;
 
-  const timer = setTimeout(() => {
+  const timer = setTimeout(async () => {
     clearPendingTimer(element);
-    apiProxyRequest(ApiProxyKey.ANALYZE_TEXT, text, (response) => {
-      if (response.success) {
-        const { accuracy, kind } = response.data.data;
-        analyzedElements.set(element, { accuracy, kind, text });
-        highlightElement(element, kind);
+
+    try {
+      if (isMedia) {
+        await apiProxyRequest(ApiProxyKey.ANALYZE_MEDIA, mediaUrl, (response) => {
+          if (response.success) {
+            const { accuracy, kind } = response.data.data;
+            analyzedElements.set(element, { accuracy, kind, text: cacheKey });
+            highlightElement(element, kind);
+          }
+        });
+      } else {
+        await apiProxyRequest(ApiProxyKey.ANALYZE_TEXT, text, (response) => {
+          if (response.success) {
+            const { accuracy, kind } = response.data.data;
+            analyzedElements.set(element, { accuracy, kind, text: cacheKey });
+            highlightElement(element, kind);
+          }
+        });
       }
-    }).catch((e) => {
-      console.error(e instanceof Error ? e.message : e);
-    });
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : error);
+    }
   }, ANALYZE_DELAY_MS);
 
   pendingTimers.set(element, timer);
@@ -268,6 +309,10 @@ function createIntersectionObserver() {
   );
 }
 
+function isCandidate(element: Element, minTextLength: number) {
+  return isTextCandidate(element, minTextLength) || isMediaCandidate(element);
+}
+
 function observeCandidateElements(minTextLength: number) {
   intersectionObserver?.disconnect();
   createIntersectionObserver();
@@ -279,19 +324,19 @@ function observeCandidateElements(minTextLength: number) {
       highlightElement(element as HTMLElement, cached.kind);
     }
 
-    if (isTextCandidate(element, minTextLength)) {
+    if (isCandidate(element, minTextLength)) {
       intersectionObserver?.observe(element);
     }
   });
 }
 
 function observeNodeCandidates(node: Element, minTextLength: number) {
-  if (isTextCandidate(node, minTextLength)) {
+  if (isCandidate(node, minTextLength)) {
     intersectionObserver?.observe(node);
   }
 
   node.querySelectorAll('*').forEach((child) => {
-    if (isTextCandidate(child, minTextLength)) {
+    if (isCandidate(child, minTextLength)) {
       intersectionObserver?.observe(child);
     }
   });
