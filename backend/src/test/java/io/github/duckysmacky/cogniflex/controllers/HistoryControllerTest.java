@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +35,7 @@ import io.github.duckysmacky.cogniflex.services.HistoryService;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(HistoryController.class)
+@ActiveProfiles("test")
 public class HistoryControllerTest {
 
     @Autowired
