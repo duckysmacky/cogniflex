@@ -44,6 +44,10 @@ public record FinalScore(
         );
     }
 
+    public double confidence() {
+        return verdict == AnalysisVerdict.AI ? aiProbability : 1.0 - aiProbability;
+    }
+
     private static double clamp(double value) {
         if (value < 0.0) {
             return 0.0;

@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.dynamic;
 
 import io.github.duckysmacky.cogniflex.analysis.ContentItem;
+import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.dynamic.ml.MLClient;
 import org.springframework.stereotype.Component;
 
@@ -25,10 +26,12 @@ public class DynamicAnalyzer {
     }
 
     private String textAttribute(ContentItem item) {
-        String text = item.attributes() == null ? null : item.attributes().get("text");
+        String text = item.attributes().get(ContentItemFactory.TEXT_ATTRIBUTE);
+
         if (text == null || text.isBlank()) {
             throw new IllegalArgumentException("Text content item requires a non-empty text attribute");
         }
+
         return text;
     }
 }

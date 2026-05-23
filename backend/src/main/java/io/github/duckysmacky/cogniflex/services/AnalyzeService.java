@@ -1,7 +1,9 @@
 package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalysisResult;
-import io.github.duckysmacky.cogniflex.analysis.dynamic.ml.MLClient;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisOrchestrator;
+import io.github.duckysmacky.cogniflex.analysis.ContentItem;
+import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
+import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
@@ -20,18 +22,21 @@ import org.springframework.web.multipart.MultipartFile;
 public class AnalyzeService {
     private static final Logger log = LoggerFactory.getLogger(AnalyzeService.class);
 
-    private final MLClient mlClient;
+    private final AnalysisOrchestrator analysisOrchestrator;
+    private final ContentItemFactory contentItemFactory;
     private final HistoryService historyService;
     private final TextPreprocessor textPreprocessor;
     private final MediaParser mediaParser;
 
     public AnalyzeService(
-        MLClient mlClient,
+        AnalysisOrchestrator analysisOrchestrator,
+        ContentItemFactory contentItemFactory,
         HistoryService historyService,
         TextPreprocessor textPreprocessor,
         MediaParser mediaParser
     ) {
-        this.mlClient = mlClient;
+        this.analysisOrchestrator = analysisOrchestrator;
+        this.contentItemFactory = contentItemFactory;
         this.historyService = historyService;
         this.textPreprocessor = textPreprocessor;
         this.mediaParser = mediaParser;
@@ -41,9 +46,10 @@ public class AnalyzeService {
         long startedAt = System.nanoTime();
 
         PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
+        ContentItem item = contentItemFactory.fromText(text);
 
-        DynamicAnalysisResult dynamicResult = mlClient.analyzeText(text.modelInput());
-        AnalysisResultResponse response = toResponse(dynamicResult);
+        FinalScore score = analysisOrchestrator.analyze(item);
+        AnalysisResultResponse response = toResponse(score);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.TEXT,
@@ -60,12 +66,10 @@ public class AnalyzeService {
         long startedAt = System.nanoTime();
 
         ParsedMedia media = mediaParser.parse(file);
+        ContentItem item = contentItemFactory.fromMedia(media);
 
-        DynamicAnalysisResult dynamicResult = switch (media.mediaType()) {
-            case IMAGE -> mlClient.analyzeImage(media.bytes());
-            case VIDEO -> mlClient.analyzeVideo(media.bytes());
-        };
-        AnalysisResultResponse response = toResponse(dynamicResult);
+        FinalScore score = analysisOrchestrator.analyze(item);
+        AnalysisResultResponse response = toResponse(score);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.MEDIA,
@@ -78,8 +82,8 @@ public class AnalyzeService {
         return response;
     }
 
-    private AnalysisResultResponse toResponse(DynamicAnalysisResult result) {
-        return new AnalysisResultResponse(result.verdict(), result.confidence());
+    private AnalysisResultResponse toResponse(FinalScore score) {
+        return new AnalysisResultResponse(score.verdict(), score.confidence());
     }
 
     private void logElapsed(String analysisType, long startedAt) {
