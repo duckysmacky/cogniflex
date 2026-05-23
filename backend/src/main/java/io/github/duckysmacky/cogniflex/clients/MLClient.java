@@ -1,12 +1,12 @@
 package io.github.duckysmacky.cogniflex.clients;
 
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 
 public interface MLClient {
 
-    AnalyzeResultResponse analyzeText(String normalizedText);
+    AnalysisResultResponse analyzeText(String normalizedText);
 
-    AnalyzeResultResponse analyzeImage(byte[] imageContent);
+    AnalysisResultResponse analyzeImage(byte[] imageContent);
 
-    AnalyzeResultResponse analyzeVideo(byte[] videoContent);
+    AnalysisResultResponse analyzeVideo(byte[] videoContent);
 }

@@ -35,7 +35,7 @@ public class HistoryService {
                 UUID.randomUUID(),
                 request.inputType(),
                 request.mediaType(),
-                request.kind(),
+                request.verdict(),
                 request.accuracy(),
                 Instant.now()
         );
@@ -72,7 +72,7 @@ public class HistoryService {
                 record.getId(),
                 record.getInputType(),
                 record.getMediaType(),
-                record.getKind(),
+                record.getVerdict(),
                 record.getAccuracy(),
                 record.getCreatedAt()
         );

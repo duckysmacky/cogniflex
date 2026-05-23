@@ -3,7 +3,7 @@ package io.github.duckysmacky.cogniflex.services;
 import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
 import io.github.duckysmacky.cogniflex.processing.media.ParsedMedia;
 import io.github.duckysmacky.cogniflex.clients.MLClient;
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.analysis.InputType;
@@ -36,30 +36,30 @@ public class AnalyzeService {
         this.mediaParser = mediaParser;
     }
 
-    public AnalyzeResultResponse analyzeText(CreateTextDetectionRequest request) {
+    public AnalysisResultResponse analyzeText(CreateTextDetectionRequest request) {
         long startedAt = System.nanoTime();
 
         PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
 
-        AnalyzeResultResponse response = mlClient.analyzeText(text.modelInput());
+        AnalysisResultResponse response = mlClient.analyzeText(text.modelInput());
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.TEXT,
             null,
-            response.kind(),
-            response.accuracy()
+            response.verdict(),
+            response.confidence()
         ));
 
         logElapsed("text", startedAt);
         return response;
     }
 
-    public AnalyzeResultResponse analyzeMedia(MultipartFile file) {
+    public AnalysisResultResponse analyzeMedia(MultipartFile file) {
         long startedAt = System.nanoTime();
 
         ParsedMedia media = mediaParser.parse(file);
 
-        AnalyzeResultResponse response = switch (media.mediaType()) {
+        AnalysisResultResponse response = switch (media.mediaType()) {
             case IMAGE -> mlClient.analyzeImage(media.bytes());
             case VIDEO -> mlClient.analyzeVideo(media.bytes());
         };
@@ -67,8 +67,8 @@ public class AnalyzeService {
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.MEDIA,
             media.mediaType(),
-            response.kind(),
-            response.accuracy()
+            response.verdict(),
+            response.confidence()
         ));
 
         logElapsed(media.mediaType().name().toLowerCase(), startedAt);

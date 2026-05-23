@@ -1,6 +1,6 @@
 package io.github.duckysmacky.cogniflex.dto;
 
-import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.analysis.InputType;
 import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import jakarta.validation.constraints.DecimalMax;
@@ -14,7 +14,7 @@ public record CreateHistoryItemRequest(
         MediaType mediaType,
 
         @NotNull
-        DetectionKind kind,
+        AnalysisVerdict verdict,
 
         @DecimalMin("0.0")
         @DecimalMax("1.0")

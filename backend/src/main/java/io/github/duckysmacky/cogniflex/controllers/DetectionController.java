@@ -1,6 +1,6 @@
 package io.github.duckysmacky.cogniflex.controllers;
 
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 import jakarta.validation.Valid;
@@ -20,18 +20,18 @@ public class DetectionController {
     }
 
     @PostMapping("/text")
-    public ResponseEntity<AnalyzeResultResponse> analyzeText(
+    public ResponseEntity<AnalysisResultResponse> analyzeText(
             @Valid @RequestBody CreateTextDetectionRequest request
     ) {
-        AnalyzeResultResponse response = analyzeService.analyzeText(request);
+        AnalysisResultResponse response = analyzeService.analyzeText(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AnalyzeResultResponse> analyzeMedia(
+    public ResponseEntity<AnalysisResultResponse> analyzeMedia(
             @RequestPart("file") MultipartFile file
     ) {
-        AnalyzeResultResponse response = analyzeService.analyzeMedia(file);
+        AnalysisResultResponse response = analyzeService.analyzeMedia(file);
         return ResponseEntity.ok(response);
     }
 }

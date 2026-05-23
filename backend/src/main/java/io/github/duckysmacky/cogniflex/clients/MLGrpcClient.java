@@ -2,8 +2,8 @@ package io.github.duckysmacky.cogniflex.clients;
 
 import com.google.protobuf.ByteString;
 import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.exceptions.ServiceUnavailableException;
 import io.github.duckysmacky.cogniflex.grpc.AnalyzeReply;
 import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
@@ -38,7 +38,7 @@ public class MLGrpcClient implements MLClient {
     }
 
     @Override
-    public AnalyzeResultResponse analyzeText(String normalizedText) {
+    public AnalysisResultResponse analyzeText(String normalizedText) {
         TextRequest request = TextRequest.newBuilder()
             .setText(normalizedText)
             .build();
@@ -63,7 +63,7 @@ public class MLGrpcClient implements MLClient {
     }
 
     @Override
-    public AnalyzeResultResponse analyzeImage(byte[] imageContent) {
+    public AnalysisResultResponse analyzeImage(byte[] imageContent) {
         PhotoRequest request = PhotoRequest.newBuilder()
             .setImageData(ByteString.copyFrom(imageContent))
             .build();
@@ -88,7 +88,7 @@ public class MLGrpcClient implements MLClient {
     }
 
     @Override
-    public AnalyzeResultResponse analyzeVideo(byte[] videoContent) {
+    public AnalysisResultResponse analyzeVideo(byte[] videoContent) {
         VideoRequest request = VideoRequest.newBuilder()
             .setVideoData(ByteString.copyFrom(videoContent))
             .build();
@@ -138,26 +138,26 @@ public class MLGrpcClient implements MLClient {
         }
     }
 
-    private AnalyzeResultResponse mapReply(AnalyzeReply reply) {
-        DetectionKind kind = mapClass(reply.getClass_());
-        double accuracy = reply.getConfidence();
+    private AnalysisResultResponse mapReply(AnalyzeReply reply) {
+        AnalysisVerdict verdict = mapClass(reply.getClass_());
+        double confidence = reply.getConfidence();
 
-        if (accuracy < 0.0 || accuracy > 1.0) {
+        if (confidence < 0.0 || confidence > 1.0) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "ML service returned invalid confidence: " + accuracy
+                    "ML service returned invalid confidence: " + confidence
             );
         }
 
-        return new AnalyzeResultResponse(kind, accuracy);
+        return new AnalysisResultResponse(verdict, confidence);
     }
 
-    private DetectionKind mapClass(String rawClass) {
+    private AnalysisVerdict mapClass(String rawClass) {
         String normalizedClass = rawClass.trim().toLowerCase(Locale.ROOT);
 
         return switch (normalizedClass) {
-            case "human", "real" -> DetectionKind.HUMAN;
-            case "ai", "ai_generated", "generated", "fake" -> DetectionKind.AI_GENERATED;
+            case "human", "real" -> AnalysisVerdict.HUMAN;
+            case "ai", "ai_generated", "generated", "fake" -> AnalysisVerdict.AI;
             default -> throw new ResponseStatusException(
                     HttpStatus.BAD_GATEWAY,
                     "Unknown class returned by ML service: " + rawClass

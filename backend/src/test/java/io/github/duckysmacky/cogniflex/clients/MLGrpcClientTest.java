@@ -1,8 +1,8 @@
 package io.github.duckysmacky.cogniflex.clients;
 
 import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
-import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.grpc.AnalyzeReply;
 import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
 import io.github.duckysmacky.cogniflex.grpc.PhotoRequest;
@@ -100,25 +100,25 @@ class MLGrpcClientTest {
 
     @Test
     void analyzeTextReturnsHumanResult() {
-        AnalyzeResultResponse response = client.analyzeText("hello");
+        AnalysisResultResponse response = client.analyzeText("hello");
 
-        assertEquals(DetectionKind.HUMAN, response.kind());
-        assertEquals(0.91, response.accuracy(), 0.0001);
+        assertEquals(AnalysisVerdict.HUMAN, response.verdict());
+        assertEquals(0.91, response.confidence(), 0.0001);
     }
 
     @Test
     void analyzeImageReturnsAiResult() {
-        AnalyzeResultResponse response = client.analyzeImage(new byte[]{1, 2, 3});
+        AnalysisResultResponse response = client.analyzeImage(new byte[]{1, 2, 3});
 
-        assertEquals(DetectionKind.AI_GENERATED, response.kind());
-        assertEquals(0.77, response.accuracy(), 0.0001);
+        assertEquals(AnalysisVerdict.AI, response.verdict());
+        assertEquals(0.77, response.confidence(), 0.0001);
     }
 
     @Test
     void analyzeVideoReturnsAiResult() {
-        AnalyzeResultResponse response = client.analyzeVideo(new byte[]{4, 5, 6});
+        AnalysisResultResponse response = client.analyzeVideo(new byte[]{4, 5, 6});
 
-        assertEquals(DetectionKind.AI_GENERATED, response.kind());
-        assertEquals(0.68, response.accuracy(), 0.0001);
+        assertEquals(AnalysisVerdict.AI, response.verdict());
+        assertEquals(0.68, response.confidence(), 0.0001);
     }
 }

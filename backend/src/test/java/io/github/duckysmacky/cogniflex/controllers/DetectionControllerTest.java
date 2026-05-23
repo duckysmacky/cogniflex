@@ -23,9 +23,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex.enums.DetectionKind;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 
 @ExtendWith(SpringExtension.class)
@@ -45,7 +45,7 @@ public class DetectionControllerTest {
     @WithMockUser(username = "user")
     public void checkAnalyzeTextIsOk() throws Exception {
         CreateTextDetectionRequest request = new CreateTextDetectionRequest("Some text to analyze");
-        AnalyzeResultResponse response = new AnalyzeResultResponse(DetectionKind.HUMAN, 0.9);
+        AnalysisResultResponse response = new AnalysisResultResponse(AnalysisVerdict.HUMAN, 0.9);
 
         given(service.analyzeText(request)).willReturn(response);
 
@@ -53,8 +53,8 @@ public class DetectionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.kind").value(response.kind().getCode()))
-                .andExpect(jsonPath("$.accuracy").value(response.accuracy()));
+                .andExpect(jsonPath("$.verdict").value(response.verdict().toString()))
+                .andExpect(jsonPath("$.confidence").value(response.confidence()));
     }
 
     @Test
@@ -65,14 +65,14 @@ public class DetectionControllerTest {
         MockMultipartFile img = new MockMultipartFile("file", "image_test.png", "image/png", bytes);
 
         given(service.analyzeMedia(any())).willReturn(
-                new AnalyzeResultResponse(DetectionKind.AI_GENERATED, 0.67)
+                new AnalysisResultResponse(AnalysisVerdict.AI, 0.67)
         );
 
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/api/analyze/media").file(img)
-                        .with(csrf()))
+                .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.kind").value(DetectionKind.AI_GENERATED.getCode()));
+                .andExpect(jsonPath("$.verdict").value(AnalysisVerdict.AI.toString()));
     }
 
     @Test
@@ -83,13 +83,13 @@ public class DetectionControllerTest {
         MockMultipartFile vid = new MockMultipartFile("file", "video_test.mp4", "video/mp4", bytes);
 
         given(service.analyzeMedia(any())).willReturn(
-                new AnalyzeResultResponse(DetectionKind.AI_GENERATED, 0.63)
+                new AnalysisResultResponse(AnalysisVerdict.AI, 0.63)
         );
 
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/api/analyze/media").file(vid)
-                        .with(csrf()))
+                .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.kind").value(DetectionKind.AI_GENERATED.getCode()));
+                .andExpect(jsonPath("$.verdict").value(AnalysisVerdict.AI.toString()));
     }
 }
