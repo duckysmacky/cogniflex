@@ -48,7 +48,7 @@ public class AnalyzeService {
         PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
         ContentItem item = contentItemFactory.fromText(text);
 
-        FinalScore score = analysisOrchestrator.analyze(item);
+        FinalScore score = analysisOrchestrator.submit(item);
         AnalysisResultResponse response = toResponse(score);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
@@ -68,7 +68,7 @@ public class AnalyzeService {
         ParsedMedia media = mediaParser.parse(file);
         ContentItem item = contentItemFactory.fromMedia(media);
 
-        FinalScore score = analysisOrchestrator.analyze(item);
+        FinalScore score = analysisOrchestrator.submit(item);
         AnalysisResultResponse response = toResponse(score);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(

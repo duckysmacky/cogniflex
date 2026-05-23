@@ -1,12 +1,18 @@
 package io.github.duckysmacky.cogniflex.analysis;
 
 import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalysisResult;
-import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalyzer;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.ImageDynamicAnalyzer;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.TextDynamicAnalyzer;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.VideoDynamicAnalyzer;
 import io.github.duckysmacky.cogniflex.analysis.dynamic.ml.MLClient;
 import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.analysis.score.TextOnlyScoreFusionStrategy;
+import io.github.duckysmacky.cogniflex.analysis.static_.ImageStaticAnalyzer;
+import io.github.duckysmacky.cogniflex.analysis.static_.TextStaticAnalyzer;
+import io.github.duckysmacky.cogniflex.analysis.static_.VideoStaticAnalyzer;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +21,16 @@ class AnalysisOrchestratorTest {
     @Test
     void analyzesTextWithDynamicAnalyzerAndNeutralStaticPlaceholder() {
         AnalysisOrchestrator orchestrator = new AnalysisOrchestrator(
-            new DynamicAnalyzer(new StubMLClient()),
+            List.of(
+                new TextDynamicAnalyzer(new StubMLClient()),
+                new ImageDynamicAnalyzer(new StubMLClient()),
+                new VideoDynamicAnalyzer(new StubMLClient())
+            ),
+            List.of(
+                new TextStaticAnalyzer(),
+                new ImageStaticAnalyzer(),
+                new VideoStaticAnalyzer()
+            ),
             new TextOnlyScoreFusionStrategy()
         );
         ContentItem item = new ContentItem(
@@ -37,7 +52,16 @@ class AnalysisOrchestratorTest {
     @Test
     void keepsDynamicOnlyScoreForImages() {
         AnalysisOrchestrator orchestrator = new AnalysisOrchestrator(
-            new DynamicAnalyzer(new StubMLClient()),
+            List.of(
+                new TextDynamicAnalyzer(new StubMLClient()),
+                new ImageDynamicAnalyzer(new StubMLClient()),
+                new VideoDynamicAnalyzer(new StubMLClient())
+            ),
+            List.of(
+                new TextStaticAnalyzer(),
+                new ImageStaticAnalyzer(),
+                new VideoStaticAnalyzer()
+            ),
             new TextOnlyScoreFusionStrategy()
         );
         ContentItem item = new ContentItem(
