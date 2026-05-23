@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.HistoryItemResponse;
 import io.github.duckysmacky.cogniflex.enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.enums.InputType;
+import io.github.duckysmacky.cogniflex.analysis.InputType;
 import io.github.duckysmacky.cogniflex.services.HistoryService;
 
 @ExtendWith(SpringExtension.class)
@@ -67,7 +67,7 @@ public class HistoryControllerTest {
         imageItemResponse = new HistoryItemResponse(
                 imageItemId,
                 InputType.MEDIA,
-                io.github.duckysmacky.cogniflex.enums.MediaType.IMAGE,
+                io.github.duckysmacky.cogniflex.analysis.MediaType.IMAGE,
                 DetectionKind.AI_GENERATED,
                 0.75,
                 Instant.now());

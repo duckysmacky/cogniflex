@@ -2,8 +2,8 @@ package io.github.duckysmacky.cogniflex.entities;
 
 import io.github.duckysmacky.cogniflex.converters.DetectionKindConverter;
 import io.github.duckysmacky.cogniflex.enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.enums.InputType;
-import io.github.duckysmacky.cogniflex.enums.MediaType;
+import io.github.duckysmacky.cogniflex.analysis.InputType;
+import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
