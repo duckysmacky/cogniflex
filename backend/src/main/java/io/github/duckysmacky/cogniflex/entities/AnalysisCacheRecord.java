@@ -18,8 +18,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "history_records")
-public class HistoryRecord {
+@Table(name = "analysis_cache_records")
+public class AnalysisCacheRecord {
 
     @Id
     private UUID id;
@@ -32,6 +32,12 @@ public class HistoryRecord {
     @Column(name = "media_type", length = 16)
     private MediaType mediaType;
 
+    @Column(name = "content_hash", nullable = false, length = 64)
+    private String contentHash;
+
+    @Column(name = "hash_algorithm", nullable = false, length = 32)
+    private String hashAlgorithm;
+
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "detection_kind")
@@ -43,70 +49,67 @@ public class HistoryRecord {
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    protected HistoryRecord() {
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    protected AnalysisCacheRecord() {
     }
 
-    public HistoryRecord(
+    public AnalysisCacheRecord(
             UUID id,
             InputType inputType,
             MediaType mediaType,
+            String contentHash,
+            String hashAlgorithm,
             DetectionKind kind,
             double accuracy,
-            Instant createdAt
+            Instant createdAt,
+            Instant updatedAt
     ) {
         this.id = id;
         this.inputType = inputType;
         this.mediaType = mediaType;
+        this.contentHash = contentHash;
+        this.hashAlgorithm = hashAlgorithm;
         this.kind = kind;
         this.accuracy = accuracy;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public InputType getInputType() {
         return inputType;
-    }
-
-    public void setInputType(InputType inputType) {
-        this.inputType = inputType;
     }
 
     public MediaType getMediaType() {
         return mediaType;
     }
 
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
+    public String getContentHash() {
+        return contentHash;
+    }
+
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
     }
 
     public DetectionKind getKind() {
         return kind;
     }
 
-    public void setKind(DetectionKind kind) {
-        this.kind = kind;
-    }
-
     public double getAccuracy() {
         return accuracy;
-    }
-
-    public void setAccuracy(double accuracy) {
-        this.accuracy = accuracy;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }
