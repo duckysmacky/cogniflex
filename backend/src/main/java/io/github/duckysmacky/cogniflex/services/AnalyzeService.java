@@ -1,12 +1,13 @@
 package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
-import io.github.duckysmacky.cogniflex.processing.media.ParsedMedia;
-import io.github.duckysmacky.cogniflex.clients.MLClient;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalysisResult;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.ml.MLClient;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.analysis.InputType;
+import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
+import io.github.duckysmacky.cogniflex.processing.media.ParsedMedia;
 import io.github.duckysmacky.cogniflex.processing.text.PreprocessedText;
 import io.github.duckysmacky.cogniflex.processing.text.TextPreprocessingOptions;
 import io.github.duckysmacky.cogniflex.processing.text.TextPreprocessor;
@@ -41,7 +42,8 @@ public class AnalyzeService {
 
         PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
 
-        AnalysisResultResponse response = mlClient.analyzeText(text.modelInput());
+        DynamicAnalysisResult dynamicResult = mlClient.analyzeText(text.modelInput());
+        AnalysisResultResponse response = toResponse(dynamicResult);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.TEXT,
@@ -59,10 +61,11 @@ public class AnalyzeService {
 
         ParsedMedia media = mediaParser.parse(file);
 
-        AnalysisResultResponse response = switch (media.mediaType()) {
+        DynamicAnalysisResult dynamicResult = switch (media.mediaType()) {
             case IMAGE -> mlClient.analyzeImage(media.bytes());
             case VIDEO -> mlClient.analyzeVideo(media.bytes());
         };
+        AnalysisResultResponse response = toResponse(dynamicResult);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.MEDIA,
@@ -73,6 +76,10 @@ public class AnalyzeService {
 
         logElapsed(media.mediaType().name().toLowerCase(), startedAt);
         return response;
+    }
+
+    private AnalysisResultResponse toResponse(DynamicAnalysisResult result) {
+        return new AnalysisResultResponse(result.verdict(), result.confidence());
     }
 
     private void logElapsed(String analysisType, long startedAt) {

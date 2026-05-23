@@ -146,7 +146,7 @@ public class TextPreprocessor {
                 if (codePoint != ' ') {
                     convertedWhitespace++;
                 }
-                if (!pendingHorizontalSpace && !builder.isEmpty()) {
+                if (!pendingHorizontalSpace && !builder.isEmpty() && builder.charAt(builder.length() - 1) != '\n') {
                     builder.append(' ');
                 } else if (pendingHorizontalSpace) {
                     collapsedRuns++;

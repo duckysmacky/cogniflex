@@ -1,9 +1,10 @@
-package io.github.duckysmacky.cogniflex.clients;
+package io.github.duckysmacky.cogniflex.analysis.dynamic.ml;
 
 import com.google.protobuf.ByteString;
-import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
-import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
+import io.github.duckysmacky.cogniflex.analysis.ContentType;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalysisResult;
+import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
 import io.github.duckysmacky.cogniflex.exceptions.ServiceUnavailableException;
 import io.github.duckysmacky.cogniflex.grpc.AnalyzeReply;
 import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
@@ -38,7 +39,7 @@ public class MLGrpcClient implements MLClient {
     }
 
     @Override
-    public AnalysisResultResponse analyzeText(String normalizedText) {
+    public DynamicAnalysisResult analyzeText(String normalizedText) {
         TextRequest request = TextRequest.newBuilder()
             .setText(normalizedText)
             .build();
@@ -59,11 +60,11 @@ public class MLGrpcClient implements MLClient {
             }
         );
 
-        return mapReply(reply);
+        return mapReply(ContentType.TEXT, reply);
     }
 
     @Override
-    public AnalysisResultResponse analyzeImage(byte[] imageContent) {
+    public DynamicAnalysisResult analyzeImage(byte[] imageContent) {
         PhotoRequest request = PhotoRequest.newBuilder()
             .setImageData(ByteString.copyFrom(imageContent))
             .build();
@@ -84,11 +85,11 @@ public class MLGrpcClient implements MLClient {
             }
         );
 
-        return mapReply(reply);
+        return mapReply(ContentType.IMAGE, reply);
     }
 
     @Override
-    public AnalysisResultResponse analyzeVideo(byte[] videoContent) {
+    public DynamicAnalysisResult analyzeVideo(byte[] videoContent) {
         VideoRequest request = VideoRequest.newBuilder()
             .setVideoData(ByteString.copyFrom(videoContent))
             .build();
@@ -109,7 +110,7 @@ public class MLGrpcClient implements MLClient {
             }
         );
 
-        return mapReply(reply);
+        return mapReply(ContentType.VIDEO, reply);
     }
 
     private MLAnalyzerGrpc.MLAnalyzerBlockingStub stubWithTimeout() {
@@ -128,28 +129,28 @@ public class MLGrpcClient implements MLClient {
         } catch (StatusRuntimeException ex) {
             long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000;
             log.error(
-                    "ML service call failed: {} in {} ms, status={}",
-                    operation,
-                    elapsedMs,
-                    ex.getStatus().getCode(),
-                    ex
+                "ML service call failed: {} in {} ms, backendHealth={}",
+                operation,
+                elapsedMs,
+                ex.getStatus().getCode(),
+                ex
             );
             throw mapGrpcException(operation, ex);
         }
     }
 
-    private AnalysisResultResponse mapReply(AnalyzeReply reply) {
+    private DynamicAnalysisResult mapReply(ContentType contentType, AnalyzeReply reply) {
         AnalysisVerdict verdict = mapClass(reply.getClass_());
         double confidence = reply.getConfidence();
 
         if (confidence < 0.0 || confidence > 1.0) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "ML service returned invalid confidence: " + confidence
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "ML service returned invalid confidence: " + confidence
             );
         }
 
-        return new AnalysisResultResponse(verdict, confidence);
+        return new DynamicAnalysisResult(contentType, verdict, confidence);
     }
 
     private AnalysisVerdict mapClass(String rawClass) {
@@ -159,8 +160,8 @@ public class MLGrpcClient implements MLClient {
             case "human", "real" -> AnalysisVerdict.HUMAN;
             case "ai", "ai_generated", "generated", "fake" -> AnalysisVerdict.AI;
             default -> throw new ResponseStatusException(
-                    HttpStatus.BAD_GATEWAY,
-                    "Unknown class returned by ML service: " + rawClass
+                HttpStatus.BAD_GATEWAY,
+                "Unknown class returned by ML service: " + rawClass
             );
         };
     }
@@ -170,32 +171,32 @@ public class MLGrpcClient implements MLClient {
 
         if (code == Status.Code.DEADLINE_EXCEEDED) {
             return new ResponseStatusException(
-                    HttpStatus.GATEWAY_TIMEOUT,
-                    "ML service timeout during " + operation,
-                    ex
+                HttpStatus.GATEWAY_TIMEOUT,
+                "ML service timeout during " + operation,
+                ex
             );
         }
 
         if (code == Status.Code.UNAVAILABLE) {
             return new ResponseStatusException(
-                    HttpStatus.SERVICE_UNAVAILABLE,
-                    "ML service is unavailable during " + operation,
-                    ex
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "ML service is unavailable during " + operation,
+                ex
             );
         }
 
         if (code == Status.Code.INVALID_ARGUMENT) {
             return new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "ML service rejected request during " + operation,
-                    ex
+                HttpStatus.BAD_REQUEST,
+                "ML service rejected request during " + operation,
+                ex
             );
         }
 
         return new ResponseStatusException(
-                HttpStatus.BAD_GATEWAY,
-                "ML service call failed during " + operation,
-                ex
+            HttpStatus.BAD_GATEWAY,
+            "ML service call failed during " + operation,
+            ex
         );
     }
 }
