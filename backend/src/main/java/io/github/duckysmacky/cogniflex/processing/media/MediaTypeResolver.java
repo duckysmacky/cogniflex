@@ -1,14 +1,13 @@
-package io.github.duckysmacky.cogniflex.services;
+package io.github.duckysmacky.cogniflex.processing.media;
 
-import io.github.duckysmacky.cogniflex.enums.MediaType;
+import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-@Service
+@Component
 public class MediaTypeResolver {
-
     public MediaType resolve(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File is empty");
@@ -29,8 +28,8 @@ public class MediaTypeResolver {
         }
 
         throw new ResponseStatusException(
-                HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-                "Only image and video files are supported"
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+            "Only image and video files are supported"
         );
     }
 }
