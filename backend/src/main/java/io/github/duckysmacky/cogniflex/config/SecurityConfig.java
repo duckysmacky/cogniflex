@@ -41,7 +41,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/error").permitAll()
-                .requestMatchers("/api/backendHealth").permitAll()
+                .requestMatchers("/api/status").permitAll()
                 .requestMatchers("/api/analyze/**").permitAll()
                 .requestMatchers("/api/metrics").permitAll()
                 .requestMatchers(
