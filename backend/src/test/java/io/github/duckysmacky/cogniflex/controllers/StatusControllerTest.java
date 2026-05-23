@@ -36,7 +36,7 @@ public class StatusControllerTest {
         given(service.getStatus())
             .willReturn(new StatusResponse("UP", "UP", "AVAILABLE", "AVAILABLE", "AVAILABLE"));
 
-        mockMvc.perform(get("/api/backendHealth")
+        mockMvc.perform(get("/api/status")
             .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.backendHealth").value("UP"))
