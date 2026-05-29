@@ -9,10 +9,15 @@ import java.util.List;
 
 public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analyzer<StaticAnalysisResult> {
     private static final Logger log = LoggerFactory.getLogger(StaticAnalyzer.class);
+    private final AnalysisContextBuilder<C> contextBuilder;
+
+    protected StaticAnalyzer(AnalysisContextBuilder<C> contextBuilder) {
+        this.contextBuilder = contextBuilder;
+    }
 
     @Override
     public final StaticAnalysisResult analyze(ContentItem item) {
-        C context = buildContext(item);
+        C context = contextBuilder.build(item);
 
         List<Evidence> evidence = rules().stream()
             .map(rule -> {
@@ -27,6 +32,5 @@ public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analy
         return StaticAnalysisResult.build(item, evidence);
     }
 
-    protected abstract C buildContext(ContentItem item);
     protected abstract List<AnalysisRule<C>> rules();
 }

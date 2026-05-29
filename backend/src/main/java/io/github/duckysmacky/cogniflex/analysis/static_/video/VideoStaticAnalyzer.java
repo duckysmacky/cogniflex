@@ -1,6 +1,5 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.video;
 
-import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalyzer;
@@ -12,13 +11,12 @@ import java.util.List;
 public class VideoStaticAnalyzer extends StaticAnalyzer<VideoAnalysisContext> {
     private final List<AnalysisRule<VideoAnalysisContext>> rules;
 
-    public VideoStaticAnalyzer(List<AnalysisRule<VideoAnalysisContext>> rules) {
+    public VideoStaticAnalyzer(
+        VideoAnalysisContextBuilder contextBuilder,
+        List<AnalysisRule<VideoAnalysisContext>> rules
+    ) {
+        super(contextBuilder);
         this.rules = rules;
-    }
-
-    @Override
-    protected VideoAnalysisContext buildContext(ContentItem item) {
-        return new VideoAnalysisContext(item);
     }
 
     @Override

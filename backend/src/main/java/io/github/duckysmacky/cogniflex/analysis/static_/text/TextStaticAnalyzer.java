@@ -1,6 +1,5 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text;
 
-import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalyzer;
@@ -12,14 +11,12 @@ import java.util.List;
 public class TextStaticAnalyzer extends StaticAnalyzer<TextAnalysisContext> {
     private final List<AnalysisRule<TextAnalysisContext>> rules;
 
-    public TextStaticAnalyzer(List<AnalysisRule<TextAnalysisContext>> rules) {
+    public TextStaticAnalyzer(
+        TextAnalysisContextBuilder contextBuilder,
+        List<AnalysisRule<TextAnalysisContext>> rules
+    ) {
+        super(contextBuilder);
         this.rules = rules;
-    }
-
-    @Override
-    protected TextAnalysisContext buildContext(ContentItem item) {
-        // TODO
-        return new TextAnalysisContext(item);
     }
 
     @Override
