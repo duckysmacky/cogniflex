@@ -4,6 +4,7 @@ import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalysisResult;
 import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalyzer;
 import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.analysis.score.ScoreFusionStrategy;
+import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalysisResult;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalyzer;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,12 @@ import java.util.concurrent.CompletionException;
 @Service
 public class AnalysisOrchestrator {
     private final List<DynamicAnalyzer> dynamicAnalyzers;
-    private final List<StaticAnalyzer> staticAnalyzers;
+    private final List<StaticAnalyzer<AnalysisContext>> staticAnalyzers;
     private final ScoreFusionStrategy scoreFusionStrategy;
 
     public AnalysisOrchestrator(
         List<DynamicAnalyzer> dynamicAnalyzers,
-        List<StaticAnalyzer> staticAnalyzers,
+        List<StaticAnalyzer<AnalysisContext>> staticAnalyzers,
         ScoreFusionStrategy scoreFusionStrategy
     ) {
         this.dynamicAnalyzers = List.copyOf(dynamicAnalyzers);
@@ -34,7 +35,7 @@ public class AnalysisOrchestrator {
         }
 
         DynamicAnalyzer dynamicAnalyzer = selectDynamicAnalyzer(item.contentType());
-        StaticAnalyzer staticAnalyzer = selectStaticAnalyzer(item.contentType());
+        StaticAnalyzer<AnalysisContext> staticAnalyzer = selectStaticAnalyzer(item.contentType());
 
         CompletableFuture<DynamicAnalysisResult> dynamicFuture = CompletableFuture.supplyAsync(
             () -> dynamicAnalyzer.analyze(item)
@@ -60,7 +61,7 @@ public class AnalysisOrchestrator {
             .orElseThrow(() -> new IllegalStateException("No dynamic analyzer for content type: " + contentType));
     }
 
-    private StaticAnalyzer selectStaticAnalyzer(ContentType contentType) {
+    private StaticAnalyzer<AnalysisContext> selectStaticAnalyzer(ContentType contentType) {
         return staticAnalyzers.stream()
             .filter(analyzer -> analyzer.supports(contentType))
             .findFirst()

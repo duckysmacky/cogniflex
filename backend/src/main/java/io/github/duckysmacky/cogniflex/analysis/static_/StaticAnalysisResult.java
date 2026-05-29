@@ -27,6 +27,7 @@ public record StaticAnalysisResult(
     }
 
     public static StaticAnalysisResult build(ContentItem item, List<Evidence> evidence) {
+        // TODO
         return new StaticAnalysisResult(item.contentType(), NEUTRAL_AI_PROBABILITY, evidence);
     }
 }
