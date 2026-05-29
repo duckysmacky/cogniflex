@@ -13,10 +13,10 @@ public class TextStaticAnalyzer extends StaticAnalyzer<TextAnalysisContext> {
 
     public TextStaticAnalyzer(
         TextAnalysisContextBuilder contextBuilder,
-        List<AnalysisRule<TextAnalysisContext>> rules
+        List<TextAnalysisRule> rules
     ) {
         super(contextBuilder);
-        this.rules = rules;
+        this.rules = List.copyOf(rules);
     }
 
     @Override

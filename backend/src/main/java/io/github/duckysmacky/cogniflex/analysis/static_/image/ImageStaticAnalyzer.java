@@ -13,10 +13,10 @@ public class ImageStaticAnalyzer extends StaticAnalyzer<ImageAnalysisContext> {
 
     public ImageStaticAnalyzer(
         ImageAnalysisContextBuilder contextBuilder,
-        List<AnalysisRule<ImageAnalysisContext>> rules
+        List<ImageAnalysisRule> rules
     ) {
         super(contextBuilder);
-        this.rules = rules;
+        this.rules = List.copyOf(rules);
     }
 
     @Override

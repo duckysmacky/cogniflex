@@ -13,10 +13,10 @@ public class VideoStaticAnalyzer extends StaticAnalyzer<VideoAnalysisContext> {
 
     public VideoStaticAnalyzer(
         VideoAnalysisContextBuilder contextBuilder,
-        List<AnalysisRule<VideoAnalysisContext>> rules
+        List<VideoAnalysisRule> rules
     ) {
         super(contextBuilder);
-        this.rules = rules;
+        this.rules = List.copyOf(rules);
     }
 
     @Override
