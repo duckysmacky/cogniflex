@@ -19,17 +19,14 @@ public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analy
     public final StaticAnalysisResult analyze(ContentItem item) {
         C context = contextBuilder.build(item);
 
-        List<Evidence> evidence = rules().stream()
+        List<RuleResult> results = rules().stream()
             .map(rule -> {
                 log.debug("Running {} analysis rule", rule.code());
-
                 return rule.evaluate(context);
             })
-            .flatMap(result -> result.evidence().stream())
             .toList();
 
-        // TODO
-        return StaticAnalysisResult.build(item, evidence);
+        return StaticAnalysisResult.build(item, results);
     }
 
     protected abstract List<AnalysisRule<C>> rules();

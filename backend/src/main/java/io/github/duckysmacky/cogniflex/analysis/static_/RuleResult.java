@@ -12,7 +12,7 @@ public record RuleResult(
         return new RuleResult(true, ruleCode, weight, evidence);
     }
 
-    public static RuleResult noMatch(String ruleCode) {
-        return new RuleResult(false, ruleCode, 0, List.of());
+    public static RuleResult noMatch(String ruleCode, double weight) {
+        return new RuleResult(false, ruleCode, weight, List.of());
     }
 }

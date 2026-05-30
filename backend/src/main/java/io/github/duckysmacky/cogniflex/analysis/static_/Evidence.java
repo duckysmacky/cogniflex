@@ -12,10 +12,20 @@ public record Evidence(
     }
 
     public enum Severity {
-        LOW,
-        MEDIUM,
-        HIGH,
-        CRITICAL
+        LOW(0.25),
+        MEDIUM(0.5),
+        HIGH(0.75),
+        CRITICAL(1.0);
+
+        private final double multiplier;
+
+        Severity(double multiplier) {
+            this.multiplier = multiplier;
+        }
+
+        public double multiplier() {
+            return multiplier;
+        }
     }
 
     public static class Builder {
