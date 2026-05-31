@@ -12,7 +12,7 @@ class TextOnlyScoreFusionStrategyTest {
     private final TextOnlyScoreFusionStrategy strategy = new TextOnlyScoreFusionStrategy();
 
     @Test
-    void textUsesEqualStaticAndDynamicWeights() {
+    void textUsesStaticFocusedWeights() {
         StaticAnalysisResult staticResult = new StaticAnalysisResult(ContentType.TEXT, 0.8, null, null);
         DynamicAnalysisResult dynamicResult = new DynamicAnalysisResult(ContentType.TEXT, AnalysisVerdict.AI, 0.6);
 
@@ -20,9 +20,9 @@ class TextOnlyScoreFusionStrategyTest {
 
         assertEquals(ContentType.TEXT, score.contentType());
         assertEquals(AnalysisVerdict.AI, score.verdict());
-        assertEquals(0.7, score.aiProbability(), 0.0001);
-        assertEquals(0.5, score.staticWeight(), 0.0001);
-        assertEquals(0.5, score.dynamicWeight(), 0.0001);
+        assertEquals(0.75, score.aiProbability(), 0.0001);
+        assertEquals(0.75, score.staticWeight(), 0.0001);
+        assertEquals(0.25, score.dynamicWeight(), 0.0001);
     }
 
     @Test

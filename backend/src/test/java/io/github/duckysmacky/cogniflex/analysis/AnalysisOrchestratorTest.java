@@ -31,9 +31,9 @@ class AnalysisOrchestratorTest {
         AnalysisResultSummary result = orchestrator.submit(textItem(Locale.ENGLISH));
 
         assertEquals(1, dynamicAnalyzer.calls);
-        assertEquals(0.65, result.score().aiProbability(), 0.0001);
-        assertEquals(0.5, result.score().staticWeight(), 0.0001);
-        assertEquals(0.5, result.score().dynamicWeight(), 0.0001);
+        assertEquals(0.575, result.score().aiProbability(), 0.0001);
+        assertEquals(0.75, result.score().staticWeight(), 0.0001);
+        assertEquals(0.25, result.score().dynamicWeight(), 0.0001);
         assertEquals(List.of(), result.evidence());
     }
 

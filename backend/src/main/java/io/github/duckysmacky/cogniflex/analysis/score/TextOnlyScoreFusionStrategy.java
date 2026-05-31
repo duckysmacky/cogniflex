@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TextOnlyScoreFusionStrategy extends ScoreFusionStrategy {
-    private static final double TEXT_STATIC_WEIGHT = 0.5;
-    private static final double TEXT_DYNAMIC_WEIGHT = 0.5;
+    private static final double TEXT_STATIC_WEIGHT = 0.75;
+    private static final double TEXT_DYNAMIC_WEIGHT = 0.25;
     private static final double DYNAMIC_ONLY_WEIGHT = 1.0;
     private static final double DISABLED_WEIGHT = 0.0;
 
