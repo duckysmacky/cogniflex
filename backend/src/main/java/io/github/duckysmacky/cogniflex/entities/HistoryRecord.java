@@ -12,8 +12,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.ColumnTransformer;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -35,7 +33,6 @@ public class HistoryRecord {
 
     @Convert(converter = AnalysisVerdictConverter.class)
     @ColumnTransformer(write = "?::analysis_verdict")
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "verdict", nullable = false, columnDefinition = "analysis_verdict")
     private AnalysisVerdict verdict;
 
