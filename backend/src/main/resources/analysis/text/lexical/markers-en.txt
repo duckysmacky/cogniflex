@@ -1,0 +1,71 @@
+# T10 - AI lexical markers (English), single word tokens only.
+# Format: word=weight. Tier-1 (3.0) = meme-grade tells, tier-2 (2.0) = strong, tier-3 (1.0) = common.
+# Multi-word / hyphenated markers (e.g. "ever-evolving", "treasure trove") live in the phrasing list.
+
+# Tier 1 - canonical chat-model tells
+delve=3.0
+delves=3.0
+delved=3.0
+delving=3.0
+tapestry=3.0
+tapestries=3.0
+multifaceted=3.0
+beacon=3.0
+realm=3.0
+realms=3.0
+testament=3.0
+bustling=3.0
+
+# Tier 2 - strong markers
+leverage=2.0
+leverages=2.0
+leveraged=2.0
+leveraging=2.0
+foster=2.0
+fosters=2.0
+fostered=2.0
+fostering=2.0
+harness=2.0
+harnessing=2.0
+navigating=2.0
+elevate=2.0
+elevates=2.0
+elevating=2.0
+embark=2.0
+unlock=2.0
+unlocking=2.0
+showcase=2.0
+showcases=2.0
+showcasing=2.0
+seamless=2.0
+seamlessly=2.0
+vibrant=2.0
+plethora=2.0
+myriad=2.0
+cornerstone=2.0
+holistic=2.0
+synergy=2.0
+streamline=2.0
+transformative=2.0
+empower=2.0
+empowers=2.0
+empowering=2.0
+unparalleled=2.0
+meticulous=2.0
+meticulously=2.0
+intricate=2.0
+intricacies=2.0
+pivotal=2.0
+nuanced=2.0
+
+# Tier 3 - common (weak on their own)
+crucial=1.0
+underscore=1.0
+underscores=1.0
+underscored=1.0
+comprehensive=1.0
+robust=1.0
+facilitate=1.0
+paramount=1.0
+landscape=1.0
+boasts=1.0
