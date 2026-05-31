@@ -39,6 +39,7 @@ class TextStaticAnalyzerConfigTest {
         TextStaticAnalyzer analyzer = new TextStaticAnalyzer(
             contextBuilder,
             scoreCalculator,
+            Runnable::run,
             List.of(rule)
         );
 
@@ -57,6 +58,7 @@ class TextStaticAnalyzerConfigTest {
         TextStaticAnalyzer analyzer = new TextStaticAnalyzer(
             contextBuilder,
             scoreCalculator,
+            Runnable::run,
             List.of(rule)
         );
 

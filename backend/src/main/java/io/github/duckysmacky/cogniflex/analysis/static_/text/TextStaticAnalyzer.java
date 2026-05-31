@@ -4,9 +4,11 @@ import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticScoreCalculator;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalyzer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 @Component
 public class TextStaticAnalyzer extends StaticAnalyzer<TextAnalysisContext> {
@@ -15,9 +17,11 @@ public class TextStaticAnalyzer extends StaticAnalyzer<TextAnalysisContext> {
     public TextStaticAnalyzer(
         TextAnalysisContextBuilder contextBuilder,
         StaticScoreCalculator scoreCalculator,
+        @Qualifier("staticAnalysisExecutor")
+        Executor staticAnalysisExecutor,
         List<TextAnalysisRule> rules
     ) {
-        super(contextBuilder, scoreCalculator);
+        super(contextBuilder, scoreCalculator, staticAnalysisExecutor);
         this.rules = List.copyOf(rules);
     }
 
