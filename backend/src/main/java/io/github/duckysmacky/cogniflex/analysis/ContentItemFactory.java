@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.processing.text.PreprocessedText;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Component
@@ -15,6 +16,7 @@ public class ContentItemFactory {
     public static final String SIZE_ATTRIBUTE = "size";
     public static final String EXTENSION_ATTRIBUTE = "extension";
     public static final String HIDDEN_CHARACTERS_ATTRIBUTE = "hiddenCharacters";
+    public static final String LOCALE_ATTRIBUTE = "locale";
 
     public ContentItem fromText(PreprocessedText text) {
         if (text == null) {
@@ -25,6 +27,7 @@ public class ContentItemFactory {
         attributes.put(TEXT_ATTRIBUTE, text.modelInput());
         attributes.put(NORMALIZED_TEXT_ATTRIBUTE, text.normalizedText());
         attributes.put(HIDDEN_CHARACTERS_ATTRIBUTE, Integer.toString(text.stats().hiddenCharacters()));
+        attributes.put(LOCALE_ATTRIBUTE, languageTag(text.locale()));
 
         return new ContentItem(
             ContentType.TEXT,
@@ -58,5 +61,10 @@ public class ContentItemFactory {
         if (value != null && !value.isBlank()) {
             attributes.put(key, value);
         }
+    }
+
+    private String languageTag(Locale locale) {
+        Locale effectiveLocale = locale == null ? Locale.ROOT : locale;
+        return effectiveLocale.toLanguageTag();
     }
 }

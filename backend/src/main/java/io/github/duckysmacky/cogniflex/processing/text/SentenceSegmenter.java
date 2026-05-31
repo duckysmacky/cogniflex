@@ -20,7 +20,7 @@ public class SentenceSegmenter {
             return List.of();
         }
 
-        BreakIterator iterator = BreakIterator.getSentenceInstance(locale == null ? Locale.ENGLISH : locale);
+        BreakIterator iterator = BreakIterator.getSentenceInstance(locale == null ? Locale.ROOT : locale);
         iterator.setText(text);
 
         List<String> sentences = new ArrayList<>();

@@ -46,6 +46,7 @@ dependencies {
 	implementation 'com.bucket4j:bucket4j_jdk17-core:8.16.1'
 
 	implementation 'com.ibm.icu:icu4j:77.1'
+	implementation 'com.github.pemistahl:lingua:1.2.2'
 	implementation 'org.ahocorasick:ahocorasick:0.6.3'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
 

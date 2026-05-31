@@ -18,8 +18,6 @@ import java.util.Locale;
 
 @Component
 public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAnalysisContext> {
-    private static final Locale DEFAULT_LANGUAGE = Locale.ENGLISH;
-
     private final HiddenCharacterScanner hiddenCharacterScanner;
     private final SentenceSegmenter sentenceSegmenter;
     private final WordTokenizer wordTokenizer;
@@ -47,7 +45,7 @@ public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAn
         }
 
         String text = analysisText(item);
-        Locale language = DEFAULT_LANGUAGE;
+        Locale language = analysisLocale(item);
 
         String matchText = matchTextNormalizer.normalize(text);
         TextLayout layout = paragraphSplitter.split(text);
@@ -73,6 +71,16 @@ public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAn
             sentences.size(),
             sentenceWordCounts
         );
+    }
+
+    private Locale analysisLocale(ContentItem item) {
+        String tag = item.attributes().get(ContentItemFactory.LOCALE_ATTRIBUTE);
+        if (tag == null || tag.isBlank() || tag.equalsIgnoreCase("und")) {
+            return Locale.ROOT;
+        }
+
+        Locale locale = Locale.forLanguageTag(tag);
+        return locale.getLanguage().isBlank() ? Locale.ROOT : locale;
     }
 
     private String analysisText(ContentItem item) {

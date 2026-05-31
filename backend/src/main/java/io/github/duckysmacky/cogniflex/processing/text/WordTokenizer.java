@@ -21,7 +21,7 @@ public class WordTokenizer {
             return List.of();
         }
 
-        BreakIterator iterator = BreakIterator.getWordInstance(locale == null ? Locale.ENGLISH : locale);
+        BreakIterator iterator = BreakIterator.getWordInstance(locale == null ? Locale.ROOT : locale);
         iterator.setText(text);
 
         List<String> words = new ArrayList<>();

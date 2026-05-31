@@ -4,13 +4,19 @@ import io.github.duckysmacky.cogniflex.exceptions.TextPreprocessingException;
 import io.github.duckysmacky.cogniflex.processing.text.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TextPreprocessorTest {
-    private final TextPreprocessor preprocessor = new TextPreprocessor(new ModelInputPreparer(), new HiddenCharacterScanner());
+    private final TextPreprocessor preprocessor = new TextPreprocessor(
+        new ModelInputPreparer(),
+        new HiddenCharacterScanner(),
+        text -> DetectedTextLocale.english()
+    );
 
     @Test
     void preprocessNormalizesUnicodeLineEndingsAndWhitespace() {
@@ -18,6 +24,7 @@ class TextPreprocessorTest {
 
         assertEquals("café\nfoo bar\nbaz", result.normalizedText());
         assertEquals(result.normalizedText(), result.modelInput());
+        assertEquals(Locale.ENGLISH, result.locale());
         assertTrue(result.stats().unicodeNormalizationChangedText());
         assertEquals(2, result.stats().lineEndingNormalizations());
         assertTrue(result.stats().convertedWhitespaceCharacters() >= 2);

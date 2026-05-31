@@ -10,13 +10,16 @@ import java.util.List;
 public class TextPreprocessor {
     private final ModelInputPreparer modelInputPreparer;
     private final HiddenCharacterScanner hiddenCharacterScanner;
+    private final TextLocaleDetector textLocaleDetector;
 
     public TextPreprocessor(
         ModelInputPreparer modelInputPreparer,
-        HiddenCharacterScanner hiddenCharacterScanner
+        HiddenCharacterScanner hiddenCharacterScanner,
+        TextLocaleDetector textLocaleDetector
     ) {
         this.modelInputPreparer = modelInputPreparer;
         this.hiddenCharacterScanner = hiddenCharacterScanner;
+        this.textLocaleDetector = textLocaleDetector;
     }
 
     public PreprocessedText preprocess(String text) {
@@ -46,6 +49,7 @@ public class TextPreprocessor {
         }
 
         ModelInput modelInput = modelInputPreparer.prepare(normalizedText, effectiveOptions);
+        DetectedTextLocale detectedLocale = textLocaleDetector.detect(normalizedText);
         NormalizationStats stats = NormalizationStats.from(
             text,
             normalizedText,
@@ -60,7 +64,8 @@ public class TextPreprocessor {
             normalizedText,
             modelInput.text(),
             hiddenCharacters,
-            stats
+            stats,
+            detectedLocale.locale()
         );
     }
 
