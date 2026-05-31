@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.RuleResult;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
@@ -33,8 +34,9 @@ class StructureRulesTest {
         new MatchTextNormalizer()
     );
 
-    private final MarkdownStructureRule markdown = new MarkdownStructureRule();
-    private final EmojiDecorationRule emoji = new EmojiDecorationRule();
+    private final StaticAnalysisConfig config = new StaticAnalysisConfig();
+    private final MarkdownStructureRule markdown = new MarkdownStructureRule(config);
+    private final EmojiDecorationRule emoji = new EmojiDecorationRule(config);
 
     @Test
     void boldLeadInListItemsAreMedium() {

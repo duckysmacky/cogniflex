@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.RuleResult;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
@@ -29,8 +30,9 @@ class TypographyRulesTest {
         new MatchTextNormalizer()
     );
 
-    private final EmDashDensityRule emDash = new EmDashDensityRule();
-    private final SmartTypographyConsistencyRule typography = new SmartTypographyConsistencyRule();
+    private final StaticAnalysisConfig config = new StaticAnalysisConfig();
+    private final EmDashDensityRule emDash = new EmDashDensityRule(config);
+    private final SmartTypographyConsistencyRule typography = new SmartTypographyConsistencyRule(config);
 
     @Test
     void denseUnspacedEmDashesAreHigh() {

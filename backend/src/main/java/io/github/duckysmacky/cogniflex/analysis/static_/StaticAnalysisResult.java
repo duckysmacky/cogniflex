@@ -29,8 +29,12 @@ public record StaticAnalysisResult(
         return new StaticAnalysisResult(contentType, StaticScoreCalculator.NEUTRAL_AI_PROBABILITY, null, null);
     }
 
-    public static StaticAnalysisResult build(ContentItem item, List<RuleResult> ruleResults) {
-        double aiProbability = StaticScoreCalculator.calculate(ruleResults);
+    public static StaticAnalysisResult build(
+        ContentItem item,
+        List<RuleResult> ruleResults,
+        StaticScoreCalculator scoreCalculator
+    ) {
+        double aiProbability = scoreCalculator.calculate(ruleResults);
 
         List<Evidence> evidence = ruleResults.stream()
             .filter(RuleResult::matched)

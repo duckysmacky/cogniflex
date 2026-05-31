@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,8 @@ public class RepetitiveOpenerRule extends TextAnalysisRule {
     private static final double DOMINANT_RATIO = 0.4;
     private static final double LOW_VARIETY_RATIO = 0.5;
 
-    public RepetitiveOpenerRule() {
-        super("T17_REPETITIVE_OPENERS", Category.STYLOMETRY, 10.0);
+    public RepetitiveOpenerRule(StaticAnalysisConfig config) {
+        super("T17_REPETITIVE_OPENERS", Category.STYLOMETRY, config);
     }
 
     @Override

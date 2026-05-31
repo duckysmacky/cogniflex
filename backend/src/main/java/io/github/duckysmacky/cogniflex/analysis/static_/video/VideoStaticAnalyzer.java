@@ -2,6 +2,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.video;
 
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisRule;
+import io.github.duckysmacky.cogniflex.analysis.static_.StaticScoreCalculator;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalyzer;
 import org.springframework.stereotype.Component;
 
@@ -13,9 +14,10 @@ public class VideoStaticAnalyzer extends StaticAnalyzer<VideoAnalysisContext> {
 
     public VideoStaticAnalyzer(
         VideoAnalysisContextBuilder contextBuilder,
+        StaticScoreCalculator scoreCalculator,
         List<VideoAnalysisRule> rules
     ) {
-        super(contextBuilder);
+        super(contextBuilder, scoreCalculator);
         this.rules = List.copyOf(rules);
     }
 

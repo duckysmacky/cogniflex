@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -30,8 +31,8 @@ public class EmDashDensityRule extends TextAnalysisRule {
     private static final double HIGH_DENSITY = 0.15;
     private static final double MEDIUM_DENSITY = 0.05;
 
-    public EmDashDensityRule() {
-        super("T8_EM_DASH_DENSITY", Category.TYPOGRAPHY, 10.0);
+    public EmDashDensityRule(StaticAnalysisConfig config) {
+        super("T8_EM_DASH_DENSITY", Category.TYPOGRAPHY, config);
     }
 
     @Override

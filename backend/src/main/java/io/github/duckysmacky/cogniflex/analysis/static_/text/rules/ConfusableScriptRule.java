@@ -2,6 +2,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import com.ibm.icu.lang.UScript;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,8 @@ import java.util.Set;
 public class ConfusableScriptRule extends TextAnalysisRule {
     private static final int MEDIUM_THRESHOLD = 2;
 
-    public ConfusableScriptRule() {
-        super("T7_CONFUSABLE_SCRIPT", Category.HIDDEN_CHARACTERS, 6.0);
+    public ConfusableScriptRule(StaticAnalysisConfig config) {
+        super("T7_CONFUSABLE_SCRIPT", Category.HIDDEN_CHARACTERS, config);
     }
 
     @Override

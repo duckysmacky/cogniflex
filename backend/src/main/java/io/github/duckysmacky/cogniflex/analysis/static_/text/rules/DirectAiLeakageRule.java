@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.rules.util.LiteralPhraseMatcher;
@@ -35,8 +36,8 @@ public class DirectAiLeakageRule extends TextAnalysisRule {
 
     private final LiteralPhraseMatcher matcher;
 
-    public DirectAiLeakageRule() {
-        super("T1_DIRECT_AI_LEAKAGE", Category.LEAKAGE, 60.0);
+    public DirectAiLeakageRule(StaticAnalysisConfig config) {
+        super("T1_DIRECT_AI_LEAKAGE", Category.LEAKAGE, config);
         this.matcher = new LiteralPhraseMatcher(PhraseResources.load("leakage/direct-ai.txt"));
     }
 

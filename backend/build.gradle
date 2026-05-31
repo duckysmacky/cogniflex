@@ -47,6 +47,7 @@ dependencies {
 
 	implementation 'com.ibm.icu:icu4j:77.1'
 	implementation 'org.ahocorasick:ahocorasick:0.6.3'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'

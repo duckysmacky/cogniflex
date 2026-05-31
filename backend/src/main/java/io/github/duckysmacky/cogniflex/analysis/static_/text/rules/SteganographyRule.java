@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacter;
@@ -31,8 +32,8 @@ public class SteganographyRule extends TextAnalysisRule {
     private static final int MAX_PAYLOAD_PREVIEW = 80;
     private static final int MIN_SELECTOR_RUN = 2;
 
-    public SteganographyRule() {
-        super("T6_STEGANOGRAPHY", Category.HIDDEN_CHARACTERS, 50.0);
+    public SteganographyRule(StaticAnalysisConfig config) {
+        super("T6_STEGANOGRAPHY", Category.HIDDEN_CHARACTERS, config);
     }
 
     @Override

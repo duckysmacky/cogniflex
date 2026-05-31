@@ -3,6 +3,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacter;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +44,8 @@ public class ZeroWidthCharacterRule extends TextAnalysisRule {
     private static final int MIN_PERIODIC_SAMPLES = 5;
     private static final double PERIODIC_DOMINANCE = 0.7;
 
-    public ZeroWidthCharacterRule() {
-        super("T5_ZERO_WIDTH_CHARACTERS", Category.HIDDEN_CHARACTERS, 30.0);
+    public ZeroWidthCharacterRule(StaticAnalysisConfig config) {
+        super("T5_ZERO_WIDTH_CHARACTERS", Category.HIDDEN_CHARACTERS, config);
     }
 
     @Override

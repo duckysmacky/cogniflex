@@ -3,6 +3,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 import com.ibm.icu.lang.UCharacter;
 import com.ibm.icu.lang.UProperty;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -24,8 +25,8 @@ public class EmojiDecorationRule extends TextAnalysisRule {
 
     private static final int MEDIUM_THRESHOLD = 2;
 
-    public EmojiDecorationRule() {
-        super("T14_EMOJI_DECORATION", Category.STRUCTURE, 6.0);
+    public EmojiDecorationRule(StaticAnalysisConfig config) {
+        super("T14_EMOJI_DECORATION", Category.STRUCTURE, config);
     }
 
     @Override

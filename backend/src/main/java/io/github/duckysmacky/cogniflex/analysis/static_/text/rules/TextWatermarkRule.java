@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,8 @@ import java.util.List;
  */
 @Component
 public class TextWatermarkRule extends TextAnalysisRule {
-    public TextWatermarkRule() {
-        super("T20_TEXT_WATERMARK", Category.WATERMARK, 0.0);
+    public TextWatermarkRule(StaticAnalysisConfig config) {
+        super("T20_TEXT_WATERMARK", Category.WATERMARK, config);
     }
 
     @Override

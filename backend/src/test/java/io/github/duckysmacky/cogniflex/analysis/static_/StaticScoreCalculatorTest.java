@@ -1,5 +1,6 @@
 package io.github.duckysmacky.cogniflex.analysis.static_;
 
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticScoringConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -8,15 +9,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StaticScoreCalculatorTest {
+    private final StaticScoreCalculator calculator = new StaticScoreCalculator(
+        new StaticScoringConfig(0.06, 3, 0.15, 2.0)
+    );
+
     @Test
     void emptyResultsAreNeutral() {
-        assertEquals(StaticScoreCalculator.NEUTRAL_AI_PROBABILITY,
-            StaticScoreCalculator.calculate(List.of()));
+        assertEquals(StaticScoreCalculator.NEUTRAL_AI_PROBABILITY, calculator.calculate(List.of()));
     }
 
     @Test
     void noMatchesScoreZero() {
-        double score = StaticScoreCalculator.calculate(List.of(
+        double score = calculator.calculate(List.of(
             RuleResult.noMatch("a", 10.0),
             RuleResult.noMatch("b", 20.0)
         ));
@@ -26,7 +30,7 @@ class StaticScoreCalculatorTest {
 
     @Test
     void singleCriticalSignalDominates() {
-        double score = StaticScoreCalculator.calculate(List.of(
+        double score = calculator.calculate(List.of(
             matched("T1", 60.0, Evidence.Severity.CRITICAL, 1.0)
         ));
 
@@ -35,7 +39,7 @@ class StaticScoreCalculatorTest {
 
     @Test
     void singleWeakSignalStaysLow() {
-        double score = StaticScoreCalculator.calculate(List.of(
+        double score = calculator.calculate(List.of(
             matched("T8", 10.0, Evidence.Severity.MEDIUM, 0.5)
         ));
 
@@ -46,12 +50,12 @@ class StaticScoreCalculatorTest {
     void threeDistinctMediumSignalsGetTheBonus() {
         // Both scenarios share the same raw score (and therefore the same base), so any
         // difference is purely the combination bonus.
-        double withBonus = StaticScoreCalculator.calculate(List.of(
+        double withBonus = calculator.calculate(List.of(
             matched("a", 10.0, Evidence.Severity.MEDIUM, 0.5),
             matched("b", 10.0, Evidence.Severity.MEDIUM, 0.5),
             matched("c", 10.0, Evidence.Severity.MEDIUM, 0.5)
         ));
-        double withoutBonus = StaticScoreCalculator.calculate(List.of(
+        double withoutBonus = calculator.calculate(List.of(
             matched("single", 30.0, Evidence.Severity.MEDIUM, 0.5)
         ));
 
@@ -61,11 +65,11 @@ class StaticScoreCalculatorTest {
 
     @Test
     void twoDistinctSignalsGetNoBonus() {
-        double two = StaticScoreCalculator.calculate(List.of(
+        double two = calculator.calculate(List.of(
             matched("a", 15.0, Evidence.Severity.MEDIUM, 0.5),
             matched("b", 15.0, Evidence.Severity.MEDIUM, 0.5)
         ));
-        double one = StaticScoreCalculator.calculate(List.of(
+        double one = calculator.calculate(List.of(
             matched("single", 30.0, Evidence.Severity.MEDIUM, 0.5)
         ));
 
@@ -74,12 +78,12 @@ class StaticScoreCalculatorTest {
 
     @Test
     void lowSeverityDoesNotCountTowardBonus() {
-        double threeLow = StaticScoreCalculator.calculate(List.of(
+        double threeLow = calculator.calculate(List.of(
             matched("a", 10.0, Evidence.Severity.LOW, 0.5),
             matched("b", 10.0, Evidence.Severity.LOW, 0.5),
             matched("c", 10.0, Evidence.Severity.LOW, 0.5)
         ));
-        double one = StaticScoreCalculator.calculate(List.of(
+        double one = calculator.calculate(List.of(
             matched("single", 30.0, Evidence.Severity.LOW, 0.5)
         ));
 

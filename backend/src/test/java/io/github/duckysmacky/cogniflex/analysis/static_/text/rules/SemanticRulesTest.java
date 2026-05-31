@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.RuleResult;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
@@ -29,10 +30,11 @@ class SemanticRulesTest {
         new MatchTextNormalizer()
     );
 
-    private final FabricatedCitationRule citations = new FabricatedCitationRule();
-    private final ConfusableScriptRule confusables = new ConfusableScriptRule();
-    private final PerplexityRule perplexity = new PerplexityRule();
-    private final TextWatermarkRule watermark = new TextWatermarkRule();
+    private final StaticAnalysisConfig config = new StaticAnalysisConfig();
+    private final FabricatedCitationRule citations = new FabricatedCitationRule(config);
+    private final ConfusableScriptRule confusables = new ConfusableScriptRule(config);
+    private final PerplexityRule perplexity = new PerplexityRule(config);
+    private final TextWatermarkRule watermark = new TextWatermarkRule(config);
 
     @Test
     void invalidIsbnChecksumIsFlagged() {
@@ -81,13 +83,11 @@ class SemanticRulesTest {
     }
 
     @Test
-    void stubRulesNeverMatchAndCarryNoWeight() {
+    void stubRulesNeverMatch() {
         TextAnalysisContext context = context("Any text at all goes here for the stub rules to ignore.");
 
         assertFalse(perplexity.evaluate(context).matched());
         assertFalse(watermark.evaluate(context).matched());
-        assertEquals(0.0, perplexity.weight());
-        assertEquals(0.0, watermark.weight());
     }
 
     private TextAnalysisContext context(String text) {

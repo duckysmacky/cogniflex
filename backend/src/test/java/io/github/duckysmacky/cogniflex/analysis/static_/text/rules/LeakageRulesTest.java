@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.RuleResult;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
@@ -33,10 +34,11 @@ class LeakageRulesTest {
         new MatchTextNormalizer()
     );
 
-    private final DirectAiLeakageRule directAi = new DirectAiLeakageRule();
-    private final ConversationalScaffoldRule scaffold = new ConversationalScaffoldRule();
-    private final KnowledgeCutoffRule knowledgeCutoff = new KnowledgeCutoffRule();
-    private final PlaceholderLeakageRule placeholder = new PlaceholderLeakageRule();
+    private final StaticAnalysisConfig config = new StaticAnalysisConfig();
+    private final DirectAiLeakageRule directAi = new DirectAiLeakageRule(config);
+    private final ConversationalScaffoldRule scaffold = new ConversationalScaffoldRule(config);
+    private final KnowledgeCutoffRule knowledgeCutoff = new KnowledgeCutoffRule(config);
+    private final PlaceholderLeakageRule placeholder = new PlaceholderLeakageRule(config);
 
     @Test
     void directAiLeakageFlagsSelfReferenceAndRefusalAsCritical() {

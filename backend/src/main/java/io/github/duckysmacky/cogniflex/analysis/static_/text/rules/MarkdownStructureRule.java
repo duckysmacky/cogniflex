@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -32,8 +33,8 @@ public class MarkdownStructureRule extends TextAnalysisRule {
     private static final double LIST_RATIO = 0.4;
     private static final int BOLD_RUN_MIN = 5;
 
-    public MarkdownStructureRule() {
-        super("T13_MARKDOWN_STRUCTURE", Category.STRUCTURE, 10.0);
+    public MarkdownStructureRule(StaticAnalysisConfig config) {
+        super("T13_MARKDOWN_STRUCTURE", Category.STRUCTURE, config);
     }
 
     @Override

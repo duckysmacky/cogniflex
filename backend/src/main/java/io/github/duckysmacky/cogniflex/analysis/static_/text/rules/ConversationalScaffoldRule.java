@@ -3,6 +3,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -40,8 +41,8 @@ public class ConversationalScaffoldRule extends TextAnalysisRule {
             + "|hope this helps)\\b"
     );
 
-    public ConversationalScaffoldRule() {
-        super("T2_CONVERSATIONAL_SCAFFOLD", Category.LEAKAGE, 25.0);
+    public ConversationalScaffoldRule(StaticAnalysisConfig config) {
+        super("T2_CONVERSATIONAL_SCAFFOLD", Category.LEAKAGE, config);
     }
 
     @Override

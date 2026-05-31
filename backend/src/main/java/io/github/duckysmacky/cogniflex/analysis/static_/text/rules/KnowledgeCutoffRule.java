@@ -3,6 +3,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.rules.util.LiteralPhraseMatcher;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.rules.util.PhraseResources;
 import org.springframework.stereotype.Component;
@@ -29,8 +30,8 @@ public class KnowledgeCutoffRule extends TextAnalysisRule {
 
     private final LiteralPhraseMatcher matcher;
 
-    public KnowledgeCutoffRule() {
-        super("T3_KNOWLEDGE_CUTOFF", Category.LEAKAGE, 30.0);
+    public KnowledgeCutoffRule(StaticAnalysisConfig config) {
+        super("T3_KNOWLEDGE_CUTOFF", Category.LEAKAGE, config);
         this.matcher = new LiteralPhraseMatcher(PhraseResources.load("leakage/knowledge-cutoff.txt"));
     }
 

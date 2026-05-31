@@ -3,6 +3,7 @@ package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,8 +22,8 @@ public class SentenceLengthVarianceRule extends TextAnalysisRule {
     private static final double MEDIUM_CV = 0.25;
     private static final double LOW_CV = 0.4;
 
-    public SentenceLengthVarianceRule() {
-        super("T15_SENTENCE_LENGTH_VARIANCE", Category.STYLOMETRY, 12.0);
+    public SentenceLengthVarianceRule(StaticAnalysisConfig config) {
+        super("T15_SENTENCE_LENGTH_VARIANCE", Category.STYLOMETRY, config);
     }
 
     @Override

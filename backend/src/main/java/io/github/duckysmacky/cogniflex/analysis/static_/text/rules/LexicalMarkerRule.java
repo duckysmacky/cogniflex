@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.rules.util.PhraseResources;
@@ -28,8 +29,8 @@ public class LexicalMarkerRule extends TextAnalysisRule {
 
     private final Map<String, Double> markers;
 
-    public LexicalMarkerRule() {
-        super("T10_AI_LEXICAL_MARKERS", Category.LEXICAL, 12.0);
+    public LexicalMarkerRule(StaticAnalysisConfig config) {
+        super("T10_AI_LEXICAL_MARKERS", Category.LEXICAL, config);
         this.markers = PhraseResources.loadWeighted("lexical/markers-en.txt", 1.0);
     }
 

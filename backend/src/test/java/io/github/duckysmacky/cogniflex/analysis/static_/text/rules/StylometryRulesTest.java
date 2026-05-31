@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.RuleResult;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
@@ -28,9 +29,10 @@ class StylometryRulesTest {
         new MatchTextNormalizer()
     );
 
-    private final SentenceLengthVarianceRule burstiness = new SentenceLengthVarianceRule();
-    private final RepetitiveOpenerRule openers = new RepetitiveOpenerRule();
-    private final HedgingDensityRule hedging = new HedgingDensityRule();
+    private final StaticAnalysisConfig config = new StaticAnalysisConfig();
+    private final SentenceLengthVarianceRule burstiness = new SentenceLengthVarianceRule(config);
+    private final RepetitiveOpenerRule openers = new RepetitiveOpenerRule(config);
+    private final HedgingDensityRule hedging = new HedgingDensityRule(config);
 
     @Test
     void uniformSentenceLengthsAreFlagged() {

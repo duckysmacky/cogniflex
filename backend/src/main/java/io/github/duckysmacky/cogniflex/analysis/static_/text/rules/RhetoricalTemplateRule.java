@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -50,8 +51,8 @@ public class RhetoricalTemplateRule extends TextAnalysisRule {
         ), Evidence.Severity.LOW, 0.4, "rule-of-three list")
     );
 
-    public RhetoricalTemplateRule() {
-        super("T12_RHETORICAL_TEMPLATES", Category.PHRASING, 8.0);
+    public RhetoricalTemplateRule(StaticAnalysisConfig config) {
+        super("T12_RHETORICAL_TEMPLATES", Category.PHRASING, config);
     }
 
     @Override

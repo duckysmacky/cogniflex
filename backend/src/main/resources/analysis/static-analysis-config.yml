@@ -1,0 +1,67 @@
+scoring:
+  saturation-rate: 0.06
+  bonus-min-signals: 3
+  bonus-step: 0.15
+  bonus-max: 2.0
+
+rules:
+  - code: T1_DIRECT_AI_LEAKAGE
+    enabled: true
+    weight: 60.0
+  - code: T2_CONVERSATIONAL_SCAFFOLD
+    enabled: true
+    weight: 25.0
+  - code: T3_KNOWLEDGE_CUTOFF
+    enabled: true
+    weight: 30.0
+  - code: T4_PLACEHOLDER_LEAKAGE
+    enabled: true
+    weight: 20.0
+  - code: T5_ZERO_WIDTH_CHARACTERS
+    enabled: true
+    weight: 30.0
+  - code: T6_STEGANOGRAPHY
+    enabled: true
+    weight: 50.0
+  - code: T7_CONFUSABLE_SCRIPT
+    enabled: true
+    weight: 6.0
+  - code: T8_EM_DASH_DENSITY
+    enabled: true
+    weight: 10.0
+  - code: T9_SMART_TYPOGRAPHY
+    enabled: true
+    weight: 8.0
+  - code: T10_AI_LEXICAL_MARKERS
+    enabled: true
+    weight: 12.0
+  - code: T11_AI_PHRASES
+    enabled: true
+    weight: 12.0
+  - code: T12_RHETORICAL_TEMPLATES
+    enabled: true
+    weight: 8.0
+  - code: T13_MARKDOWN_STRUCTURE
+    enabled: true
+    weight: 10.0
+  - code: T14_EMOJI_DECORATION
+    enabled: true
+    weight: 6.0
+  - code: T15_SENTENCE_LENGTH_VARIANCE
+    enabled: true
+    weight: 12.0
+  - code: T16_PERPLEXITY
+    enabled: false
+    weight: 0.0
+  - code: T17_REPETITIVE_OPENERS
+    enabled: true
+    weight: 10.0
+  - code: T18_HEDGING_DENSITY
+    enabled: true
+    weight: 8.0
+  - code: T19_FABRICATED_CITATIONS
+    enabled: true
+    weight: 12.0
+  - code: T20_TEXT_WATERMARK
+    enabled: false
+    weight: 0.0

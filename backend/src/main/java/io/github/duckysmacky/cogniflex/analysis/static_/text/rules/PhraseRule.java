@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.rules.util.LiteralPhraseMatcher;
@@ -27,8 +28,8 @@ public class PhraseRule extends TextAnalysisRule {
     private final Map<String, Double> phrases;
     private final LiteralPhraseMatcher matcher;
 
-    public PhraseRule() {
-        super("T11_AI_PHRASES", Category.PHRASING, 12.0);
+    public PhraseRule(StaticAnalysisConfig config) {
+        super("T11_AI_PHRASES", Category.PHRASING, config);
         this.phrases = PhraseResources.loadWeighted("phrasing/transitions-en.txt", 1.0);
         this.matcher = new LiteralPhraseMatcher(phrases.keySet());
     }

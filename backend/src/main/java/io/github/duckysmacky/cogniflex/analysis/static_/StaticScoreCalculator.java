@@ -1,5 +1,10 @@
 package io.github.duckysmacky.cogniflex.analysis.static_;
 
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticScoringConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
 /**
@@ -15,45 +20,48 @@ import java.util.List;
  *         accumulate toward 1, and the result needs no division by the total rule weight (so adding
  *         rules no longer dilutes existing scores).</li>
  *     <li><b>Combination bonus.</b> Co-occurrence of several independent tells is far more
- *         incriminating than any one of them, so when at least {@link #BONUS_MIN_SIGNALS} distinct
- *         rules each raise MEDIUM-or-higher evidence the base score is multiplied by a capped
- *         factor.</li>
+ *         incriminating than any one of them, so when enough distinct rules each raise
+ *         MEDIUM-or-higher evidence the base score is multiplied by a capped factor.</li>
  * </ol>
  */
+@Component
 public final class StaticScoreCalculator {
     /** Returned when no rules ran at all (no information, rather than "not AI"). */
     public static final double NEUTRAL_AI_PROBABILITY = 0.5;
 
-    /** Saturation rate of the noisy-OR squash; higher = a given raw score saturates faster. */
-    private static final double SATURATION_RATE = 0.06;
-    /** Minimum number of distinct MEDIUM+ rules before the combination bonus engages. */
-    private static final int BONUS_MIN_SIGNALS = 3;
-    /** Bonus added per distinct MEDIUM+ rule beyond the threshold. */
-    private static final double BONUS_STEP = 0.15;
-    /** Hard cap on the combination multiplier. */
-    private static final double BONUS_MAX = 2.0;
+    private final StaticScoringConfig config;
 
-    private StaticScoreCalculator() {
+    @Autowired
+    public StaticScoreCalculator(StaticAnalysisConfig config) {
+        this(config.scoring());
     }
 
-    public static double calculate(List<RuleResult> results) {
+    public StaticScoreCalculator(StaticScoringConfig config) {
+        this.config = config;
+    }
+
+    public double neutralAiProbability() {
+        return NEUTRAL_AI_PROBABILITY;
+    }
+
+    public double calculate(List<RuleResult> results) {
         if (results.isEmpty()) {
             return NEUTRAL_AI_PROBABILITY;
         }
 
-        double base = 1.0 - Math.exp(-SATURATION_RATE * rawScore(results));
+        double base = 1.0 - Math.exp(-config.saturationRate() * rawScore(results));
         double factor = combinationFactor(results);
         return Math.min(1.0, base * factor);
     }
 
-    private static double rawScore(List<RuleResult> results) {
+    private double rawScore(List<RuleResult> results) {
         return results.stream()
             .filter(RuleResult::matched)
             .mapToDouble(result -> result.weight() * averageEvidenceScore(result.evidence()))
             .sum();
     }
 
-    private static double averageEvidenceScore(List<Evidence> evidence) {
+    private double averageEvidenceScore(List<Evidence> evidence) {
         if (evidence.isEmpty()) {
             return 1.0;
         }
@@ -64,26 +72,26 @@ public final class StaticScoreCalculator {
             .orElse(1.0);
     }
 
-    private static double combinationFactor(List<RuleResult> results) {
+    private double combinationFactor(List<RuleResult> results) {
         long distinctStrong = countDistinctStrongSignals(results);
-        if (distinctStrong < BONUS_MIN_SIGNALS) {
+        if (distinctStrong < config.bonusMinSignals()) {
             return 1.0;
         }
 
-        double factor = 1.0 + BONUS_STEP * (distinctStrong - (BONUS_MIN_SIGNALS - 1));
-        return Math.min(BONUS_MAX, factor);
+        double factor = 1.0 + config.bonusStep() * (distinctStrong - (config.bonusMinSignals() - 1));
+        return Math.min(config.bonusMax(), factor);
     }
 
-    private static long countDistinctStrongSignals(List<RuleResult> results) {
+    private long countDistinctStrongSignals(List<RuleResult> results) {
         return results.stream()
             .filter(RuleResult::matched)
-            .filter(StaticScoreCalculator::hasStrongEvidence)
+            .filter(this::hasStrongEvidence)
             .map(RuleResult::ruleCode)
             .distinct()
             .count();
     }
 
-    private static boolean hasStrongEvidence(RuleResult result) {
+    private boolean hasStrongEvidence(RuleResult result) {
         return result.evidence().stream()
             .anyMatch(e -> e.severity().atLeast(Evidence.Severity.MEDIUM));
     }

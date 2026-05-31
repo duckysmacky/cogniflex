@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.rules.util.PhraseResources;
@@ -32,8 +33,8 @@ public class HedgingDensityRule extends TextAnalysisRule {
 
     private final Pattern hedgePattern;
 
-    public HedgingDensityRule() {
-        super("T18_HEDGING_DENSITY", Category.STYLOMETRY, 8.0);
+    public HedgingDensityRule(StaticAnalysisConfig config) {
+        super("T18_HEDGING_DENSITY", Category.STYLOMETRY, config);
         this.hedgePattern = buildHedgePattern();
     }
 

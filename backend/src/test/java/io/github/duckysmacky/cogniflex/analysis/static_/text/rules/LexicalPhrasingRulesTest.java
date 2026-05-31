@@ -5,6 +5,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
 import io.github.duckysmacky.cogniflex.analysis.static_.RuleResult;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
@@ -28,9 +29,10 @@ class LexicalPhrasingRulesTest {
         new MatchTextNormalizer()
     );
 
-    private final LexicalMarkerRule lexical = new LexicalMarkerRule();
-    private final PhraseRule phrasing = new PhraseRule();
-    private final RhetoricalTemplateRule templates = new RhetoricalTemplateRule();
+    private final StaticAnalysisConfig config = new StaticAnalysisConfig();
+    private final LexicalMarkerRule lexical = new LexicalMarkerRule(config);
+    private final PhraseRule phrasing = new PhraseRule(config);
+    private final RhetoricalTemplateRule templates = new RhetoricalTemplateRule(config);
 
     @Test
     void clusteredLexicalMarkersAreMedium() {

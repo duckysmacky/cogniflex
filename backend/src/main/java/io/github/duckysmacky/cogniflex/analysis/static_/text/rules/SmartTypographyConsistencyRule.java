@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,8 @@ public class SmartTypographyConsistencyRule extends TextAnalysisRule {
     private static final int MIN_QUOTES = 2;
     private static final int MEDIUM_ELLIPSIS = 3;
 
-    public SmartTypographyConsistencyRule() {
-        super("T9_SMART_TYPOGRAPHY", Category.TYPOGRAPHY, 8.0);
+    public SmartTypographyConsistencyRule(StaticAnalysisConfig config) {
+        super("T9_SMART_TYPOGRAPHY", Category.TYPOGRAPHY, config);
     }
 
     @Override

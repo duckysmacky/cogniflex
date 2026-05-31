@@ -1,6 +1,7 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text.rules;
 
 import io.github.duckysmacky.cogniflex.analysis.static_.Evidence;
+import io.github.duckysmacky.cogniflex.analysis.static_.config.StaticAnalysisConfig;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.text.TextAnalysisRule;
 import org.springframework.stereotype.Component;
@@ -50,8 +51,8 @@ public class PlaceholderLeakageRule extends TextAnalysisRule {
         ), Evidence.Severity.MEDIUM, 0.55)
     );
 
-    public PlaceholderLeakageRule() {
-        super("T4_PLACEHOLDER_LEAKAGE", Category.LEAKAGE, 20.0);
+    public PlaceholderLeakageRule(StaticAnalysisConfig config) {
+        super("T4_PLACEHOLDER_LEAKAGE", Category.LEAKAGE, config);
     }
 
     @Override
