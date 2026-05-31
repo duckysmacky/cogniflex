@@ -13,6 +13,7 @@ public record HiddenCharacter(
         CONTROL,
         NON_BREAKING_SPACE,
         SOFT_HYPHEN,
+        TAG,
         VARIATION_SELECTOR,
         ZERO_WIDTH;
 
@@ -29,7 +30,10 @@ public record HiddenCharacter(
             if (codePoint == '\u00AD') {
                 return SOFT_HYPHEN;
             }
-            if (codePoint >= '\uFE00' && codePoint <= '\uFE0F') {
+            if (codePoint >= 0xE0000 && codePoint <= 0xE007F) {
+                return TAG;
+            }
+            if ((codePoint >= '\uFE00' && codePoint <= '\uFE0F') || (codePoint >= 0xE0100 && codePoint <= 0xE01EF)) {
                 return VARIATION_SELECTOR;
             }
             if (codePoint == '\u00A0' || codePoint == '\u2007' || codePoint == '\u202F') {
@@ -46,6 +50,7 @@ public record HiddenCharacter(
             return this == BIDI_CONTROL
                 || this == BYTE_ORDER_MARK
                 || this == SOFT_HYPHEN
+                || this == TAG
                 || this == VARIATION_SELECTOR
                 || this == ZERO_WIDTH;
         }
