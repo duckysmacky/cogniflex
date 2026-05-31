@@ -9,6 +9,15 @@ public interface AnalysisRule<C extends AnalysisContext> {
     enum Category {
         METADATA,
         FILENAME,
-        ENCODING
+        ENCODING,
+        LEAKAGE,
+        HIDDEN_CHARACTERS,
+        TYPOGRAPHY,
+        LEXICAL,
+        PHRASING,
+        STRUCTURE,
+        STYLOMETRY,
+        SEMANTIC,
+        WATERMARK
     }
 }
