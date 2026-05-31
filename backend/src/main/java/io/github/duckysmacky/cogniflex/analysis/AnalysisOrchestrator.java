@@ -7,26 +7,32 @@ import io.github.duckysmacky.cogniflex.analysis.score.ScoreFusionStrategy;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalysisResult;
 import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalyzer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
 
 @Service
 public class AnalysisOrchestrator {
     private final List<DynamicAnalyzer> dynamicAnalyzers;
     private final List<StaticAnalyzer<AnalysisContext>> staticAnalyzers;
     private final ScoreFusionStrategy scoreFusionStrategy;
+    private final Executor analysisOrchestrationExecutor;
 
     public AnalysisOrchestrator(
         List<DynamicAnalyzer> dynamicAnalyzers,
         List<StaticAnalyzer<AnalysisContext>> staticAnalyzers,
-        ScoreFusionStrategy scoreFusionStrategy
+        ScoreFusionStrategy scoreFusionStrategy,
+        @Qualifier("analysisOrchestrationExecutor")
+        Executor analysisOrchestrationExecutor
     ) {
         this.dynamicAnalyzers = List.copyOf(dynamicAnalyzers);
         this.staticAnalyzers = List.copyOf(staticAnalyzers);
         this.scoreFusionStrategy = scoreFusionStrategy;
+        this.analysisOrchestrationExecutor = analysisOrchestrationExecutor;
     }
 
     public FinalScore submit(ContentItem item) {
@@ -37,21 +43,32 @@ public class AnalysisOrchestrator {
         DynamicAnalyzer dynamicAnalyzer = selectDynamicAnalyzer(item.contentType());
         StaticAnalyzer<AnalysisContext> staticAnalyzer = selectStaticAnalyzer(item.contentType());
 
-        CompletableFuture<DynamicAnalysisResult> dynamicFuture = CompletableFuture.supplyAsync(
-            () -> dynamicAnalyzer.analyze(item)
+        var dynamicFuture = CompletableFuture.supplyAsync(
+            () -> dynamicAnalyzer.analyze(item),
+            analysisOrchestrationExecutor
         );
-        CompletableFuture<StaticAnalysisResult> staticFuture = CompletableFuture.supplyAsync(
-            () -> staticAnalyzer.analyze(item)
+        var staticFuture = CompletableFuture.supplyAsync(
+            () -> staticAnalyzer.analyze(item),
+            analysisOrchestrationExecutor
         );
 
         try {
             return scoreFusionStrategy.combine(staticFuture.join(), dynamicFuture.join());
         } catch (CompletionException ex) {
-            if (ex.getCause() instanceof RuntimeException runtimeException) {
-                throw runtimeException;
-            }
-            throw ex;
+            throw unwrapCompletionException(ex);
         }
+    }
+
+    private RuntimeException unwrapCompletionException(CompletionException ex) {
+        Throwable cause = ex.getCause();
+        while (cause instanceof CompletionException completionException && completionException.getCause() != null) {
+            cause = completionException.getCause();
+        }
+
+        if (cause instanceof RuntimeException runtimeException) {
+            return runtimeException;
+        }
+        return ex;
     }
 
     private DynamicAnalyzer selectDynamicAnalyzer(ContentType contentType) {
