@@ -101,7 +101,7 @@ public class AnalysisOrchestrator {
 
         String tag = item.attributes().get(ContentItemFactory.LOCALE_ATTRIBUTE);
         if (tag == null || tag.isBlank() || tag.equalsIgnoreCase("und")) {
-            return false;
+            return true;
         }
 
         Locale locale = Locale.forLanguageTag(tag);

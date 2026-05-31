@@ -9,7 +9,7 @@ import java.util.Locale;
 
 @Component
 public class LinguaTextLocaleDetector implements TextLocaleDetector {
-    private static final double MINIMUM_RELATIVE_DISTANCE = 0.15;
+    private static final double MINIMUM_RELATIVE_DISTANCE = 0.05;
 
     private final LanguageDetector detector;
 
