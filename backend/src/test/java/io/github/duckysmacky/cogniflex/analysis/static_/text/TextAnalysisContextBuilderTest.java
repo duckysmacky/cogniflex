@@ -4,6 +4,7 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
+import io.github.duckysmacky.cogniflex.processing.text.MatchTextNormalizer;
 import io.github.duckysmacky.cogniflex.processing.text.ParagraphSplitter;
 import io.github.duckysmacky.cogniflex.processing.text.SentenceSegmenter;
 import io.github.duckysmacky.cogniflex.processing.text.WordTokenizer;
@@ -20,7 +21,8 @@ class TextAnalysisContextBuilderTest {
         new HiddenCharacterScanner(),
         new SentenceSegmenter(),
         new WordTokenizer(),
-        new ParagraphSplitter()
+        new ParagraphSplitter(),
+        new MatchTextNormalizer()
     );
 
     @Test

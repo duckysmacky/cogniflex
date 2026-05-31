@@ -1,0 +1,37 @@
+# T1 - Direct prompt / assistant leakage (literal phrases, English).
+# Lowercase, straight apostrophes; matched against the NFKC-casefolded match surface.
+# Self-identification
+as an ai language model
+as a large language model
+as an ai assistant
+i am an ai language model
+i'm an ai language model
+i am an ai developed by
+i'm an ai developed by
+i am a language model
+i'm a language model
+i'm just an ai
+as a language model
+i'm chatgpt
+i am chatgpt
+as chatgpt
+as an openai
+as claude, an ai
+i am gemini
+as a google ai
+# Capability / data disclaimers tied to model identity
+i don't have personal opinions
+i don't have personal experiences
+i don't have feelings or emotions
+i was trained on a dataset
+my training data
+# Prompt echo / instruction leakage
+here is the rewritten text
+here's the rewritten version
+sure, here is the rewritten
+rewrite the following
+as requested, here is
+certainly! here's
+i cannot provide medical advice
+i cannot provide legal advice
+i cannot provide financial advice

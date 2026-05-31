@@ -1,12 +1,12 @@
 package io.github.duckysmacky.cogniflex.analysis.static_.text;
 
-import com.ibm.icu.text.Normalizer2;
 import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisContextBuilder;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacter;
 import io.github.duckysmacky.cogniflex.processing.text.HiddenCharacterScanner;
+import io.github.duckysmacky.cogniflex.processing.text.MatchTextNormalizer;
 import io.github.duckysmacky.cogniflex.processing.text.ParagraphSplitter;
 import io.github.duckysmacky.cogniflex.processing.text.SentenceSegmenter;
 import io.github.duckysmacky.cogniflex.processing.text.TextLayout;
@@ -24,17 +24,20 @@ public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAn
     private final SentenceSegmenter sentenceSegmenter;
     private final WordTokenizer wordTokenizer;
     private final ParagraphSplitter paragraphSplitter;
+    private final MatchTextNormalizer matchTextNormalizer;
 
     public TextAnalysisContextBuilder(
         HiddenCharacterScanner hiddenCharacterScanner,
         SentenceSegmenter sentenceSegmenter,
         WordTokenizer wordTokenizer,
-        ParagraphSplitter paragraphSplitter
+        ParagraphSplitter paragraphSplitter,
+        MatchTextNormalizer matchTextNormalizer
     ) {
         this.hiddenCharacterScanner = hiddenCharacterScanner;
         this.sentenceSegmenter = sentenceSegmenter;
         this.wordTokenizer = wordTokenizer;
         this.paragraphSplitter = paragraphSplitter;
+        this.matchTextNormalizer = matchTextNormalizer;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAn
         String text = analysisText(item);
         Locale language = DEFAULT_LANGUAGE;
 
-        String matchText = Normalizer2.getNFKCCasefoldInstance().normalize(text);
+        String matchText = matchTextNormalizer.normalize(text);
         TextLayout layout = paragraphSplitter.split(text);
         List<String> sentences = sentenceSegmenter.segment(text, language);
         List<String> words = wordTokenizer.tokenize(text, language);
