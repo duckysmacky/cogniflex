@@ -14,7 +14,7 @@ import java.util.List;
  * <p>The score is built in two stages:
  * <ol>
  *     <li><b>Weighted noisy-OR saturation.</b> Each matched rule contributes
- *         {@code weight · averageEvidence} to a raw total, which is squashed with
+ *         {@code weight · aggregateEvidence} to a raw total, which is squashed with
  *         {@code 1 - e^(-rate · raw)}. This is the closed form of a noisy-OR over the per-rule
  *         contributions: one strong rule already pushes the score high, independent signals
  *         accumulate toward 1, and the result needs no division by the total rule weight (so adding
@@ -49,37 +49,46 @@ public final class StaticScoreCalculator {
             return NEUTRAL_AI_PROBABILITY;
         }
 
-        double base = 1.0 - Math.exp(-config.saturationRate() * rawScore(results));
-        double factor = combinationFactor(results);
-        return Math.min(1.0, base * factor);
+        double total = totalActiveWeight(results);
+        double normalizedRaw = total > 0 ? rawScore(results) / total : 0.0;
+        double base = 1.0 - Math.exp(-config.saturationRate() * normalizedRaw);
+        double bonus = combinationBonus(base, results);
+        return Math.min(1.0, base + bonus);
+    }
+
+    private double totalActiveWeight(List<RuleResult> results) {
+        return results.stream().mapToDouble(RuleResult::weight).sum();
     }
 
     private double rawScore(List<RuleResult> results) {
         return results.stream()
             .filter(RuleResult::matched)
-            .mapToDouble(result -> result.weight() * averageEvidenceScore(result.evidence()))
+            .mapToDouble(result -> result.weight() * aggregateEvidenceScore(result.evidence()))
             .sum();
     }
 
-    private double averageEvidenceScore(List<Evidence> evidence) {
+    private double aggregateEvidenceScore(List<Evidence> evidence) {
         if (evidence.isEmpty()) {
             return 1.0;
         }
 
-        return evidence.stream()
+        double total = evidence.stream()
             .mapToDouble(e -> e.confidence() * e.severity().multiplier())
-            .average()
-            .orElse(1.0);
+            .sum();
+        return 1.0 - Math.exp(-total);
     }
 
-    private double combinationFactor(List<RuleResult> results) {
+    private double combinationBonus(double base, List<RuleResult> results) {
         long distinctStrong = countDistinctStrongSignals(results);
         if (distinctStrong < config.bonusMinSignals()) {
-            return 1.0;
+            return 0.0;
         }
 
-        double factor = 1.0 + config.bonusStep() * (distinctStrong - (config.bonusMinSignals() - 1));
-        return Math.min(config.bonusMax(), factor);
+        double bonusStrength = Math.min(
+            config.bonusMax() - 1.0,
+            config.bonusStep() * (distinctStrong - (config.bonusMinSignals() - 1))
+        );
+        return bonusStrength * (1.0 - base);
     }
 
     private long countDistinctStrongSignals(List<RuleResult> results) {

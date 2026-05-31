@@ -1,7 +1,7 @@
 scoring:
-  saturation-rate: 0.06
+  saturation-rate: 10.0
   bonus-min-signals: 3
-  bonus-step: 0.15
+  bonus-step: 0.08
   bonus-max: 2.0
 
 rules:
