@@ -42,7 +42,7 @@ public class AnalysisOrchestrator {
         this.analysisOrchestrationExecutor = analysisOrchestrationExecutor;
     }
 
-    public FinalScore submit(ContentItem item) {
+    public AnalysisResultSummary submit(ContentItem item) {
         if (item == null) {
             throw new IllegalArgumentException("Content item is required");
         }
@@ -76,7 +76,7 @@ public class AnalysisOrchestrator {
                 item.contentType(), staticResult.elapsedMillis(), dynamicResult.elapsedMillis(), dynamicResult.status(), elapsedMillis(orchestrationStartedAt)
             );
 
-            return score;
+            return new AnalysisResultSummary(score, staticResult.result().evidence());
         } catch (CompletionException ex) {
             throw unwrapCompletionException(ex);
         }

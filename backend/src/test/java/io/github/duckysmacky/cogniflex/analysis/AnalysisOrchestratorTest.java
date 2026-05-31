@@ -2,7 +2,6 @@ package io.github.duckysmacky.cogniflex.analysis;
 
 import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalysisResult;
 import io.github.duckysmacky.cogniflex.analysis.dynamic.DynamicAnalyzer;
-import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.analysis.score.TextOnlyScoreFusionStrategy;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisContext;
 import io.github.duckysmacky.cogniflex.analysis.static_.AnalysisRule;
@@ -29,31 +28,32 @@ class AnalysisOrchestratorTest {
 
     @Test
     void textDynamicAnalysisRunsForEnglishText() {
-        FinalScore score = orchestrator.submit(textItem(Locale.ENGLISH));
+        AnalysisResultSummary result = orchestrator.submit(textItem(Locale.ENGLISH));
 
         assertEquals(1, dynamicAnalyzer.calls);
-        assertEquals(0.65, score.aiProbability(), 0.0001);
-        assertEquals(0.5, score.staticWeight(), 0.0001);
-        assertEquals(0.5, score.dynamicWeight(), 0.0001);
+        assertEquals(0.65, result.score().aiProbability(), 0.0001);
+        assertEquals(0.5, result.score().staticWeight(), 0.0001);
+        assertEquals(0.5, result.score().dynamicWeight(), 0.0001);
+        assertEquals(List.of(), result.evidence());
     }
 
     @Test
     void textDynamicAnalysisIsSkippedForNonEnglishText() {
-        FinalScore score = orchestrator.submit(textItem(Locale.forLanguageTag("es")));
+        AnalysisResultSummary result = orchestrator.submit(textItem(Locale.forLanguageTag("es")));
 
         assertEquals(0, dynamicAnalyzer.calls);
-        assertEquals(0.5, score.aiProbability(), 0.0001);
-        assertEquals(1.0, score.staticWeight(), 0.0001);
-        assertEquals(0.0, score.dynamicWeight(), 0.0001);
+        assertEquals(0.5, result.score().aiProbability(), 0.0001);
+        assertEquals(1.0, result.score().staticWeight(), 0.0001);
+        assertEquals(0.0, result.score().dynamicWeight(), 0.0001);
     }
 
     @Test
     void textDynamicAnalysisIsSkippedWhenLocaleIsUnknown() {
-        FinalScore score = orchestrator.submit(textItem(Locale.ROOT));
+        AnalysisResultSummary result = orchestrator.submit(textItem(Locale.ROOT));
 
         assertEquals(0, dynamicAnalyzer.calls);
-        assertEquals(1.0, score.staticWeight(), 0.0001);
-        assertEquals(0.0, score.dynamicWeight(), 0.0001);
+        assertEquals(1.0, result.score().staticWeight(), 0.0001);
+        assertEquals(0.0, result.score().dynamicWeight(), 0.0001);
     }
 
     private ContentItem textItem(Locale locale) {

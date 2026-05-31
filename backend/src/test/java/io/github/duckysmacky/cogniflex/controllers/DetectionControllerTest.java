@@ -54,7 +54,8 @@ public class DetectionControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.verdict").value(response.verdict().toString()))
-                .andExpect(jsonPath("$.confidence").value(response.confidence()));
+                .andExpect(jsonPath("$.confidence").value(response.confidence()))
+                .andExpect(jsonPath("$.evidence").isArray());
     }
 
     @Test

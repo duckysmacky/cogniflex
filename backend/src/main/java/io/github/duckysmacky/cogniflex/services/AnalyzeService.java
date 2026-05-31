@@ -1,12 +1,14 @@
 package io.github.duckysmacky.cogniflex.services;
 
 import io.github.duckysmacky.cogniflex.analysis.AnalysisOrchestrator;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisResultSummary;
 import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
+import io.github.duckysmacky.cogniflex.dto.EvidenceResponse;
 import io.github.duckysmacky.cogniflex.analysis.InputType;
 import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
 import io.github.duckysmacky.cogniflex.processing.media.ParsedMedia;
@@ -48,8 +50,8 @@ public class AnalyzeService {
         PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
         ContentItem item = contentItemFactory.fromText(text);
 
-        FinalScore score = analysisOrchestrator.submit(item);
-        AnalysisResultResponse response = toResponse(score);
+        AnalysisResultSummary result = analysisOrchestrator.submit(item);
+        AnalysisResultResponse response = toResponse(result);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.TEXT,
@@ -68,8 +70,8 @@ public class AnalyzeService {
         ParsedMedia media = mediaParser.parse(file);
         ContentItem item = contentItemFactory.fromMedia(media);
 
-        FinalScore score = analysisOrchestrator.submit(item);
-        AnalysisResultResponse response = toResponse(score);
+        AnalysisResultSummary result = analysisOrchestrator.submit(item);
+        AnalysisResultResponse response = toResponse(result);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
             InputType.MEDIA,
@@ -82,8 +84,15 @@ public class AnalyzeService {
         return response;
     }
 
-    private AnalysisResultResponse toResponse(FinalScore score) {
-        return new AnalysisResultResponse(score.verdict(), score.confidence());
+    private AnalysisResultResponse toResponse(AnalysisResultSummary result) {
+        FinalScore score = result.score();
+        return new AnalysisResultResponse(
+            score.verdict(),
+            score.confidence(),
+            result.evidence().stream()
+                .map(EvidenceResponse::from)
+                .toList()
+        );
     }
 
     private void logElapsed(String analysisType, long startedAt) {
