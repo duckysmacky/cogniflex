@@ -25,13 +25,13 @@ public class AnalysisOrchestrator {
     private static final Logger log = LoggerFactory.getLogger(AnalysisOrchestrator.class);
 
     private final List<DynamicAnalyzer> dynamicAnalyzers;
-    private final List<StaticAnalyzer<AnalysisContext>> staticAnalyzers;
+    private final List<StaticAnalyzer<? extends AnalysisContext>> staticAnalyzers;
     private final ScoreFusionStrategy scoreFusionStrategy;
     private final Executor analysisOrchestrationExecutor;
 
     public AnalysisOrchestrator(
         List<DynamicAnalyzer> dynamicAnalyzers,
-        List<StaticAnalyzer<AnalysisContext>> staticAnalyzers,
+        List<StaticAnalyzer<? extends AnalysisContext>> staticAnalyzers,
         ScoreFusionStrategy scoreFusionStrategy,
         @Qualifier("analysisOrchestrationExecutor")
         Executor analysisOrchestrationExecutor
@@ -52,7 +52,7 @@ public class AnalysisOrchestrator {
             ? selectDynamicAnalyzer(item.contentType())
             : null;
 
-        StaticAnalyzer<AnalysisContext> staticAnalyzer = selectStaticAnalyzer(item.contentType());
+        StaticAnalyzer<? extends AnalysisContext> staticAnalyzer = selectStaticAnalyzer(item.contentType());
 
         CompletableFuture<TimedAnalysisResult<DynamicAnalysisResult>> dynamicFuture = dynamicAnalyzer == null
             ? CompletableFuture.completedFuture(TimedAnalysisResult.skipped())
@@ -115,7 +115,7 @@ public class AnalysisOrchestrator {
             .orElseThrow(() -> new IllegalStateException("No dynamic analyzer for content type: " + contentType));
     }
 
-    private StaticAnalyzer<AnalysisContext> selectStaticAnalyzer(ContentType contentType) {
+    private StaticAnalyzer<? extends AnalysisContext> selectStaticAnalyzer(ContentType contentType) {
         return staticAnalyzers.stream()
             .filter(analyzer -> analyzer.supports(contentType))
             .findFirst()
