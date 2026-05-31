@@ -1,0 +1,24 @@
+# T18 - Hedging / false-balance terms (English).
+# Adverbial and phrasal hedges (bare modals like "may/might/could" are excluded as too common).
+# Lowercase; matched on word boundaries against the normalized match surface.
+generally
+typically
+usually
+often
+arguably
+relatively
+somewhat
+broadly speaking
+in general
+in many cases
+in some cases
+in most cases
+it depends
+tends to
+tend to
+to some extent
+more or less
+for the most part
+it is worth considering
+it could be argued
+there are pros and cons

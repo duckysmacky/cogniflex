@@ -27,6 +27,7 @@ import java.util.Locale;
  * @param characterCount    number of Unicode code points in {@link #text}
  * @param wordCount         number of word tokens
  * @param sentenceCount     number of sentences
+ * @param sentenceWordCounts word-token count for each sentence (parallel to {@link #sentences})
  */
 public record TextAnalysisContext(
     ContentItem source,
@@ -40,7 +41,8 @@ public record TextAnalysisContext(
     List<HiddenCharacter> hiddenCharacters,
     int characterCount,
     int wordCount,
-    int sentenceCount
+    int sentenceCount,
+    List<Integer> sentenceWordCounts
 ) implements AnalysisContext {
     public TextAnalysisContext {
         paragraphs = paragraphs == null ? List.of() : List.copyOf(paragraphs);
@@ -48,5 +50,6 @@ public record TextAnalysisContext(
         sentences = sentences == null ? List.of() : List.copyOf(sentences);
         words = words == null ? List.of() : List.copyOf(words);
         hiddenCharacters = hiddenCharacters == null ? List.of() : List.copyOf(hiddenCharacters);
+        sentenceWordCounts = sentenceWordCounts == null ? List.of() : List.copyOf(sentenceWordCounts);
     }
 }

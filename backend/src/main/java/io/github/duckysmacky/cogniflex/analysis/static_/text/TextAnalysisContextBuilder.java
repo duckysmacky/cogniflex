@@ -54,6 +54,9 @@ public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAn
         List<String> sentences = sentenceSegmenter.segment(text, language);
         List<String> words = wordTokenizer.tokenize(text, language);
         List<HiddenCharacter> hiddenCharacters = hiddenCharacterScanner.scan(text);
+        List<Integer> sentenceWordCounts = sentences.stream()
+            .map(sentence -> wordTokenizer.tokenize(sentence, language).size())
+            .toList();
 
         return new TextAnalysisContext(
             item,
@@ -67,7 +70,8 @@ public class TextAnalysisContextBuilder implements AnalysisContextBuilder<TextAn
             hiddenCharacters,
             text.codePointCount(0, text.length()),
             words.size(),
-            sentences.size()
+            sentences.size(),
+            sentenceWordCounts
         );
     }
 
