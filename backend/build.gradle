@@ -45,6 +45,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'com.bucket4j:bucket4j_jdk17-core:8.16.1'
 
+	implementation 'com.ibm.icu:icu4j:77.1'
+	implementation 'org.ahocorasick:ahocorasick:0.6.3'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
 	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TextPreprocessorTest {
-    private final TextPreprocessor preprocessor = new TextPreprocessor(new ModelInputPreparer());
+    private final TextPreprocessor preprocessor = new TextPreprocessor(new ModelInputPreparer(), new HiddenCharacterScanner());
 
     @Test
     void preprocessNormalizesUnicodeLineEndingsAndWhitespace() {

@@ -13,7 +13,7 @@ class TextOnlyScoreFusionStrategyTest {
 
     @Test
     void textUsesEqualStaticAndDynamicWeights() {
-        StaticAnalysisResult staticResult = new StaticAnalysisResult(ContentType.TEXT, 0.8, null);
+        StaticAnalysisResult staticResult = new StaticAnalysisResult(ContentType.TEXT, 0.8, null, null);
         DynamicAnalysisResult dynamicResult = new DynamicAnalysisResult(ContentType.TEXT, AnalysisVerdict.AI, 0.6);
 
         FinalScore score = strategy.combine(staticResult, dynamicResult);

@@ -4,15 +4,19 @@ import io.github.duckysmacky.cogniflex.exceptions.TextPreprocessingException;
 import org.springframework.stereotype.Component;
 
 import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class TextPreprocessor {
     private final ModelInputPreparer modelInputPreparer;
+    private final HiddenCharacterScanner hiddenCharacterScanner;
 
-    public TextPreprocessor(ModelInputPreparer modelInputPreparer) {
+    public TextPreprocessor(
+        ModelInputPreparer modelInputPreparer,
+        HiddenCharacterScanner hiddenCharacterScanner
+    ) {
         this.modelInputPreparer = modelInputPreparer;
+        this.hiddenCharacterScanner = hiddenCharacterScanner;
     }
 
     public PreprocessedText preprocess(String text) {
@@ -28,7 +32,7 @@ public class TextPreprocessor {
             ? TextPreprocessingOptions.defaults()
             : options;
 
-        List<HiddenCharacter> hiddenCharacters = scanHiddenCharacters(text);
+        List<HiddenCharacter> hiddenCharacters = hiddenCharacterScanner.scan(text);
         LineEndingNormalization lineEndingNormalization = normalizeLineEnding(text);
         String unicodeNormalized = Normalizer.normalize(
             lineEndingNormalization.text(),
@@ -58,40 +62,6 @@ public class TextPreprocessor {
             hiddenCharacters,
             stats
         );
-    }
-
-    private List<HiddenCharacter> scanHiddenCharacters(String text) {
-        if (text == null || text.isEmpty()) {
-            return List.of();
-        }
-
-        List<HiddenCharacter> characters = new ArrayList<>();
-        int charIndex = 0;
-        int codePointIndex = 0;
-
-        while (charIndex < text.length()) {
-            int codePoint = text.codePointAt(charIndex);
-            HiddenCharacter.Kind kind = HiddenCharacter.Kind.fromCodePoint(codePoint);
-
-            if (kind != null) {
-                characters.add(new HiddenCharacter(
-                    codePoint,
-                    charIndex,
-                    codePointIndex,
-                    kind,
-                    printableCodePoint(codePoint)
-                ));
-            }
-
-            charIndex += Character.charCount(codePoint);
-            codePointIndex++;
-        }
-
-        return List.copyOf(characters);
-    }
-
-    private String printableCodePoint(int codePoint) {
-        return "U+" + String.format("%04X", codePoint);
     }
 
     private LineEndingNormalization normalizeLineEnding(String text) {
