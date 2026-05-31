@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analyzer<StaticAnalysisResult> {
     private static final Logger log = LoggerFactory.getLogger(StaticAnalyzer.class);
@@ -28,14 +29,35 @@ public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analy
 
     @Override
     public final StaticAnalysisResult analyze(ContentItem item) {
+        long analysisStartedAt = System.nanoTime();
         C context = contextBuilder.build(item);
+
+        log.info("Starting static analysis for {} content", item.contentType());
 
         List<CompletableFuture<RuleResult>> ruleFutures = rules().stream()
             .filter(AnalysisRule::enabled)
             .map(rule ->
                 CompletableFuture.supplyAsync(() -> {
-                    log.debug("Running {} analysis rule", rule.code());
-                    return rule.evaluate(context);
+                    long ruleStartedAt = System.nanoTime();
+                    log.debug("Running static analysis rule {}", rule.code());
+
+                    try {
+                        RuleResult result = rule.evaluate(context);
+
+                        log.debug(
+                            "Static analysis rule {} completed in {} ms: matched={}, evidenceCount={}",
+                            rule.code(), elapsedMillis(ruleStartedAt), result.matched(), result.evidence().size()
+                        );
+
+                        return result;
+                    } catch (RuntimeException ex) {
+                        log.warn(
+                            "Static analysis rule {} failed after {} ms",
+                            rule.code(), elapsedMillis(ruleStartedAt), ex
+                        );
+
+                        throw ex;
+                    }
                 }, staticAnalysisExecutor)
             )
             .toList();
@@ -45,7 +67,17 @@ public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analy
                 .map(CompletableFuture::join)
                 .toList();
 
-            return StaticAnalysisResult.build(item, results, scoreCalculator);
+            StaticAnalysisResult result = StaticAnalysisResult.build(item, results, scoreCalculator);
+            long matchedRuleCount = results.stream()
+                .filter(RuleResult::matched)
+                .count();
+
+            log.info(
+                "Static analysis completed for {} content in {} ms: matchedRules={}, evidenceCount={}, aiProbability={}",
+                item.contentType(), elapsedMillis(analysisStartedAt), matchedRuleCount, result.evidence().size(), result.aiProbability()
+            );
+
+            return result;
         } catch (CompletionException ex) {
             if (ex.getCause() instanceof RuntimeException runtimeException) {
                 throw runtimeException;
@@ -56,4 +88,8 @@ public abstract class StaticAnalyzer<C extends AnalysisContext> implements Analy
     }
 
     protected abstract List<AnalysisRule<C>> rules();
+
+    private static long elapsedMillis(long startedAt) {
+        return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startedAt);
+    }
 }
