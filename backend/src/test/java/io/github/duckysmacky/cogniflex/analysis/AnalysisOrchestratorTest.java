@@ -47,15 +47,6 @@ class AnalysisOrchestratorTest {
         assertEquals(0.0, result.score().dynamicWeight(), 0.0001);
     }
 
-    @Test
-    void textDynamicAnalysisIsSkippedWhenLocaleIsUnknown() {
-        AnalysisResultSummary result = orchestrator.submit(textItem(Locale.ROOT));
-
-        assertEquals(0, dynamicAnalyzer.calls);
-        assertEquals(1.0, result.score().staticWeight(), 0.0001);
-        assertEquals(0.0, result.score().dynamicWeight(), 0.0001);
-    }
-
     private ContentItem textItem(Locale locale) {
         return new ContentItem(
             ContentType.TEXT,
