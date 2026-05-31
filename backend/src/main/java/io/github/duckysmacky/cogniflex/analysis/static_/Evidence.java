@@ -26,6 +26,10 @@ public record Evidence(
         public double multiplier() {
             return multiplier;
         }
+
+        public boolean atLeast(Severity other) {
+            return ordinal() >= other.ordinal();
+        }
     }
 
     public static class Builder {
