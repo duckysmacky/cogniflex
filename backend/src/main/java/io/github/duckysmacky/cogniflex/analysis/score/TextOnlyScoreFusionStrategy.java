@@ -6,18 +6,14 @@ import io.github.duckysmacky.cogniflex.analysis.static_.StaticAnalysisResult;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TextOnlyScoreFusionStrategy implements ScoreFusionStrategy {
+public class TextOnlyScoreFusionStrategy extends ScoreFusionStrategy {
     private static final double TEXT_STATIC_WEIGHT = 0.5;
     private static final double TEXT_DYNAMIC_WEIGHT = 0.5;
     private static final double DYNAMIC_ONLY_WEIGHT = 1.0;
     private static final double DISABLED_WEIGHT = 0.0;
 
     @Override
-    public FinalScore combine(StaticAnalysisResult staticResult, DynamicAnalysisResult dynamicResult) {
-        if (dynamicResult == null) {
-            throw new IllegalArgumentException("Dynamic analysis result is required");
-        }
-
+    protected FinalScore combineAvailable(StaticAnalysisResult staticResult, DynamicAnalysisResult dynamicResult) {
         return switch (dynamicResult.contentType()) {
             case TEXT -> combineText(staticResult, dynamicResult);
             case IMAGE, VIDEO -> keepDynamicResult(dynamicResult);

@@ -10,6 +10,7 @@ import io.github.duckysmacky.cogniflex.processing.text.SentenceSegmenter;
 import io.github.duckysmacky.cogniflex.processing.text.WordTokenizer;
 import org.junit.jupiter.api.Test;
 
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,6 +50,24 @@ class TextAnalysisContextBuilderTest {
     }
 
     @Test
+    void buildUsesDetectedLocaleFromContentItem() {
+        ContentItem item = textItem("Bonjour tout le monde.", Locale.FRENCH);
+
+        TextAnalysisContext context = builder.build(item);
+
+        assertEquals(Locale.FRENCH, context.language());
+    }
+
+    @Test
+    void buildUsesRootLocaleWhenLocaleIsMissing() {
+        ContentItem item = textItem("Text without language metadata.");
+
+        TextAnalysisContext context = builder.build(item);
+
+        assertEquals(Locale.ROOT, context.language());
+    }
+
+    @Test
     void buildRejectsNonTextContent() {
         ContentItem item = new ContentItem(ContentType.IMAGE, null, "a.png", new byte[]{1}, Map.of());
 
@@ -63,12 +82,23 @@ class TextAnalysisContextBuilderTest {
     }
 
     private ContentItem textItem(String normalizedText) {
+        return textItem(normalizedText, null);
+    }
+
+    private ContentItem textItem(String normalizedText, Locale locale) {
+        Map<String, String> attributes = locale == null
+            ? Map.of(ContentItemFactory.NORMALIZED_TEXT_ATTRIBUTE, normalizedText)
+            : Map.of(
+                ContentItemFactory.NORMALIZED_TEXT_ATTRIBUTE, normalizedText,
+                ContentItemFactory.LOCALE_ATTRIBUTE, locale.toLanguageTag()
+            );
+
         return new ContentItem(
             ContentType.TEXT,
             null,
             null,
             null,
-            Map.of(ContentItemFactory.NORMALIZED_TEXT_ATTRIBUTE, normalizedText)
+            attributes
         );
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -40,13 +41,19 @@ public class AnalysisOrchestrator {
             throw new IllegalArgumentException("Content item is required");
         }
 
-        DynamicAnalyzer dynamicAnalyzer = selectDynamicAnalyzer(item.contentType());
+        DynamicAnalyzer dynamicAnalyzer = shouldRunDynamicAnalysis(item)
+            ? selectDynamicAnalyzer(item.contentType())
+            : null;
+
         StaticAnalyzer<AnalysisContext> staticAnalyzer = selectStaticAnalyzer(item.contentType());
 
-        var dynamicFuture = CompletableFuture.supplyAsync(
-            () -> dynamicAnalyzer.analyze(item),
-            analysisOrchestrationExecutor
-        );
+        CompletableFuture<DynamicAnalysisResult> dynamicFuture = dynamicAnalyzer == null
+            ? CompletableFuture.completedFuture(null)
+            : CompletableFuture.supplyAsync(
+                () -> dynamicAnalyzer.analyze(item),
+                analysisOrchestrationExecutor
+            );
+
         var staticFuture = CompletableFuture.supplyAsync(
             () -> staticAnalyzer.analyze(item),
             analysisOrchestrationExecutor
@@ -69,6 +76,20 @@ public class AnalysisOrchestrator {
             return runtimeException;
         }
         return ex;
+    }
+
+    private boolean shouldRunDynamicAnalysis(ContentItem item) {
+        if (item.contentType() != ContentType.TEXT) {
+            return true;
+        }
+
+        String tag = item.attributes().get(ContentItemFactory.LOCALE_ATTRIBUTE);
+        if (tag == null || tag.isBlank() || tag.equalsIgnoreCase("und")) {
+            return false;
+        }
+
+        Locale locale = Locale.forLanguageTag(tag);
+        return Locale.ENGLISH.getLanguage().equals(locale.getLanguage());
     }
 
     private DynamicAnalyzer selectDynamicAnalyzer(ContentType contentType) {

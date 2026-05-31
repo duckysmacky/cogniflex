@@ -26,13 +26,27 @@ class TextOnlyScoreFusionStrategyTest {
     }
 
     @Test
-    void missingTextStaticResultIsNeutral() {
+    void missingStaticResultUsesDynamicOnly() {
         DynamicAnalysisResult dynamicResult = new DynamicAnalysisResult(ContentType.TEXT, AnalysisVerdict.AI, 0.8);
 
         FinalScore score = strategy.combine(null, dynamicResult);
 
-        assertEquals(0.65, score.aiProbability(), 0.0001);
+        assertEquals(0.8, score.aiProbability(), 0.0001);
         assertEquals(AnalysisVerdict.AI, score.verdict());
+        assertEquals(0.0, score.staticWeight(), 0.0001);
+        assertEquals(1.0, score.dynamicWeight(), 0.0001);
+    }
+
+    @Test
+    void missingDynamicResultUsesStaticOnly() {
+        StaticAnalysisResult staticResult = new StaticAnalysisResult(ContentType.TEXT, 0.8, null, null);
+
+        FinalScore score = strategy.combine(staticResult, null);
+
+        assertEquals(0.8, score.aiProbability(), 0.0001);
+        assertEquals(AnalysisVerdict.AI, score.verdict());
+        assertEquals(1.0, score.staticWeight(), 0.0001);
+        assertEquals(0.0, score.dynamicWeight(), 0.0001);
     }
 
     @Test
