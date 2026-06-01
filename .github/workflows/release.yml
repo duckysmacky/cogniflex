@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 permissions:
   actions: read
@@ -33,7 +33,7 @@ jobs:
             exit 1
           fi
 
-          git fetch origin master:refs/remotes/origin/master --tags
+          git fetch origin master:refs/remotes/origin/master --tags --force
           tag_commit="$(git rev-list -n 1 "${GITHUB_REF_NAME}")"
           master_commit="$(git rev-parse origin/master)"
           if [[ "${tag_commit}" != "${master_commit}" ]]; then
