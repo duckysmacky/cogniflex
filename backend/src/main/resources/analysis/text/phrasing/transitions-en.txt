@@ -1,0 +1,41 @@
+# T11 - AI transition / cliche phrases (English).
+# Format: phrase=weight. Strong collocations (2.0) -> MEDIUM, weak transitions (1.0) -> LOW.
+# Lowercase, straight apostrophes (matched against the normalized match surface).
+
+# Strong collocations
+it's important to note=2.0
+it's worth noting=2.0
+it is worth mentioning=2.0
+that being said=2.0
+in today's fast-paced world=2.0
+in today's digital world=2.0
+in today's modern world=2.0
+in the realm of=2.0
+navigating the complexities of=2.0
+a testament to=2.0
+rich tapestry=2.0
+when it comes to=2.0
+at the end of the day=2.0
+plays a crucial role=2.0
+plays a vital role=2.0
+plays a pivotal role=2.0
+plays a key role=2.0
+dive into=2.0
+let's dive in=2.0
+let's explore=2.0
+unlock the potential=2.0
+unlock the power=2.0
+unlock the secrets=2.0
+ever-evolving=2.0
+treasure trove=2.0
+cutting-edge=2.0
+state-of-the-art=2.0
+stark reminder=2.0
+
+# Weak transitions
+furthermore=1.0
+moreover=1.0
+additionally=1.0
+in conclusion=1.0
+in summary=1.0
+to sum up=1.0

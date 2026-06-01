@@ -1,5 +1,5 @@
 import { ApiProxyKey, apiProxyRequest } from '@/api';
-import { AnalyzeKind } from '@/entities/analyze';
+import { AnalyzeVerdict } from '@/entities/analyze';
 import { MIN_TEXT_LENGTH_DEFAULT } from '@/sections';
 import type { AbstractObject, Nullable } from '@/types';
 import { autoUpdate, computePosition, flip, offset, shift } from '@floating-ui/dom';
@@ -23,7 +23,7 @@ const HIGHLIGHT_HUMAN = '0 0 0 2px rgba(38, 197, 94, 0.6)';
 
 const analyzedElements = new WeakMap<
   HTMLElement,
-  { text: string; kind: AnalyzeKind; accuracy: number }
+  { text: string; verdict: AnalyzeVerdict; confidence: number }
 >();
 
 const pendingTimers = new WeakMap<Element, ReturnType<typeof setTimeout>>();
@@ -98,8 +98,8 @@ function showTooltip(element: HTMLElement) {
 
   currentHoveredElement = element;
 
-  const icon = data.kind === AnalyzeKind.AI ? '🤖' : '✅';
-  tooltipEl.textContent = `${icon} ${Math.round(data.accuracy * 100)}%`;
+  const icon = data.verdict === AnalyzeVerdict.AI ? '🤖' : '✅';
+  tooltipEl.textContent = `${icon} ${Math.round(data.confidence * 100)}%`;
 
   tooltipEl.setAttribute(TOOLTIP_VISIBLE_ATTR, '');
 
@@ -113,12 +113,12 @@ function hideTooltip() {
   tooltipUpdateCleanup = null;
 }
 
-function highlightElement(element: HTMLElement, kind: AnalyzeKind) {
+function highlightElement(element: HTMLElement, verdict: AnalyzeVerdict) {
   if (!element.hasAttribute(HIGHLIGHT_ATTR)) {
     element.setAttribute(HIGHLIGHT_ATTR, element.style.boxShadow);
   }
 
-  const shadow = kind === AnalyzeKind.AI ? HIGHLIGHT_AI : HIGHLIGHT_HUMAN;
+  const shadow = verdict === AnalyzeVerdict.AI ? HIGHLIGHT_AI : HIGHLIGHT_HUMAN;
   const existingShadow = element.style.boxShadow;
   element.style.boxShadow = existingShadow ? `${existingShadow}, ${shadow}` : shadow;
 }
@@ -242,7 +242,7 @@ function markCandidate(element: HTMLElement) {
 
   const cached = analyzedElements.get(element);
   if (cached && cached.text === cacheKey) {
-    highlightElement(element, cached.kind);
+    highlightElement(element, cached.verdict);
     return;
   }
 
@@ -257,17 +257,17 @@ function markCandidate(element: HTMLElement) {
       if (isMedia) {
         await apiProxyRequest(ApiProxyKey.ANALYZE_MEDIA, mediaUrl, (response) => {
           if (response.success) {
-            const { accuracy, kind } = response.data.data;
-            analyzedElements.set(element, { accuracy, kind, text: cacheKey });
-            highlightElement(element, kind);
+            const { confidence, verdict } = response.data.data;
+            analyzedElements.set(element, { confidence, verdict, text: cacheKey });
+            highlightElement(element, verdict);
           }
         });
       } else {
         await apiProxyRequest(ApiProxyKey.ANALYZE_TEXT, text, (response) => {
           if (response.success) {
-            const { accuracy, kind } = response.data.data;
-            analyzedElements.set(element, { accuracy, kind, text: cacheKey });
-            highlightElement(element, kind);
+            const { confidence, verdict } = response.data.data;
+            analyzedElements.set(element, { confidence, verdict, text: cacheKey });
+            highlightElement(element, verdict);
           }
         });
       }
@@ -321,7 +321,7 @@ function observeCandidateElements(minTextLength: number) {
     // восстанавливаем подсветку для уже проанализированных
     const cached = analyzedElements.get(element as HTMLElement);
     if (cached) {
-      highlightElement(element as HTMLElement, cached.kind);
+      highlightElement(element as HTMLElement, cached.verdict);
     }
 
     if (isCandidate(element, minTextLength)) {

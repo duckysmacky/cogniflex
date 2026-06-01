@@ -1,98 +1,98 @@
 package io.github.duckysmacky.cogniflex.services;
 
-import io.github.duckysmacky.cogniflex.clients.MLClient;
-import io.github.duckysmacky.cogniflex.dto.AnalyzeResultResponse;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisOrchestrator;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisResultSummary;
+import io.github.duckysmacky.cogniflex.analysis.ContentItem;
+import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
+import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
+import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
-import io.github.duckysmacky.cogniflex.enums.InputType;
-import io.github.duckysmacky.cogniflex.enums.MediaType;
+import io.github.duckysmacky.cogniflex.dto.EvidenceResponse;
+import io.github.duckysmacky.cogniflex.analysis.InputType;
+import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
+import io.github.duckysmacky.cogniflex.processing.media.ParsedMedia;
+import io.github.duckysmacky.cogniflex.processing.text.PreprocessedText;
+import io.github.duckysmacky.cogniflex.processing.text.TextPreprocessingOptions;
+import io.github.duckysmacky.cogniflex.processing.text.TextPreprocessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
 
 @Service
 public class AnalyzeService {
-
     private static final Logger log = LoggerFactory.getLogger(AnalyzeService.class);
 
-    private final MLClient mlClient;
+    private final AnalysisOrchestrator analysisOrchestrator;
+    private final ContentItemFactory contentItemFactory;
     private final HistoryService historyService;
-    private final MediaTypeResolver mediaTypeResolver;
+    private final TextPreprocessor textPreprocessor;
+    private final MediaParser mediaParser;
 
     public AnalyzeService(
-            MLClient mlClient,
-            HistoryService historyService,
-            MediaTypeResolver mediaTypeResolver
+        AnalysisOrchestrator analysisOrchestrator,
+        ContentItemFactory contentItemFactory,
+        HistoryService historyService,
+        TextPreprocessor textPreprocessor,
+        MediaParser mediaParser
     ) {
-        this.mlClient = mlClient;
+        this.analysisOrchestrator = analysisOrchestrator;
+        this.contentItemFactory = contentItemFactory;
         this.historyService = historyService;
-        this.mediaTypeResolver = mediaTypeResolver;
+        this.textPreprocessor = textPreprocessor;
+        this.mediaParser = mediaParser;
     }
 
-    public AnalyzeResultResponse analyzeText(CreateTextDetectionRequest request) {
+    public AnalysisResultResponse analyzeText(CreateTextDetectionRequest request) {
         long startedAt = System.nanoTime();
 
-        String normalizedText = normalizeText(request.text());
-        AnalyzeResultResponse response = mlClient.analyzeText(normalizedText);
+        PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
+        ContentItem item = contentItemFactory.fromText(text);
+
+        AnalysisResultSummary result = analysisOrchestrator.submit(item);
+        AnalysisResultResponse response = toResponse(result);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
-                InputType.TEXT,
-                null,
-                response.kind(),
-                response.accuracy()
+            InputType.TEXT,
+            null,
+            response.verdict(),
+            response.confidence()
         ));
 
         logElapsed("text", startedAt);
         return response;
     }
 
-    public AnalyzeResultResponse analyzeMedia(MultipartFile file) {
+    public AnalysisResultResponse analyzeMedia(MultipartFile file) {
         long startedAt = System.nanoTime();
 
-        MediaType mediaType = mediaTypeResolver.resolve(file);
-        byte[] content = readBytes(file);
+        ParsedMedia media = mediaParser.parse(file);
+        ContentItem item = contentItemFactory.fromMedia(media);
 
-        AnalyzeResultResponse response = switch (mediaType) {
-            case IMAGE -> mlClient.analyzeImage(content);
-            case VIDEO -> mlClient.analyzeVideo(content);
-        };
+        AnalysisResultSummary result = analysisOrchestrator.submit(item);
+        AnalysisResultResponse response = toResponse(result);
 
         historyService.createHistoryItem(new CreateHistoryItemRequest(
-                InputType.MEDIA,
-                mediaType,
-                response.kind(),
-                response.accuracy()
+            InputType.MEDIA,
+            media.mediaType(),
+            response.verdict(),
+            response.confidence()
         ));
 
-        logElapsed(mediaType.name().toLowerCase(), startedAt);
+        logElapsed(media.mediaType().name().toLowerCase(), startedAt);
         return response;
     }
 
-    private String normalizeText(String text) {
-        String normalizedText = text.trim().replaceAll("\\s+", " ");
-
-        if (normalizedText.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Text is empty");
-        }
-
-        return normalizedText;
-    }
-
-    private byte[] readBytes(MultipartFile file) {
-        try {
-            return file.getBytes();
-        } catch (IOException ex) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Cannot read uploaded file",
-                    ex
-            );
-        }
+    private AnalysisResultResponse toResponse(AnalysisResultSummary result) {
+        FinalScore score = result.score();
+        return new AnalysisResultResponse(
+            score.verdict(),
+            score.confidence(),
+            result.evidence().stream()
+                .map(EvidenceResponse::from)
+                .toList()
+        );
     }
 
     private void logElapsed(String analysisType, long startedAt) {

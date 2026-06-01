@@ -1,10 +1,10 @@
 export type TAnalyzeResult = {
-  kind: AnalyzeKind;
-  accuracy: number;
+  verdict: AnalyzeVerdict;
+  confidence: number;
 };
 
-export const AnalyzeKind = {
-  REAL: 0,
-  AI: 1,
+export const AnalyzeVerdict = {
+  HUMAN: 'human',
+  AI: 'ai',
 } as const;
-export type AnalyzeKind = (typeof AnalyzeKind)[keyof typeof AnalyzeKind];
+export type AnalyzeVerdict = (typeof AnalyzeVerdict)[keyof typeof AnalyzeVerdict];
