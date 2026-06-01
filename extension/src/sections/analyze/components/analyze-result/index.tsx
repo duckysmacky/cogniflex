@@ -1,15 +1,15 @@
-import { AnalyzeKind, type TAnalyzeResult } from '@/entities/analyze';
+import { AnalyzeVerdict, type TAnalyzeResult } from '@/entities/analyze';
 import { ANALYZE_RESULTS_MAP } from '@/sections/analyze/components/analyze-result/constants';
 import type { Nullable } from '@/types';
 import { IconLoader2 } from '@tabler/icons-react';
 import { twMerge } from 'tailwind-merge';
 
-const KIND_TO_RESULT_CLASSES: Record<AnalyzeKind, Record<'container' | 'badge', string>> = {
-  [AnalyzeKind.REAL]: {
+const VERDICT_TO_RESULT_CLASSES: Record<AnalyzeVerdict, Record<'container' | 'badge', string>> = {
+  [AnalyzeVerdict.HUMAN]: {
     container: 'border-green bg-green/20',
     badge: 'text-green bg-green/20 border-green',
   },
-  [AnalyzeKind.AI]: {
+  [AnalyzeVerdict.AI]: {
     container: 'border-red bg-red/20',
     badge: 'text-red bg-red/20 border-red',
   },
@@ -37,7 +37,7 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
     }
 
     if (analyzeResult) {
-      const classes = KIND_TO_RESULT_CLASSES[analyzeResult.kind];
+      const classes = VERDICT_TO_RESULT_CLASSES[analyzeResult.verdict];
       return (
         <div
           className={twMerge(
@@ -51,12 +51,12 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
               classes.badge,
             )}
           >
-            {ANALYZE_RESULTS_MAP[analyzeResult.kind]}
+            {ANALYZE_RESULTS_MAP[analyzeResult.verdict]}
           </div>
 
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-3xl font-semibold">
-              {Math.round(analyzeResult.accuracy * 100)}%
+              {Math.round(analyzeResult.confidence * 100)}%
             </span>
             <span className="text-2xs text-gray">Уверенность</span>
           </div>

@@ -1,6 +1,6 @@
-import { AnalyzeKind } from '@/entities/analyze';
+import { AnalyzeVerdict } from '@/entities/analyze';
 
-export const ANALYZE_RESULTS_MAP: Record<AnalyzeKind, string> = {
-  [AnalyzeKind.REAL]: 'Оригинальный контент',
-  [AnalyzeKind.AI]: 'Сгенерировано ИИ',
+export const ANALYZE_RESULTS_MAP: Record<AnalyzeVerdict, string> = {
+  [AnalyzeVerdict.HUMAN]: 'Оригинальный контент',
+  [AnalyzeVerdict.AI]: 'Сгенерировано ИИ',
 };

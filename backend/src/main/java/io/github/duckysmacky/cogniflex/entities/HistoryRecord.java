@@ -1,9 +1,9 @@
 package io.github.duckysmacky.cogniflex.entities;
 
-import io.github.duckysmacky.cogniflex.converters.DetectionKindConverter;
-import io.github.duckysmacky.cogniflex.enums.DetectionKind;
-import io.github.duckysmacky.cogniflex.enums.InputType;
-import io.github.duckysmacky.cogniflex.enums.MediaType;
+import io.github.duckysmacky.cogniflex.converters.AnalysisVerdictConverter;
+import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
+import io.github.duckysmacky.cogniflex.analysis.InputType;
+import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -11,6 +11,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.ColumnTransformer;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -30,9 +31,10 @@ public class HistoryRecord {
     @Column(name = "media_type", length = 16)
     private MediaType mediaType;
 
-    @Convert(converter = DetectionKindConverter.class)
-    @Column(nullable = false)
-    private DetectionKind kind;
+    @Convert(converter = AnalysisVerdictConverter.class)
+    @ColumnTransformer(write = "?::analysis_verdict")
+    @Column(name = "verdict", nullable = false, columnDefinition = "analysis_verdict")
+    private AnalysisVerdict verdict;
 
     @Column(nullable = false)
     private double accuracy;
@@ -47,14 +49,14 @@ public class HistoryRecord {
             UUID id,
             InputType inputType,
             MediaType mediaType,
-            DetectionKind kind,
+            AnalysisVerdict verdict,
             double accuracy,
             Instant createdAt
     ) {
         this.id = id;
         this.inputType = inputType;
         this.mediaType = mediaType;
-        this.kind = kind;
+        this.verdict = verdict;
         this.accuracy = accuracy;
         this.createdAt = createdAt;
     }
@@ -83,12 +85,12 @@ public class HistoryRecord {
         this.mediaType = mediaType;
     }
 
-    public DetectionKind getKind() {
-        return kind;
+    public AnalysisVerdict getVerdict() {
+        return verdict;
     }
 
-    public void setKind(DetectionKind kind) {
-        this.kind = kind;
+    public void setVerdict(AnalysisVerdict verdict) {
+        this.verdict = verdict;
     }
 
     public double getAccuracy() {
