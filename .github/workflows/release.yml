@@ -148,6 +148,8 @@ jobs:
           ML_SERVICE_IMAGE: ${{ steps.metadata.outputs.ml_service_image_version }}
         run: |
           cat > release-notes.md <<EOF
+          ## Artifacts
+
           Docker images:
 
           - Backend: \`${BACKEND_IMAGE}\`
@@ -160,7 +162,7 @@ jobs:
 
           gh release create "v${VERSION}" \
             "extension/release/cogniflex-extension-${VERSION}.zip" \
-            --title "Cogniflex ${VERSION}" \
+            --title "v${VERSION}" \
             --notes-file release-notes.md \
             --draft \
             --verify-tag
