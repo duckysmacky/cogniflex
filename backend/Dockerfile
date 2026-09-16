@@ -17,4 +17,4 @@ WORKDIR /app
 
 COPY --from=builder /app/backend/build/libs/*.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "--enable-native-access=ALL-UNNAMED", "-jar", "app.jar"]
