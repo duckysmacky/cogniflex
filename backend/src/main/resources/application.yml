@@ -19,7 +19,6 @@ spring:
       host: "${REDIS_HOST:localhost}"
       port: "${REDIS_PORT:6379}"
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     hibernate:
       ddl-auto: validate
