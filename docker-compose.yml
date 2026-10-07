@@ -37,29 +37,29 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - DB_HOST=db
       - REDIS_HOST=redis
-      - ML_SERVICE_HOST=ml-service
+      - INFERENCE_HOST=inference
     volumes:
       - ./backend/src/main/resources:/app/config:ro
     depends_on:
       - db
       - redis
-      - ml-service
+      - inference
     networks:
       - backend-network
       - analysis-network
     restart: unless-stopped
 
-  ml-service:
+  inference:
     build:
       context: .
-      dockerfile: ml-service/Dockerfile
-    image: cogniflex-ml-service:latest
-    container_name: cogniflex-ml-service
+      dockerfile: inference/Dockerfile
+    image: cogniflex-inference:latest
+    container_name: cogniflex-inference
     env_file:
       - .env
     volumes:
-      - ./ml-service/config.yaml:/app/ml-service/config.yaml:ro
-      - ./ml-service/weights:/app/ml-service/weights:ro
+      - ./inference/config.yaml:/app/inference/config.yaml:ro
+      - ./inference/weights:/app/inference/weights:ro
     networks:
       - analysis-network
     restart: unless-stopped

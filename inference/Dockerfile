@@ -1,18 +1,18 @@
 FROM python:3.10-slim
 
-WORKDIR /app/ml-service
+WORKDIR /app/inference
 
 ARG HF_TOKEN
 
 ENV PYTHONUNBUFFERED=1
 ENV HF_TOKEN=${HF_TOKEN}
 
-COPY ml-service/requirements.txt .
+COPY inference/requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-COPY ml-service/ .
+COPY inference/ .
 COPY proto ../proto
 
 RUN mkdir -p generated && \
@@ -20,7 +20,7 @@ RUN mkdir -p generated && \
     -I../proto \
     --python_out=./generated \
     --grpc_python_out=./generated \
-    ../proto/*.proto
+    ../proto/cogniflex/inference/*.proto
 
 RUN python -c "from transformers import AutoTokenizer, AutoModel; \
     AutoTokenizer.from_pretrained('roberta-base'); \

@@ -70,11 +70,11 @@ if [[ -n "$REGISTRY" && -n "$REGISTRY_USERNAME" ]]; then
 
   log "Pulling custom images from '$IMAGE_PREFIX'"
   docker pull "$IMAGE_PREFIX/cogniflex-backend:latest"
-  docker pull "$IMAGE_PREFIX/cogniflex-ml-service:latest"
+  docker pull "$IMAGE_PREFIX/cogniflex-inference:latest"
 
   log "Tagging custom images for docker compose"
   docker tag "$IMAGE_PREFIX/cogniflex-backend:latest" cogniflex-backend:latest
-  docker tag "$IMAGE_PREFIX/cogniflex-ml-service:latest" cogniflex-ml-service:latest
+  docker tag "$IMAGE_PREFIX/cogniflex-inference:latest" cogniflex-inference:latest
 else
   log "No registry username provided, using local custom images"
 fi
@@ -89,13 +89,13 @@ log "Removing old Cogniflex images"
 if [[ -n "$REGISTRY" && -n "$REGISTRY_USERNAME" ]]; then
   remove_old_project_images \
     "cogniflex-backend" \
-    "cogniflex-ml-service" \
+    "cogniflex-inference" \
     "$REGISTRY/$REGISTRY_USERNAME/cogniflex-backend" \
-    "$REGISTRY/$REGISTRY_USERNAME/cogniflex-ml-service"
+    "$REGISTRY/$REGISTRY_USERNAME/cogniflex-inference"
 else
   remove_old_project_images \
     "cogniflex-backend" \
-    "cogniflex-ml-service"
+    "cogniflex-inference"
 fi
 
 log "Removing dangling images"

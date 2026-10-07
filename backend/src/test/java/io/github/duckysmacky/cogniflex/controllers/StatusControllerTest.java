@@ -42,7 +42,7 @@ public class StatusControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.backendHealth").value("UP"))
             .andExpect(jsonPath("$.backendStatus").value("UP"))
-            .andExpect(jsonPath("$.MLServiceStatus").value("AVAILABLE"))
+            .andExpect(jsonPath("$.inferenceStatus").value("AVAILABLE"))
             .andExpect(jsonPath("$.databaseStatus").value("AVAILABLE"))
             .andExpect(jsonPath("$.redisStatus").value("AVAILABLE"));
     }

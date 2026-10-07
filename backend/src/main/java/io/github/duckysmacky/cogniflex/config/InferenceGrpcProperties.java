@@ -9,8 +9,8 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 
 @Validated
-@ConfigurationProperties(prefix = "grpc.ml-service")
-public class MLGrpcProperties {
+@ConfigurationProperties(prefix = "grpc.inference")
+public class InferenceGrpcProperties {
 
     @NotBlank
     private String host;

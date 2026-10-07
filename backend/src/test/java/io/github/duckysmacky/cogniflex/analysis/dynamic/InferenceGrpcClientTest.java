@@ -2,10 +2,10 @@ package io.github.duckysmacky.cogniflex.analysis.dynamic;
 
 import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
-import io.github.duckysmacky.cogniflex.analysis.dynamic.ml.MLGrpcClient;
-import io.github.duckysmacky.cogniflex.config.MLGrpcProperties;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.inference.InferenceGrpcClient;
+import io.github.duckysmacky.cogniflex.config.InferenceGrpcProperties;
 import io.github.duckysmacky.cogniflex.grpc.AnalyzeReply;
-import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
+import io.github.duckysmacky.cogniflex.grpc.AnalyzerGrpc;
 import io.github.duckysmacky.cogniflex.grpc.PhotoRequest;
 import io.github.duckysmacky.cogniflex.grpc.TextRequest;
 import io.github.duckysmacky.cogniflex.grpc.VideoRequest;
@@ -22,11 +22,11 @@ import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MLGrpcClientTest {
+class InferenceGrpcClientTest {
 
     private Server server;
     private ManagedChannel channel;
-    private MLGrpcClient client;
+    private InferenceGrpcClient client;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -34,7 +34,7 @@ class MLGrpcClientTest {
 
         server = InProcessServerBuilder.forName(serverName)
             .directExecutor()
-            .addService(new MLAnalyzerGrpc.MLAnalyzerImplBase() {
+            .addService(new AnalyzerGrpc.AnalyzerImplBase() {
                 @Override
                 public void analyzeText(
                     TextRequest request,
@@ -84,11 +84,11 @@ class MLGrpcClientTest {
             .directExecutor()
             .build();
 
-        MLGrpcProperties properties = new MLGrpcProperties();
+        InferenceGrpcProperties properties = new InferenceGrpcProperties();
         properties.setTimeout(Duration.ofSeconds(1));
 
-        client = new MLGrpcClient(
-            MLAnalyzerGrpc.newBlockingStub(channel),
+        client = new InferenceGrpcClient(
+            AnalyzerGrpc.newBlockingStub(channel),
             properties
         );
     }

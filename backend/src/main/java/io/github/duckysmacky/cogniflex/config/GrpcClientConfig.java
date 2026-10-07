@@ -1,6 +1,6 @@
 package io.github.duckysmacky.cogniflex.config;
 
-import io.github.duckysmacky.cogniflex.grpc.MLAnalyzerGrpc;
+import io.github.duckysmacky.cogniflex.grpc.AnalyzerGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties(MLGrpcProperties.class)
+@EnableConfigurationProperties(InferenceGrpcProperties.class)
 public class GrpcClientConfig {
 
     @Bean(destroyMethod = "shutdownNow")
-    public ManagedChannel mlManagedChannel(MLGrpcProperties properties) {
+    public ManagedChannel inferenceManagedChannel(InferenceGrpcProperties properties) {
         ManagedChannelBuilder<?> builder =
                 ManagedChannelBuilder.forAddress(properties.getHost(), properties.getPort());
 
@@ -24,7 +24,7 @@ public class GrpcClientConfig {
     }
 
     @Bean
-    public MLAnalyzerGrpc.MLAnalyzerBlockingStub mlAnalyzerBlockingStub(ManagedChannel mlManagedChannel) {
-        return MLAnalyzerGrpc.newBlockingStub(mlManagedChannel);
+    public AnalyzerGrpc.AnalyzerBlockingStub analyzerBlockingStub(ManagedChannel inferenceManagedChannel) {
+        return AnalyzerGrpc.newBlockingStub(inferenceManagedChannel);
     }
 }

@@ -31,8 +31,8 @@ server:
   port: "${BACKEND_PORT:8080}"
 
 grpc:
-  ml-service:
-    host: ${ML_SERVICE_HOST:localhost}
-    port: ${ML_SERVICE_PORT:50051}
+  inference:
+    host: ${INFERENCE_HOST:localhost}
+    port: ${INFERENCE_PORT:50051}
     timeout: 30s
     plaintext: true

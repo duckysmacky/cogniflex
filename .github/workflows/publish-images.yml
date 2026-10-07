@@ -22,9 +22,9 @@ jobs:
       backend_image_latest: ${{ steps.metadata.outputs.backend_image_latest }}
       backend_image_sha: ${{ steps.metadata.outputs.backend_image_sha }}
       backend_tags: ${{ steps.metadata.outputs.backend_tags }}
-      ml_service_image_latest: ${{ steps.metadata.outputs.ml_service_image_latest }}
-      ml_service_image_sha: ${{ steps.metadata.outputs.ml_service_image_sha }}
-      ml_service_tags: ${{ steps.metadata.outputs.ml_service_tags }}
+      inference_image_latest: ${{ steps.metadata.outputs.inference_image_latest }}
+      inference_image_sha: ${{ steps.metadata.outputs.inference_image_sha }}
+      inference_tags: ${{ steps.metadata.outputs.inference_tags }}
       registry_username: ${{ steps.metadata.outputs.registry_username }}
 
     steps:
@@ -45,17 +45,17 @@ jobs:
           echo "registry_username=${owner}" >> "$GITHUB_OUTPUT"
           echo "backend_image_latest=${image_prefix}/cogniflex-backend:latest" >> "$GITHUB_OUTPUT"
           echo "backend_image_sha=${image_prefix}/cogniflex-backend:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
-          echo "ml_service_image_latest=${image_prefix}/cogniflex-ml-service:latest" >> "$GITHUB_OUTPUT"
-          echo "ml_service_image_sha=${image_prefix}/cogniflex-ml-service:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "inference_image_latest=${image_prefix}/cogniflex-inference:latest" >> "$GITHUB_OUTPUT"
+          echo "inference_image_sha=${image_prefix}/cogniflex-inference:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
           {
             echo "backend_tags<<EOF"
             echo "${image_prefix}/cogniflex-backend:latest"
             echo "${image_prefix}/cogniflex-backend:${GITHUB_SHA}"
             echo "EOF"
-            echo "ml_service_tags<<EOF"
-            echo "${image_prefix}/cogniflex-ml-service:latest"
-            echo "${image_prefix}/cogniflex-ml-service:${GITHUB_SHA}"
+            echo "inference_tags<<EOF"
+            echo "${image_prefix}/cogniflex-inference:latest"
+            echo "${image_prefix}/cogniflex-inference:${GITHUB_SHA}"
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
@@ -66,7 +66,7 @@ jobs:
     timeout-minutes: 60
     outputs:
       backend_digest: ${{ steps.backend_image.outputs.digest }}
-      ml_service_digest: ${{ steps.ml_service_image.outputs.digest }}
+      inference_digest: ${{ steps.inference_image.outputs.digest }}
 
     steps:
       - name: Check out repository
@@ -93,16 +93,16 @@ jobs:
           cache-to: type=gha,mode=max,scope=backend
           tags: ${{ needs.prepare.outputs.backend_tags }}
 
-      - name: Build and push ML service image
-        id: ml_service_image
+      - name: Build and push inference image
+        id: inference_image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ml-service/Dockerfile
+          file: inference/Dockerfile
           push: true
-          cache-from: type=gha,scope=ml-service
-          cache-to: type=gha,mode=max,scope=ml-service
-          tags: ${{ needs.prepare.outputs.ml_service_tags }}
+          cache-from: type=gha,scope=inference
+          cache-to: type=gha,mode=max,scope=inference
+          tags: ${{ needs.prepare.outputs.inference_tags }}
 
   metadata:
     name: Upload publish metadata
@@ -117,18 +117,18 @@ jobs:
           BACKEND_DIGEST: ${{ needs.build-images.outputs.backend_digest }}
           BACKEND_IMAGE_LATEST: ${{ needs.prepare.outputs.backend_image_latest }}
           BACKEND_IMAGE_SHA: ${{ needs.prepare.outputs.backend_image_sha }}
-          ML_SERVICE_DIGEST: ${{ needs.build-images.outputs.ml_service_digest }}
-          ML_SERVICE_IMAGE_LATEST: ${{ needs.prepare.outputs.ml_service_image_latest }}
-          ML_SERVICE_IMAGE_SHA: ${{ needs.prepare.outputs.ml_service_image_sha }}
+          INFERENCE_DIGEST: ${{ needs.build-images.outputs.inference_digest }}
+          INFERENCE_IMAGE_LATEST: ${{ needs.prepare.outputs.inference_image_latest }}
+          INFERENCE_IMAGE_SHA: ${{ needs.prepare.outputs.inference_image_sha }}
           REGISTRY_USERNAME: ${{ needs.prepare.outputs.registry_username }}
         run: |
           {
             echo "backend_digest=${BACKEND_DIGEST}"
             echo "backend_image_latest=${BACKEND_IMAGE_LATEST}"
             echo "backend_image_sha=${BACKEND_IMAGE_SHA}"
-            echo "ml_service_digest=${ML_SERVICE_DIGEST}"
-            echo "ml_service_image_latest=${ML_SERVICE_IMAGE_LATEST}"
-            echo "ml_service_image_sha=${ML_SERVICE_IMAGE_SHA}"
+            echo "inference_digest=${INFERENCE_DIGEST}"
+            echo "inference_image_latest=${INFERENCE_IMAGE_LATEST}"
+            echo "inference_image_sha=${INFERENCE_IMAGE_SHA}"
             echo "registry_username=${REGISTRY_USERNAME}"
           } > publish-metadata.env
 

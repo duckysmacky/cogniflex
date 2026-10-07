@@ -2,7 +2,7 @@ package io.github.duckysmacky.cogniflex.controllers;
 
 import io.github.duckysmacky.cogniflex.dto.MetricsResponse;
 import io.github.duckysmacky.cogniflex.services.availability.DatabaseAvailabilityService;
-import io.github.duckysmacky.cogniflex.services.availability.MLServiceAvailabilityService;
+import io.github.duckysmacky.cogniflex.services.availability.InferenceAvailabilityService;
 
 import io.github.duckysmacky.cogniflex.services.availability.RedisAvailabilityService;
 
@@ -27,7 +27,7 @@ public class MetricsController {
     private DatabaseAvailabilityService databaseAvailabilityService;
 
     @Autowired
-    private MLServiceAvailabilityService MLServiceAvailabilityService;
+    private InferenceAvailabilityService inferenceAvailabilityService;
 
     private String measureAndFormat(Supplier<String> service)
     {
@@ -53,7 +53,7 @@ public class MetricsController {
         return new MetricsResponse(
             measureAndFormat(databaseAvailabilityService::getStatus),
             measureAndFormat(redisAvailabilityService::getStatus),
-            measureAndFormat(MLServiceAvailabilityService::getStatus)
+            measureAndFormat(inferenceAvailabilityService::getStatus)
         );
     }
 }

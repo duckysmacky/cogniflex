@@ -26,9 +26,9 @@ eslint . --fix        # lint + autofix
 prettier --write .    # format
 ```
 
-### ML Service (Python)
+### Inference Service (Python)
 ```bash
-cd ml-service
+cd inference
 pip install -r requirements.txt
 python main.py        # start gRPC server on :50051
 python tests/test_text_client.py    # manual test
@@ -37,7 +37,7 @@ python tests/test_text_client.py    # manual test
 ### Full Stack
 ```bash
 docker compose up --build           # all services
-docker compose up --build ml-service  # individual service
+docker compose up --build inference  # individual service
 ```
 
 ## Architecture
@@ -60,7 +60,7 @@ All backend code lives under `io.github.duckysmacky.cogniflex`:
 - **`analysis/`** — core detection pipeline
   - `Analyzer<R>` — top-level interface; `AnalysisOrchestrator` runs static + dynamic analyzers in parallel via `CompletableFuture`
   - `static_/` — rule-based heuristic analysis; `StaticAnalyzer` (abstract) evaluates a list of `AnalysisRule<C>` implementations and collects `Evidence`
-  - `dynamic/` — ML model inference; `DynamicAnalyzer` delegates to `MLGrpcClient` which calls the Python gRPC service
+  - `dynamic/` — ML model inference; `DynamicAnalyzer` delegates to `InferenceGrpcClient` which calls the Python gRPC service
   - `score/` — `ScoreFusionStrategy` merges static evidence + dynamic ML score into a `FinalScore` (verdict + confidence)
 - **`processing/`** — input preparation: `TextPreprocessor` (hidden chars → line endings → Unicode → whitespace normalization), `MediaParser` (image/video handling)
 - **`controllers/`** — REST endpoints: `DetectionController` (`POST /api/analyze/text`, `POST /api/analyze/media`), `HistoryController`, `StatusController`
@@ -76,7 +76,7 @@ All backend code lives under `io.github.duckysmacky.cogniflex`:
 3. `ContentItemFactory` creates an immutable `ContentItem`
 4. `AnalysisOrchestrator` runs concurrently:
    - `TextStaticAnalyzer` evaluates `TextAnalysisRule` implementations → `Evidence`
-   - `TextDynamicAnalyzer` → `MLGrpcClient` → Python gRPC service (RoBERTa model)
+   - `TextDynamicAnalyzer` → `InferenceGrpcClient` → Python gRPC service (RoBERTa model)
 5. `ScoreFusionStrategy.combine()` → `FinalScore`
 6. Result persisted via `HistoryService`, response returned
 
@@ -86,13 +86,13 @@ Implement `TextAnalysisRule` (or `ImageAnalysisRule` / `VideoAnalysisRule`), reg
 
 ### gRPC Contract
 
-Shared proto definition: `proto/ml_analyzer.proto`. Generated Java stubs live in the backend; Python stubs in `ml-service/`. When changing the proto, regenerate stubs for both services.
+Shared proto definition: `proto/cogniflex/inference/analyzer.proto`. Generated Java stubs live in the backend; Python stubs in `inference/`. When changing the proto, regenerate stubs for both services.
 
 ### Configuration
 
 - Secrets/endpoints via `.env` (not committed)
 - Spring profiles: `dev`, `prod` (`application-{profile}.yml`)
-- gRPC ML service defaults to `localhost:50051`
+- gRPC inference service defaults to `localhost:50051`
 - Multi-part uploads: 1024 MB max
 - Database: H2 for tests, PostgreSQL 18 in prod/dev
 
@@ -101,4 +101,4 @@ Shared proto definition: `proto/ml_analyzer.proto`. Generated Java stubs live in
 - **Text**: RoBERTa (Hugging Face Transformers)
 - **Image**: ResNet18 (PyTorch + torchvision)
 - **Video**: stub (not yet implemented)
-- Model weights stored locally under `ml-service/weights/` (not in repo)
+- Model weights stored locally under `inference/weights/` (not in repo)

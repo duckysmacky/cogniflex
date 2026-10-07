@@ -2,7 +2,7 @@ package io.github.duckysmacky.cogniflex.analysis.dynamic;
 
 import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
-import io.github.duckysmacky.cogniflex.analysis.dynamic.ml.MLClient;
+import io.github.duckysmacky.cogniflex.analysis.dynamic.inference.InferenceClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -10,14 +10,14 @@ import java.util.concurrent.Executor;
 
 @Component
 public class VideoDynamicAnalyzer extends DynamicAnalyzer {
-    private final MLClient mlClient;
+    private final InferenceClient inferenceClient;
 
     public VideoDynamicAnalyzer(
-        MLClient mlClient,
+        InferenceClient inferenceClient,
         @Qualifier("dynamicAnalysisExecutor") Executor dynamicAnalysisExecutor
     ) {
         super(dynamicAnalysisExecutor);
-        this.mlClient = mlClient;
+        this.inferenceClient = inferenceClient;
     }
 
     @Override
@@ -27,6 +27,6 @@ public class VideoDynamicAnalyzer extends DynamicAnalyzer {
 
     @Override
     protected DynamicAnalysisResult analyzeDynamic(ContentItem item) {
-        return mlClient.analyzeVideo(item.bytes());
+        return inferenceClient.analyzeVideo(item.bytes());
     }
 }

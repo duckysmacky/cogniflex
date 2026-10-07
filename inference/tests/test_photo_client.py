@@ -5,8 +5,7 @@ from common import load_env_file
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'generated'))
 
-import ml_analyzer_pb2
-import ml_analyzer_pb2_grpc
+from cogniflex.inference import analyzer_pb2, analyzer_pb2_grpc
 
 
 def test_photo(image_path):
@@ -21,11 +20,11 @@ def test_photo(image_path):
     
     target = f"{os.getenv('ML_GRPC_HOST', 'localhost')}:{os.getenv('ML_GRPC_PORT', '50051')}"
     channel = grpc.insecure_channel(target)
-    stub = ml_analyzer_pb2_grpc.MLAnalyzerStub(channel)
+    stub = analyzer_pb2_grpc.AnalyzerStub(channel)
     
     try:
         response = stub.AnalyzePhoto(
-            ml_analyzer_pb2.PhotoRequest(image_data=image_bytes),
+            analyzer_pb2.PhotoRequest(image_data=image_bytes),
             timeout=30.0
         )
         

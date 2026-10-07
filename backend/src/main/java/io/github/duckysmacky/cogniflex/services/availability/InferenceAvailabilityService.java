@@ -10,13 +10,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class MLServiceAvailabilityService implements AvailabilityService {
+public class InferenceAvailabilityService implements AvailabilityService {
     private static final Duration CONNECTION_CHECK_TIMEOUT = Duration.ofMillis(500);
 
-    private final ManagedChannel mlManagedChannel;
+    private final ManagedChannel inferenceManagedChannel;
 
-    public MLServiceAvailabilityService(ManagedChannel mlManagedChannel) {
-        this.mlManagedChannel = mlManagedChannel;
+    public InferenceAvailabilityService(ManagedChannel inferenceManagedChannel) {
+        this.inferenceManagedChannel = inferenceManagedChannel;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class MLServiceAvailabilityService implements AvailabilityService {
 
     private ConnectivityState getCurrentState() {
         try {
-            ConnectivityState state = mlManagedChannel.getState(true);
+            ConnectivityState state = inferenceManagedChannel.getState(true);
 
             if (state == ConnectivityState.READY
                 || state == ConnectivityState.TRANSIENT_FAILURE
@@ -55,9 +55,9 @@ public class MLServiceAvailabilityService implements AvailabilityService {
 
     private ConnectivityState waitForStateChange(ConnectivityState state) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        mlManagedChannel.notifyWhenStateChanged(state, latch::countDown);
+        inferenceManagedChannel.notifyWhenStateChanged(state, latch::countDown);
         latch.await(CONNECTION_CHECK_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
 
-        return mlManagedChannel.getState(false);
+        return inferenceManagedChannel.getState(false);
     }
 }

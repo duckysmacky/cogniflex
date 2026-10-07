@@ -50,8 +50,8 @@ jobs:
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "backend_image_sha=${image_prefix}/cogniflex-backend:${tag_commit}" >> "$GITHUB_OUTPUT"
           echo "backend_image_version=${image_prefix}/cogniflex-backend:${version}" >> "$GITHUB_OUTPUT"
-          echo "ml_service_image_sha=${image_prefix}/cogniflex-ml-service:${tag_commit}" >> "$GITHUB_OUTPUT"
-          echo "ml_service_image_version=${image_prefix}/cogniflex-ml-service:${version}" >> "$GITHUB_OUTPUT"
+          echo "inference_image_sha=${image_prefix}/cogniflex-inference:${tag_commit}" >> "$GITHUB_OUTPUT"
+          echo "inference_image_version=${image_prefix}/cogniflex-inference:${version}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -102,11 +102,11 @@ jobs:
       - name: Verify published SHA images
         env:
           BACKEND_IMAGE_SHA: ${{ steps.metadata.outputs.backend_image_sha }}
-          ML_SERVICE_IMAGE_SHA: ${{ steps.metadata.outputs.ml_service_image_sha }}
+          INFERENCE_IMAGE_SHA: ${{ steps.metadata.outputs.inference_image_sha }}
         run: |
           set -euo pipefail
 
-          for image in "${BACKEND_IMAGE_SHA}" "${ML_SERVICE_IMAGE_SHA}"; do
+          for image in "${BACKEND_IMAGE_SHA}" "${INFERENCE_IMAGE_SHA}"; do
             docker buildx imagetools inspect "${image}" >/dev/null
           done
 
@@ -114,16 +114,16 @@ jobs:
         env:
           BACKEND_IMAGE_SHA: ${{ steps.metadata.outputs.backend_image_sha }}
           BACKEND_IMAGE_VERSION: ${{ steps.metadata.outputs.backend_image_version }}
-          ML_SERVICE_IMAGE_SHA: ${{ steps.metadata.outputs.ml_service_image_sha }}
-          ML_SERVICE_IMAGE_VERSION: ${{ steps.metadata.outputs.ml_service_image_version }}
+          INFERENCE_IMAGE_SHA: ${{ steps.metadata.outputs.inference_image_sha }}
+          INFERENCE_IMAGE_VERSION: ${{ steps.metadata.outputs.inference_image_version }}
         run: |
           docker buildx imagetools create \
             --tag "${BACKEND_IMAGE_VERSION}" \
             "${BACKEND_IMAGE_SHA}"
 
           docker buildx imagetools create \
-            --tag "${ML_SERVICE_IMAGE_VERSION}" \
-            "${ML_SERVICE_IMAGE_SHA}"
+            --tag "${INFERENCE_IMAGE_VERSION}" \
+            "${INFERENCE_IMAGE_SHA}"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -145,7 +145,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.metadata.outputs.version }}
           BACKEND_IMAGE: ${{ steps.metadata.outputs.backend_image_version }}
-          ML_SERVICE_IMAGE: ${{ steps.metadata.outputs.ml_service_image_version }}
+          INFERENCE_IMAGE: ${{ steps.metadata.outputs.inference_image_version }}
         run: |
           cat > release-notes.md <<EOF
           ## Artifacts
@@ -153,7 +153,7 @@ jobs:
           Docker images:
 
           - Backend: \`${BACKEND_IMAGE}\`
-          - ML service: \`${ML_SERVICE_IMAGE}\`
+          - Inference: \`${INFERENCE_IMAGE}\`
 
           Extension build:
 

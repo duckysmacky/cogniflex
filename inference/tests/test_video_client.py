@@ -6,8 +6,7 @@ from common import load_env_file
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'generated'))
 
-import ml_analyzer_pb2
-import ml_analyzer_pb2_grpc
+from cogniflex.inference import analyzer_pb2, analyzer_pb2_grpc
 
 
 def test_video(video_path):
@@ -33,11 +32,11 @@ def test_video(video_path):
             ('grpc.max_receive_message_length', max_message_length_bytes),
         ]
     )
-    stub = ml_analyzer_pb2_grpc.MLAnalyzerStub(channel)
+    stub = analyzer_pb2_grpc.AnalyzerStub(channel)
     
     try:
         response = stub.AnalyzeVideo(
-            ml_analyzer_pb2.VideoRequest(video_data=video_bytes),
+            analyzer_pb2.VideoRequest(video_data=video_bytes),
             timeout=30.0
         )
         

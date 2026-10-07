@@ -6,15 +6,16 @@ from pathlib import Path
 
 
 def ensure_generated_proto(proto_dir: Path, generated_dir: Path) -> bool:
-    proto_file = proto_dir / "ml_analyzer.proto"
+    proto_file = proto_dir / "cogniflex" / "inference" / "analyzer.proto"
     if not proto_file.exists():
         logging.error("Proto file not found: %s", proto_file)
         return False
 
     generated_dir.mkdir(parents=True, exist_ok=True)
 
-    pb2_file = generated_dir / "ml_analyzer_pb2.py"
-    pb2_grpc_file = generated_dir / "ml_analyzer_pb2_grpc.py"
+    out_dir = generated_dir / "cogniflex" / "inference"
+    pb2_file = out_dir / "analyzer_pb2.py"
+    pb2_grpc_file = out_dir / "analyzer_pb2_grpc.py"
 
     if pb2_file.exists() and pb2_grpc_file.exists():
         proto_mtime = os.path.getmtime(proto_file)

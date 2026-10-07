@@ -7,12 +7,12 @@ from concurrent import futures
 from pathlib import Path
 
 import grpc
-import ml_analyzer_pb2_grpc
+from cogniflex.inference import analyzer_pb2_grpc
 
 from app.config import load_settings
 from app.detectors.mocks import MockTextDetector, MockVideoDetector
 from app.detectors.photo_detector import MultitypePictureDetector
-from app.grpc_service import MLAnalyzerServicer
+from app.grpc_service import AnalyzerServicer
 
 
 def serve(service_root: Path, project_root: Path):
@@ -28,8 +28,8 @@ def serve(service_root: Path, project_root: Path):
             ("grpc.max_receive_message_length", max_message_length_bytes),
         ],
     )
-    ml_analyzer_pb2_grpc.add_MLAnalyzerServicer_to_server(
-        MLAnalyzerServicer(photo_detector, video_detector, text_detector),
+    analyzer_pb2_grpc.add_AnalyzerServicer_to_server(
+        AnalyzerServicer(photo_detector, video_detector, text_detector),
         server,
     )
     server.add_insecure_port(f"{settings.grpc.host}:{settings.grpc.port}")

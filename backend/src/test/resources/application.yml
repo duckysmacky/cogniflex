@@ -16,7 +16,7 @@ spring:
   flyway:
     enabled: false
 grpc:
-  ml-service:
+  inference:
     host: ${ML_GRPC_HOST:localhost}
     port: ${ML_GRPC_PORT:50051}
     timeout: 5s
