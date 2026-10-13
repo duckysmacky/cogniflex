@@ -133,21 +133,35 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           cat > release-notes.md <<EOF
-          ## Artifacts
+          # Release notes
 
-          Docker images:
+          <!-- TODO: summarize what changed in this release -->
 
-          - Backend: \`ghcr.io/${{ needs.prepare.outputs.owner }}/cogniflex-backend:${VERSION}\`
-          - Inference: \`ghcr.io/${{ needs.prepare.outputs.owner }}/cogniflex-inference:${VERSION}\`
+          ## Changelog
 
-          Extension build:
+          <!-- TODO: fill the changelog -->
 
-          - \`cogniflex-extension-${VERSION}.zip\`
+          ## Installation and running
+
+          See README.md on how to install and run the application.
+
+          ## Docker images
+
+          You can pull the docker images for this release using the following commands:
+
+          \`\`\`
+          docker pull ghcr.io/${{ needs.prepare.outputs.owner }}/cogniflex-backend:${VERSION}
+          docker pull ghcr.io/${{ needs.prepare.outputs.owner }}/cogniflex-inference:${VERSION}
+          \`\`\`
+
+          ## Browser extension
+
+          Download \`cogniflex-extension-${VERSION}.zip\` from the assets below and load it as an unpacked extension.
           EOF
 
           gh release create "v${VERSION}" \
             "extension/release/cogniflex-extension-${VERSION}.zip" \
-            --title "v${VERSION}" \
+            --title "v${VERSION} - Release" \
             --notes-file release-notes.md \
             --draft \
             --verify-tag
