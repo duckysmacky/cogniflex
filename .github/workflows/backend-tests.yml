@@ -10,6 +10,7 @@ on:
       - "backend/**"
       - ".github/workflows/backend-tests.yml"
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
