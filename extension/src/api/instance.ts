@@ -1,3 +1,4 @@
+import { getT } from '@/i18n';
 import axios, { AxiosError } from 'axios';
 
 export const apiInstance = axios.create({
@@ -9,12 +10,10 @@ apiInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error instanceof AxiosError) {
-      switch (error.status) {
-        case 415:
-          throw new AxiosError('Файл данного типа не поддерживается');
-        case 413:
-          throw new AxiosError('Файл слишком большой');
-      }
+      const t = getT();
+      const message = (error.status && t.errors[error.status]) || t.analyze.failed;
+
+      throw new AxiosError(message, error.code, error.config, error.request, error.response);
     }
 
     return Promise.reject(error);

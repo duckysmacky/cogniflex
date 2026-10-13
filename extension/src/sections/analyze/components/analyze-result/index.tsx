@@ -1,5 +1,5 @@
 import { AnalyzeVerdict, type TAnalyzeResult } from '@/entities/analyze';
-import { ANALYZE_RESULTS_MAP } from '@/sections/analyze/components/analyze-result/constants';
+import { useT } from '@/i18n';
 import type { Nullable } from '@/types';
 import { IconLoader2 } from '@tabler/icons-react';
 import { twMerge } from 'tailwind-merge';
@@ -22,6 +22,8 @@ export type AnalyzeResultProps = {
 };
 
 export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResultProps) => {
+  const t = useT();
+
   const getContent = () => {
     if (error) {
       return <span className="text-red text-xs font-semibold">{error}</span>;
@@ -31,7 +33,7 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
       return (
         <div className="text-gray flex items-center gap-2">
           <IconLoader2 size={16} className="animate-spin" />
-          <span className="text-xs font-semibold">Активно работаем...</span>
+          <span className="text-xs font-semibold">{t.result.analyzing}</span>
         </div>
       );
     }
@@ -51,20 +53,20 @@ export const AnalyzeResult = ({ isAnalyzing, error, analyzeResult }: AnalyzeResu
               classes.badge,
             )}
           >
-            {ANALYZE_RESULTS_MAP[analyzeResult.verdict]}
+            {t.result.verdict[analyzeResult.verdict]}
           </div>
 
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-3xl font-semibold">
               {Math.round(analyzeResult.confidence * 100)}%
             </span>
-            <span className="text-2xs text-gray">Уверенность</span>
+            <span className="text-2xs text-gray">{t.result.confidence}</span>
           </div>
         </div>
       );
     }
 
-    return <span className="text-gray text-xs font-semibold">Здесь будет результат</span>;
+    return <span className="text-gray text-xs font-semibold">{t.result.empty}</span>;
   };
 
   return <div className="flex justify-center px-5 py-4">{getContent()}</div>;

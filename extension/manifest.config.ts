@@ -6,7 +6,7 @@ export default defineManifest({
   manifest_version: 3,
   name: 'Cogniflex',
   version: extensionVersion,
-  description: 'ИИ-детектор текста, видео и изображений в реальном времени.',
+  description: 'Real-time AI detector for text, images and videos.',
   action: {
     default_popup: 'index.html',
   },
