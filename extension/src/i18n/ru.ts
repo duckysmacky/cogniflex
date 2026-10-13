@@ -1,3 +1,4 @@
+import { AnalyzeVerdict } from '@/entities/analyze';
 import type { Dictionary } from './en';
 
 const CHAR_FORMS: Partial<Record<Intl.LDMLPluralRule, string>> = {
@@ -30,8 +31,8 @@ export const ru: Dictionary = {
     confidence: 'Уверенность',
     empty: 'Здесь будет результат',
     verdict: {
-      human: 'Оригинальный контент',
-      ai: 'Сгенерировано ИИ',
+      [AnalyzeVerdict.HUMAN]: 'Оригинальный контент',
+      [AnalyzeVerdict.AI]: 'Сгенерировано ИИ',
     },
   },
   settings: {

@@ -1,4 +1,4 @@
-import type { AnalyzeVerdict } from '@/entities/analyze';
+import { AnalyzeVerdict } from '@/entities/analyze';
 
 export const en = {
   header: {
@@ -24,8 +24,8 @@ export const en = {
     confidence: 'Confidence',
     empty: 'The result will appear here',
     verdict: {
-      human: 'Human-written',
-      ai: 'AI-generated',
+      [AnalyzeVerdict.HUMAN]: 'Human-written',
+      [AnalyzeVerdict.AI]: 'AI-generated',
     } satisfies Record<AnalyzeVerdict, string>,
   },
   settings: {
