@@ -41,7 +41,7 @@ export const en = {
   errors: {
     413: 'File is too large',
     415: 'This file type is not supported',
-  } as Partial<Record<number, string>>,
+  },
   fileSizeUnits: ['B', 'KB', 'MB', 'GB', 'TB'],
 };
 
