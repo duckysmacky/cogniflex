@@ -5,8 +5,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import zip from 'vite-plugin-zip-pack';
 import manifest from './manifest.config';
-
-const extensionVersion = process.env.EXTENSION_VERSION ?? '0.0.0';
+import pkg from './package.json' with { type: 'json' };
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,7 +16,7 @@ export default defineConfig({
     crx({ manifest }),
     zip({
       outDir: 'release',
-      outFileName: `cogniflex-extension-${extensionVersion}.zip`,
+      outFileName: `cogniflex-extension-${pkg.version}.zip`,
     }),
     tailwindcss(),
   ],

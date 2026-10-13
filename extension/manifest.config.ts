@@ -1,11 +1,10 @@
 import { defineManifest } from '@crxjs/vite-plugin';
-
-const extensionVersion = process.env.EXTENSION_VERSION ?? '0.0.0';
+import pkg from './package.json' with { type: 'json' };
 
 export default defineManifest({
   manifest_version: 3,
   name: 'Cogniflex',
-  version: extensionVersion,
+  version: pkg.version,
   description: 'Real-time AI detector for text, images and videos.',
   action: {
     default_popup: 'index.html',
