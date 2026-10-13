@@ -26,13 +26,16 @@ eslint . --fix        # lint + autofix
 prettier --write .    # format
 ```
 
-### Inference Service (Python)
+### Inference Service (Python, uv + just)
 ```bash
 cd inference
-pip install -r requirements.txt
-python main.py        # start gRPC server on :50051
-python tests/test_text_client.py    # manual test
+just sync             # install deps (uv sync)
+just proto            # generate gRPC stubs into generated/
+just run              # start gRPC server on :50051
+just test-text "..."  # manual test against running server
+just                  # list all recipes
 ```
+Dependencies live in `pyproject.toml` / `uv.lock`; add with `uv add <pkg>`.
 
 ### Full Stack
 ```bash

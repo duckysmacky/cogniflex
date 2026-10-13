@@ -45,10 +45,12 @@ inference/
 
 ## Требования
 
-Установка зависимостей для локального запуска inference-сервиса:
+Для локального запуска нужны [uv](https://docs.astral.sh/uv/) и [just](https://just.systems/).
+Установка зависимостей (uv сам скачает нужную версию Python):
 
 ```bash
-py -3.10 -m pip install -r inference/requirements.txt
+cd inference
+just sync
 ```
 
 Для анализа изображений нужны веса, указанные в `inference/config.yaml`.
@@ -91,7 +93,7 @@ models:
 
 ```bash
 cd inference
-python main.py
+just run
 ```
 
 Через Docker Compose:

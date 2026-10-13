@@ -1,0 +1,42 @@
+proto_dir := "../proto"
+
+# List available recipes
+default:
+    @just --list
+
+# Install dependencies into .venv
+sync:
+    uv sync
+
+# Generate Python gRPC stubs into generated/
+proto:
+    mkdir -p generated
+    uv run python -m grpc_tools.protoc -I{{proto_dir}} --python_out=generated --grpc_python_out=generated {{proto_dir}}/cogniflex/inference/analyzer.proto
+
+# Start the gRPC server on :50051
+run:
+    uv run main.py
+
+# Send text to a running server
+test-text text:
+    uv run tests/test_text_client.py "{{text}}"
+
+# Send an image to a running server
+test-photo path:
+    uv run tests/test_photo_client.py "{{path}}"
+
+# Send a video to a running server
+test-video path:
+    uv run tests/test_video_client.py "{{path}}"
+
+# Re-resolve the lockfile after editing pyproject.toml
+lock:
+    uv lock
+
+# Upgrade all locked dependencies
+upgrade:
+    uv lock --upgrade
+
+# Build and start the service in Docker
+docker:
+    docker compose -f ../docker-compose.yml up --build inference

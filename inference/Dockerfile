@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app/inference
 
@@ -6,11 +6,13 @@ ARG HF_TOKEN
 
 ENV PYTHONUNBUFFERED=1
 ENV HF_TOKEN=${HF_TOKEN}
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV PATH="/app/inference/.venv/bin:$PATH"
 
-COPY inference/requirements.txt .
+COPY inference/pyproject.toml inference/uv.lock inference/.python-version ./
 
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN uv sync --locked --no-dev --no-install-project
 
 COPY inference/ .
 COPY proto ../proto

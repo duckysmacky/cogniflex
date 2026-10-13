@@ -18,3 +18,5 @@ model/notebooks
 model/build
 model/artifacts
 model/weights
+**/.venv
+inference/generated
