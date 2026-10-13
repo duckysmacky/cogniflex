@@ -70,7 +70,7 @@ export const AnalyzeSection = () => {
       setResult(response.data);
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
-        setError((e.status && t.errors[e.status]) || t.analyze.failed);
+        setError(e.message);
       }
     } finally {
       setIsAnalyzing(false);

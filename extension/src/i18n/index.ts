@@ -22,3 +22,5 @@ export const resolveLanguage = (setting: LanguageSetting): Language => {
 export const useLanguage = () => resolveLanguage(useSettingsStore((state) => state.language));
 
 export const useT = () => DICTIONARIES[useLanguage()];
+
+export const getT = () => DICTIONARIES[resolveLanguage(useSettingsStore.getState().language)];
