@@ -53,6 +53,8 @@ services:
     build:
       context: .
       dockerfile: inference/Dockerfile
+      secrets:
+        - HF_TOKEN
     image: cogniflex-inference:latest
     container_name: cogniflex-inference
     env_file:
@@ -73,3 +75,7 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+
+secrets:
+  HF_TOKEN:
+    environment: HF_TOKEN
