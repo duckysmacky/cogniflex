@@ -51,6 +51,8 @@ jobs:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
+          secrets: |
+            HF_TOKEN=${{ secrets.HF_TOKEN }}
           cache-from: type=gha,scope=${{ matrix.scope }}
           cache-to: type=gha,mode=max,scope=${{ matrix.scope }}
           tags: ghcr.io/${{ needs.prepare.outputs.owner }}/${{ matrix.image }}:latest
@@ -104,6 +106,8 @@ jobs:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
+          secrets: |
+            HF_TOKEN=${{ secrets.HF_TOKEN }}
           cache-from: type=gha,scope=${{ matrix.scope }}
           cache-to: type=gha,mode=max,scope=${{ matrix.scope }}
           tags: ghcr.io/${{ needs.prepare.outputs.owner }}/${{ matrix.image }}:${{ steps.version.outputs.version }}
