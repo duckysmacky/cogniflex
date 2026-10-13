@@ -1,11 +1,6 @@
 import { AnalyzeVerdict } from '@/entities/analyze';
+import { pluralize } from '@/utils';
 import type { Dictionary } from './en';
-
-const CHAR_FORMS: Partial<Record<Intl.LDMLPluralRule, string>> = {
-  one: 'символ',
-  few: 'символа',
-};
-const pluralRules = new Intl.PluralRules('ru');
 
 export const ru: Dictionary = {
   header: {
@@ -22,7 +17,7 @@ export const ru: Dictionary = {
     title: 'Анализ',
     fileInfo: (extension, size) => `Файл ${extension} • ${size}`,
     placeholder: 'Введите текст или переместите файл сюда...',
-    charCount: (count) => `${count} ${CHAR_FORMS[pluralRules.select(count)] ?? 'символов'}`,
+    charCount: (count) => `${count} ${pluralize(count, ['символ', 'символа', 'символов'])}`,
     run: 'Запустить проверку',
     failed: 'Не удалось выполнить проверку. Попробуйте ещё раз',
   },
