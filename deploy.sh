@@ -6,6 +6,7 @@ BRANCH="${DEPLOY_BRANCH:-master}"
 REGISTRY="${REGISTRY:-}"
 REGISTRY_USERNAME="${REGISTRY_USERNAME:-}"
 REGISTRY_TOKEN="${REGISTRY_TOKEN:-}"
+IMAGE_TAG="${IMAGE_TAG:-latest}"
 
 log() {
   printf '[deploy] %s\n' "$1"
@@ -41,6 +42,17 @@ remove_old_project_images() {
   done
 }
 
+remove_project_images() {
+  local repo
+  local image_ref
+
+  for repo in "$@"; do
+    while IFS= read -r image_ref; do
+      [[ -n "$image_ref" ]] && docker image rm "$image_ref" >/dev/null 2>&1 || true
+    done < <(docker images "$repo" --format '{{.Repository}}:{{.Tag}}')
+  done
+}
+
 cd "$APP_DIR"
 
 log "Deploying Cogniflex from branch '$BRANCH' in '$APP_DIR'"
@@ -68,13 +80,23 @@ fi
 if [[ -n "$REGISTRY" && -n "$REGISTRY_USERNAME" ]]; then
   IMAGE_PREFIX="$REGISTRY/$REGISTRY_USERNAME"
 
+  # Free the old images first so old and new never share the disk
+  log "Stopping app services and removing old images"
+  docker compose rm -sf backend inference
+  remove_project_images \
+    "cogniflex-backend" \
+    "cogniflex-inference" \
+    "$IMAGE_PREFIX/cogniflex-backend" \
+    "$IMAGE_PREFIX/cogniflex-inference"
+  docker image prune -f
+
   log "Pulling custom images from '$IMAGE_PREFIX'"
-  docker pull "$IMAGE_PREFIX/cogniflex-backend:latest"
-  docker pull "$IMAGE_PREFIX/cogniflex-inference:latest"
+  docker pull "$IMAGE_PREFIX/cogniflex-backend:$IMAGE_TAG"
+  docker pull "$IMAGE_PREFIX/cogniflex-inference:$IMAGE_TAG"
 
   log "Tagging custom images for docker compose"
-  docker tag "$IMAGE_PREFIX/cogniflex-backend:latest" cogniflex-backend:latest
-  docker tag "$IMAGE_PREFIX/cogniflex-inference:latest" cogniflex-inference:latest
+  docker tag "$IMAGE_PREFIX/cogniflex-backend:$IMAGE_TAG" cogniflex-backend:latest
+  docker tag "$IMAGE_PREFIX/cogniflex-inference:$IMAGE_TAG" cogniflex-inference:latest
 else
   log "No registry username provided, using local custom images"
 fi
