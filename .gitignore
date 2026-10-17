@@ -2,6 +2,7 @@
 .vscode
 .venv
 .ipynb_checkpoints
+.worktrees
 
 __pycache__
 venv
