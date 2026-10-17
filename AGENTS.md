@@ -76,6 +76,8 @@ Never commit to `master` or `dev` directly. All work goes through a PR into `dev
    to test, related GitHub issue in the body (`Closes #123`, not `#123` in the title). One PR = one task.
 7. Run the affected service's build, tests and linters before pushing.
 8. Do not merge PRs, approve your own work, delete remote branches or push release tags - humans do that.
+9. Before opening a PR or when asked to review a PR - check the diff/code in the PR against `REVIEW.md`,
+   which contains review instruction and rules
 
 When working with worktrees, keep them in `.worktrees/` directory with directory name derived from
 branch's name (e.g.: `feature/auth` branch will be in `.worktrees/feature-auth` worktree)
