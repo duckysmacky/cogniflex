@@ -1,0 +1,5 @@
+[boot 00:00:03.992] socket=0 segment=0 cascade-stack-window=0x40..0xbf validation=passed
+[boot 00:00:03.993] socket=1 segment=1 cascade-stack-window=0x40..0xbf validation=passed
+[boot 00:00:17.404] PCI discovery complete endpoints=96 bus-exhaustion=0
+[result] bus allocation fixed; one intermittent endpoint-readiness failure remains in later runs
+

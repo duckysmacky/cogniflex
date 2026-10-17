@@ -1,0 +1,5 @@
+[boot 00:00:04.108] socket=0 segment=0 stack=1 bus-window=0x40..0x7f
+[boot 00:00:04.109] bridge=0000:40:00.0 requested-subordinate=0xb7 assigned-subordinate=0x7f
+[boot 00:00:04.110] PCI bus-number exhaustion below 0000:40:00.0
+[result] 40 of 48 expected endpoints discovered on socket 0
+

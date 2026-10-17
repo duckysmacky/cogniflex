@@ -1,0 +1,7 @@
+[boot 00:00:14.220] endpoint=0001:a4:00.0 identity=0xffffffff action=defer
+[boot 00:00:22.761] recovery-pass endpoint=0001:a4:00.0 stage=reread result=not-ready
+[boot 00:00:23.188] recovery-pass endpoint=0001:a4:00.0 stage=leaf-sbr result=ready
+[boot 00:00:23.190] endpoint=0001:a4:00.0 bar0=size-valid assignment=pending
+[run 07 00:00:17.182] endpoint=0000:9d:00.0 identity=valid bar0=size-invalid result=missing-drive
+[run 08 00:00:14.220] endpoint=0001:a4:00.0 identity=0xffffffff result=missing-drive
+[result] endpoints=96 controllers=96 namespaces=96 consecutive-reboots=11
