@@ -1,107 +1,103 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to AI agents when working with code in this repository.
+Instructions for AI agents working in the Cogniflex repository. `CLAUDE.md` is a symlink to this file.
+Each service has its own `AGENTS.md` with stack, build and style rules - read it before touching that directory.
 
-## Project Overview
+## What Cogniflex is
 
-Cogniflex is an AI content detection platform that analyzes text, images, and videos to determine whether they are AI-generated. It uses a dual-path analysis approach: **static analysis** (heuristic/pattern-based rules) and **dynamic analysis** (ML model inference via gRPC).
+Cogniflex detects AI-generated content - text, images and videos - and gives a probabilistic
+verdict instead of an absolute claim. The main client is a browser extension that analyzes page
+content in real time and highlights likely AI-generated fragments; manual analysis (paste text,
+upload media) is available in the extension and on the website. The project is early-stage:
+video analysis is a stub and the website frontend is a bare shell.
 
-## Build & Run Commands
+Every item goes through two analysis paths whose results are fused into one verdict:
+- **Static** - deterministic rules over the content (text heuristics, image/video checks) -> evidence + score.
+- **Dynamic** - ML models served by the inference service over gRPC -> class + confidence.
 
-### Backend (Java 25 / Spring Boot 4.0.2)
-```bash
-cd backend
-./gradlew build       # compile + test
-./gradlew test        # run tests only
-./gradlew bootRun     # run dev server
-```
+## Repository map
 
-### Frontend (React 19 / TypeScript)
-```bash
-cd frontend
-npm run dev           # dev server
-npm run build         # tsc -b && vite build
-eslint .              # lint
-eslint . --fix        # lint + autofix
-prettier --write .    # format
-```
-
-### Inference Service (Python, uv + just)
-```bash
-cd inference
-just sync             # install deps (uv sync)
-just proto            # generate gRPC stubs into generated/
-just run              # start gRPC server on :50051
-just test-text "..."  # manual test against running server
-just                  # list all recipes
-```
-Dependencies live in `pyproject.toml` / `uv.lock`; add with `uv add <pkg>`.
-
-### Full Stack
-```bash
-docker compose up --build           # all services
-docker compose up --build inference  # individual service
-```
+| Path | What | Stack |
+|---|---|---|
+| `backend/` | REST API, analysis pipeline, persistence | Java 25, Spring Boot 4, Gradle |
+| `inference/` | gRPC model-serving service | Python 3.12, uv, just, PyTorch (CPU) |
+| `model/` | Research, training, evaluation (not deployed) | Python, Jupyter |
+| `extension/` | Chrome extension (Manifest V3): real-time and manual analysis | React 19, TypeScript, Vite, CRXJS, Tailwind 4, yarn |
+| `frontend/` | Website (early shell, not in Docker Compose yet) | React 19, TypeScript, Vite, yarn |
+| `proto/cogniflex/inference/` | gRPC contract, single source of truth | Protobuf 3 |
+| `docs/` | Documentation and research for **humans** (mostly Russian) | Markdown |
+| `.context/` | Additional context for **agents** | Markdown |
+| `.github/workflows/` | CI tests, release image builds and deploy, Claude review | GitHub Actions |
+| `deploy.sh` | Server-side deploy script used by the release workflow | Bash |
 
 ## Architecture
 
-Three-tier microservice architecture:
-
 ```
-Frontend/Extension (React+TS)
-        │ REST
-        ▼
-Backend (Spring Boot) ─── gRPC ──► ML Service (Python, :50051)
-        │
-   PostgreSQL 18 + Redis 8
+extension / frontend --REST--> backend --gRPC(:50051)--> inference
+                                  |
+                          PostgreSQL 18 + Redis 8
 ```
 
-### Backend Package Layout
+- `backend` preprocesses input, runs static and dynamic analyzers in parallel, fuses scores,
+  stores history in PostgreSQL (Flyway migrations) and rate-limits requests.
+- `inference` loads model weights from `inference/weights/` at startup and answers `AnalyzeText` /
+  `AnalyzePhoto` / `AnalyzeVideo` RPCs. It never calls the backend.
+- `extension` content scripts never call the backend directly: they message the background service
+  worker, which performs the HTTP request (`src/api/proxy/`).
+- Both backend and inference generate code from `proto/` at build time; generated code is never
+  committed. A proto change must keep backend and inference compiling in the same PR.
+- `model/` produces weights; the result is shipped to `inference/weights/` manually, never via imports.
+- Full stack: `docker compose up --build` (config from `.env`, template in `.env.example`).
 
-All backend code lives under `io.github.duckysmacky.cogniflex`:
+## Tools and skills
 
-- **`analysis/`** — core detection pipeline
-  - `Analyzer<R>` — top-level interface; `AnalysisOrchestrator` runs static + dynamic analyzers in parallel via `CompletableFuture`
-  - `static_/` — rule-based heuristic analysis; `StaticAnalyzer` (abstract) evaluates a list of `AnalysisRule<C>` implementations and collects `Evidence`
-  - `dynamic/` — ML model inference; `DynamicAnalyzer` delegates to `InferenceGrpcClient` which calls the Python gRPC service
-  - `score/` — `ScoreFusionStrategy` merges static evidence + dynamic ML score into a `FinalScore` (verdict + confidence)
-- **`processing/`** — input preparation: `TextPreprocessor` (hidden chars → line endings → Unicode → whitespace normalization), `MediaParser` (image/video handling)
-- **`controllers/`** — REST endpoints: `DetectionController` (`POST /api/analyze/text`, `POST /api/analyze/media`), `HistoryController`, `StatusController`
-- **`services/`** — `AnalyzeService` orchestrates the full flow; `RateLimiterService` (Bucket4j); `HistoryService` (persistence)
-- **`entities/` + `repositories/`** — JPA entities and Spring Data repositories; Flyway migrations in `resources/db/migration/`
-- **`config/`** — Spring beans, security, gRPC client config
-- **`exceptions/`** — custom exceptions + `GlobalExceptionHandler`
+- there is a `.agents/skills` directory present with predefined skills for this project. it is symlinked
+  to `.claude/skills` and `.codex/skills` for those specific agents to be able to use those skills
+- **graphify**: if a code graph exists, query it (report/graph) before broad grep/glob exploration,
+  and use it to find callers and dependencies across services. Rebuild it after large structural changes.
+- **context-manager**: use it for complex or multi-session work (large features, refactors,
+  investigations) to keep plans and progress in `.context/` so the next session can resume.
+- Put agent-facing notes in `.context/`, never in `docs/`. Edit `docs/` only when asked.
 
-### Analysis Flow (Text Example)
+## Git workflow
 
-1. `POST /api/analyze/text` → `AnalyzeService.analyzeText()`
-2. `TextPreprocessor` normalizes input
-3. `ContentItemFactory` creates an immutable `ContentItem`
-4. `AnalysisOrchestrator` runs concurrently:
-   - `TextStaticAnalyzer` evaluates `TextAnalysisRule` implementations → `Evidence`
-   - `TextDynamicAnalyzer` → `InferenceGrpcClient` → Python gRPC service (RoBERTa model)
-5. `ScoreFusionStrategy.combine()` → `FinalScore`
-6. Result persisted via `HistoryService`, response returned
+Never commit to `master` or `dev` directly. All work goes through a PR into `dev`;
+`dev -> master` is done only by Maintainers.
 
-### Adding a New Static Rule
+1. Start from fresh `dev`: `git fetch origin && git switch dev && git pull --ff-only`.
+2. Create a branch: `git switch -c <prefix>/<short-kebab-description>` (2-5 lowercase words).
+   Prefixes: `feature/`, `fix/`, `refactor/`, `chore/` (deps, build), `docs/`, `release/` (maintainers).
+3. If already on a branch, check it is the right one and up to date: `git fetch origin` and
+   `git rebase origin/dev` when behind. Use `git push --force-with-lease` only on your own branch.
+4. Commits: small, one logical change each. Title in English, imperative, capitalized, no period,
+   <= 50 chars (`Add em dash density rule`, `Fix crash on empty image`). Body explains "why".
+5. Stage files by name, not `git add .`; check `git status` and `git diff --staged` first.
+6. PR into `dev`: same title rules (it becomes the squash commit), description with what/why/how
+   to test, related GitHub issue in the body (`Closes #123`, not `#123` in the title). One PR = one task.
+7. Run the affected service's build, tests and linters before pushing.
+8. Do not merge PRs, approve your own work, delete remote branches or push release tags - humans do that.
 
-Implement `TextAnalysisRule` (or `ImageAnalysisRule` / `VideoAnalysisRule`), register it as a Spring `@Component`, and `StaticAnalyzer` will pick it up automatically. See `ZeroWidthCharacterRule` for an example.
+## Guardrails
 
-### gRPC Contract
-
-Shared proto definition: `proto/cogniflex/inference/analyzer.proto`. Generated Java stubs live in the backend; Python stubs in `inference/`. When changing the proto, regenerate stubs for both services.
-
-### Configuration
-
-- Secrets/endpoints via `.env` (not committed)
-- Spring profiles: `dev`, `prod` (`application-{profile}.yml`)
-- gRPC inference service defaults to `localhost:50051`
-- Multi-part uploads: 1024 MB max
-- Database: H2 for tests, PostgreSQL 18 in prod/dev
-
-### ML Models
-
-- **Text**: RoBERTa (Hugging Face Transformers)
-- **Image**: ResNet18 (PyTorch + torchvision)
-- **Video**: stub (not yet implemented)
-- Model weights stored locally under `inference/weights/` (not in repo)
+- **No secrets.** Never commit `.env`, tokens (`HF_TOKEN`, ...), keys or credentials. Config goes through env vars.
+- **No large files.** Never commit model weights (`*.pth`, `*.safetensors`, ...), datasets, CSV
+  dumps, archives or build output. Document the download source and target path in that
+  service's `README.md` instead. If you do not know where a file came from, ask the user.
+- **No generated code or build output** in git: `inference/generated/`, `backend/build/`,
+  `frontend/dist/`, `extension/dist/`, `extension/release/`.
+- **Agent instruction files** (`AGENTS.md`, `CLAUDE.md`) are edited only after a **critical**
+  change to the repo (new service, new build tool, changed workflow), or when explicitly asked.
+- **CI, release, deploy and Docker** (`.github/workflows/`, `deploy.sh`, `Dockerfile`s,
+  `docker-compose.yml`, `.dockerignore`) are edited only when the task is about them or a critical
+  change requires it.
+- **Versions.** The project version lives in `backend/build.gradle`, `inference/pyproject.toml`,
+  `extension/package.json` and `frontend/package.json`. Bump them together and only when asked.
+- **Organization.** Keep the existing clean, explicit layout (like `proto/cogniflex/inference/`):
+  clear module and package names, one responsibility per module, no junk dirs (`utils2`, `new`).
+- **Scope.** Change only what the task needs. No repo-wide reformatting, no unrelated renames.
+- **Dependencies.** Add them through the service's package manager (Gradle, uv, yarn) and commit
+  the lockfile. Do not add new tools, frameworks or services without asking.
+- **Destructive actions** (history rewrites on shared branches, deleting files or data, dropping
+  DB tables, resetting volumes) require explicit user confirmation.
+- Investigate before changing: read the code and existing tests, reproduce bugs, then fix.
+- Code, comments, identifiers, commits and PR titles are in English.
