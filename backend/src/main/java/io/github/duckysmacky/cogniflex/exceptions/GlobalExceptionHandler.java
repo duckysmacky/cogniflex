@@ -2,6 +2,7 @@ package io.github.duckysmacky.cogniflex.exceptions;
 
 import io.github.duckysmacky.cogniflex.dto.ErrorResponse;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,6 +25,15 @@ public class GlobalExceptionHandler {
             .body(new ErrorResponse(
                 "Multipart request error",
                 "Invalid multipart request"
+            ));
+    }
+
+    @ExceptionHandler(UnsupportedAnalysisException.class)
+    public ResponseEntity<ErrorResponse> handleUnsupportedAnalysisException(UnsupportedAnalysisException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+            .body(new ErrorResponse(
+                "UNSUPPORTED",
+                ex.getMessage()
             ));
     }
 

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
+import io.github.duckysmacky.cogniflex.exceptions.UnsupportedAnalysisException;
 import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 
 @ExtendWith(SpringExtension.class)
@@ -78,19 +79,21 @@ public class DetectionControllerTest {
 
     @Test
     @WithMockUser(username = "user")
-    public void checkAnalyzeVideoIsOk() throws Exception {
+    public void checkAnalyzeVideoIsNotImplemented() throws Exception {
         ClassPathResource resource = new ClassPathResource("static/video_test.mp4");
         byte[] bytes = resource.getInputStream().readAllBytes();
         MockMultipartFile vid = new MockMultipartFile("file", "video_test.mp4", "video/mp4", bytes);
 
-        given(service.analyzeMedia(any())).willReturn(
-                new AnalysisResultResponse(AnalysisVerdict.AI, 0.63)
+        given(service.analyzeMedia(any())).willThrow(
+                new UnsupportedAnalysisException("Video analysis is not supported yet")
         );
 
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart("/api/analyze/media").file(vid)
                 .with(csrf()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.verdict").value(AnalysisVerdict.AI.toString()));
+                .andExpect(status().isNotImplemented())
+                .andExpect(jsonPath("$.error").value("UNSUPPORTED"))
+                .andExpect(jsonPath("$.message").value("Video analysis is not supported yet"))
+                .andExpect(jsonPath("$.verdict").doesNotExist());
     }
 }
