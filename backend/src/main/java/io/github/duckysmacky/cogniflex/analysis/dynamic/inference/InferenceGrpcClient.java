@@ -185,6 +185,14 @@ public class InferenceGrpcClient implements InferenceClient {
             );
         }
 
+        if (code == Status.Code.UNIMPLEMENTED) {
+            return new ResponseStatusException(
+                HttpStatus.NOT_IMPLEMENTED,
+                "Inference service does not support " + operation,
+                ex
+            );
+        }
+
         if (code == Status.Code.INVALID_ARGUMENT) {
             return new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
