@@ -11,16 +11,20 @@ import io.github.duckysmacky.cogniflex.grpc.TextRequest;
 import io.github.duckysmacky.cogniflex.grpc.VideoRequest;
 import io.grpc.ManagedChannel;
 import io.grpc.Server;
+import io.grpc.Status;
 import io.grpc.inprocess.InProcessChannelBuilder;
 import io.grpc.inprocess.InProcessServerBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class InferenceGrpcClientTest {
 
@@ -124,5 +128,45 @@ class InferenceGrpcClientTest {
         assertEquals(ContentType.VIDEO, response.contentType());
         assertEquals(AnalysisVerdict.AI, response.verdict());
         assertEquals(0.68, response.confidence(), 0.0001);
+    }
+
+    @Test
+    void unimplementedRpcIsMappedToNotImplemented() throws IOException {
+        String serverName = InProcessServerBuilder.generateName();
+        Server unimplementedServer = InProcessServerBuilder.forName(serverName)
+            .directExecutor()
+            .addService(new AnalyzerGrpc.AnalyzerImplBase() {
+                @Override
+                public void analyzeVideo(
+                    VideoRequest request,
+                    io.grpc.stub.StreamObserver<AnalyzeReply> responseObserver
+                ) {
+                    responseObserver.onError(Status.UNIMPLEMENTED.asRuntimeException());
+                }
+            })
+            .build()
+            .start();
+        ManagedChannel unimplementedChannel = InProcessChannelBuilder.forName(serverName)
+            .directExecutor()
+            .build();
+
+        try {
+            InferenceGrpcProperties properties = new InferenceGrpcProperties();
+            properties.setTimeout(Duration.ofSeconds(1));
+            InferenceGrpcClient unimplementedClient = new InferenceGrpcClient(
+                AnalyzerGrpc.newBlockingStub(unimplementedChannel),
+                properties
+            );
+
+            ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> unimplementedClient.analyzeVideo(new byte[]{4, 5, 6})
+            );
+
+            assertEquals(HttpStatus.NOT_IMPLEMENTED, ex.getStatusCode());
+        } finally {
+            unimplementedChannel.shutdownNow();
+            unimplementedServer.shutdownNow();
+        }
     }
 }
