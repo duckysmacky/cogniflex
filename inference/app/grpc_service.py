@@ -81,7 +81,6 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         logging.info("[Text] New request received")
         logging.info("[Text] Peer: %s", context.peer())
         logging.info("[Text] Text length: %s chars", len(text))
-        logging.info("[Text] Content: %s...", text[:200])
 
         if not text:
             logging.warning("[Text] Empty request received, returning error")
@@ -124,8 +123,14 @@ def _set_internal_error(
     start_time: float,
     error: Exception,
 ) -> None:
+    # Exception messages from tokenizers/PIL/OpenCV may embed request content,
+    # so only the exception type is logged and the client gets a generic detail.
     elapsed = time.time() - start_time
-    error_msg = f"{operation} inference failed after {elapsed:.3f}s: {str(error)}"
-    logging.error("[%s] %s", operation, error_msg)
+    logging.error(
+        "[%s] Inference failed after %.3fs: %s",
+        operation,
+        elapsed,
+        type(error).__name__,
+    )
     context.set_code(grpc.StatusCode.INTERNAL)
-    context.set_details(error_msg)
+    context.set_details(f"{operation} inference failed")
