@@ -27,6 +27,12 @@ spring:
     baseline-on-migrate: true
     locations: classpath:db/migration
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 server:
   port: "${BACKEND_PORT:8080}"
 
