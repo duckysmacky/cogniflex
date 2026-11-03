@@ -69,6 +69,12 @@ class ActuatorHealthEndpointTest {
         assertTrue(get(applicationPort, "/actuator/health/liveness").statusCode() >= 400);
     }
 
+    @Test
+    void oldStatusAndMetricsEndpointsAreGone() throws Exception {
+        assertTrue(get(applicationPort, "/api/status").statusCode() >= 400);
+        assertTrue(get(applicationPort, "/api/metrics").statusCode() >= 400);
+    }
+
     private static HttpResponse<String> get(int port, String path) throws IOException, InterruptedException {
         var request = HttpRequest.newBuilder(URI.create("http://localhost:" + port + path)).GET().build();
         return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
