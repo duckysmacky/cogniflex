@@ -40,10 +40,10 @@ Everything lives under `io.github.duckysmacky.cogniflex`:
     and its gRPC implementation `InferenceGrpcClient`
   - `score/` - `ScoreFusionStrategy` -> `FinalScore`
 - `processing/` - `text/` (normalization, segmentation, locale detection, model input) and `media/` (parsing)
-- `controllers/` - `/api/analyze/{text,media}`, `/api/history`
-- `services/` - `AnalyzeService`, `HistoryService`, rate limiting
+- `controllers/` - `/api/analyze/{text,media}`
+- `services/` - `AnalyzeService`, rate limiting
 - `health/` - custom Actuator health indicators (`InferenceHealthIndicator`: gRPC channel state)
-- `dto/`, `entities/`, `repositories/`, `converters/`, `config/`, `exceptions/` (`GlobalExceptionHandler`)
+- `dto/`, `config/`, `exceptions/` (`GlobalExceptionHandler`)
 
 ## Health endpoints
 
@@ -57,7 +57,7 @@ internal to the Docker network and not published in `docker-compose.yml`. Do not
 `ManagementSecurityConfig` opens the exposed Actuator endpoints; the main chain still ends with `denyAll()`.
 
 Request flow: controller -> `AnalyzeService` -> preprocess -> `AnalysisOrchestrator`
-(static rules + `InferenceGrpcClient`) -> score fusion -> `HistoryService` -> response DTO.
+(static rules + `InferenceGrpcClient`) -> score fusion -> response DTO.
 
 ## Common tasks
 

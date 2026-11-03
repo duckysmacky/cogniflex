@@ -6,10 +6,8 @@ import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
-import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.dto.EvidenceResponse;
-import io.github.duckysmacky.cogniflex.analysis.InputType;
 import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import io.github.duckysmacky.cogniflex.exceptions.UnsupportedAnalysisException;
 import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
@@ -29,7 +27,6 @@ public class AnalyzeService {
 
     private final AnalysisOrchestrator analysisOrchestrator;
     private final ContentItemFactory contentItemFactory;
-    private final HistoryService historyService;
     private final TextPreprocessor textPreprocessor;
     private final MediaParser mediaParser;
     private final MediaTypeResolver mediaTypeResolver;
@@ -37,14 +34,12 @@ public class AnalyzeService {
     public AnalyzeService(
         AnalysisOrchestrator analysisOrchestrator,
         ContentItemFactory contentItemFactory,
-        HistoryService historyService,
         TextPreprocessor textPreprocessor,
         MediaParser mediaParser,
         MediaTypeResolver mediaTypeResolver
     ) {
         this.analysisOrchestrator = analysisOrchestrator;
         this.contentItemFactory = contentItemFactory;
-        this.historyService = historyService;
         this.textPreprocessor = textPreprocessor;
         this.mediaParser = mediaParser;
         this.mediaTypeResolver = mediaTypeResolver;
@@ -58,13 +53,6 @@ public class AnalyzeService {
 
         AnalysisResultSummary result = analysisOrchestrator.submit(item);
         AnalysisResultResponse response = toResponse(result);
-
-        historyService.createHistoryItem(new CreateHistoryItemRequest(
-            InputType.TEXT,
-            null,
-            response.verdict(),
-            response.confidence()
-        ));
 
         logElapsed("text", startedAt);
         return response;
@@ -83,13 +71,6 @@ public class AnalyzeService {
 
         AnalysisResultSummary result = analysisOrchestrator.submit(item);
         AnalysisResultResponse response = toResponse(result);
-
-        historyService.createHistoryItem(new CreateHistoryItemRequest(
-            InputType.MEDIA,
-            media.mediaType(),
-            response.verdict(),
-            response.confidence()
-        ));
 
         logElapsed(media.mediaType().name().toLowerCase(), startedAt);
         return response;

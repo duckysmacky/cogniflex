@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Outside the dev profile only the public analyze API is reachable: the OpenAPI / Swagger UI paths and the
- * removed status and metrics endpoints must all be rejected by security.
+ * removed status, metrics and history endpoints must all be rejected by security.
  */
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(DetectionController.class)
@@ -66,7 +66,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void historyStillRequiresAuthentication() throws Exception {
+    void removedHistoryEndpointIsNotExposed() throws Exception {
         mockMvc.perform(get("/api/history"))
             .andExpect(status().isForbidden());
     }

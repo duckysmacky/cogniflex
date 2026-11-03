@@ -6,11 +6,9 @@ import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.analysis.ContentItem;
 import io.github.duckysmacky.cogniflex.analysis.ContentItemFactory;
 import io.github.duckysmacky.cogniflex.analysis.ContentType;
-import io.github.duckysmacky.cogniflex.analysis.InputType;
 import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import io.github.duckysmacky.cogniflex.analysis.score.FinalScore;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
-import io.github.duckysmacky.cogniflex.dto.CreateHistoryItemRequest;
 import io.github.duckysmacky.cogniflex.exceptions.UnsupportedAnalysisException;
 import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
 import io.github.duckysmacky.cogniflex.processing.media.MediaTypeResolver;
@@ -24,26 +22,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class AnalyzeServiceTest {
     private final AnalysisOrchestrator orchestrator = mock(AnalysisOrchestrator.class);
-    private final HistoryService historyService = mock(HistoryService.class);
     private final MediaTypeResolver mediaTypeResolver = new MediaTypeResolver();
     private final MediaParser mediaParser = mock(MediaParser.class);
     private final AnalyzeService service = new AnalyzeService(
         orchestrator,
         new ContentItemFactory(),
-        historyService,
         mock(TextPreprocessor.class),
         mediaParser,
         mediaTypeResolver
     );
 
     @Test
-    void videoIsRejectedAsUnsupportedWithoutAnalysisOrHistory() {
+    void videoIsRejectedAsUnsupportedWithoutAnalysis() {
         MockMultipartFile video = new MockMultipartFile("file", "clip.mp4", "video/mp4", new byte[] {1, 2, 3});
 
         UnsupportedAnalysisException ex = assertThrows(
@@ -52,11 +47,11 @@ class AnalyzeServiceTest {
         );
 
         assertEquals("Video analysis is not supported yet", ex.getMessage());
-        verifyNoInteractions(orchestrator, historyService, mediaParser);
+        verifyNoInteractions(orchestrator, mediaParser);
     }
 
     @Test
-    void imageStillGoesThroughAnalysisAndHistory() {
+    void imageStillGoesThroughAnalysis() {
         byte[] bytes = {1, 2, 3};
         MockMultipartFile image = new MockMultipartFile("file", "photo.png", "image/png", bytes);
         when(mediaParser.parse(image)).thenReturn(new io.github.duckysmacky.cogniflex.processing.media.ParsedMedia(
@@ -71,8 +66,5 @@ class AnalyzeServiceTest {
 
         assertEquals(AnalysisVerdict.AI, response.verdict());
         assertEquals(0.8, response.confidence(), 0.0001);
-        verify(historyService).createHistoryItem(
-            new CreateHistoryItemRequest(InputType.MEDIA, MediaType.IMAGE, AnalysisVerdict.AI, 0.8)
-        );
     }
 }
