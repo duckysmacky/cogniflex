@@ -49,8 +49,6 @@ public class SecurityConfig {
                     "/swagger-ui/**",
                     "/swagger-ui.html"
                 ).permitAll()
-                // пока у нас нет пользователей для истории, но я все равно так оставлю на будущее
-                .requestMatchers("/api/history/**").authenticated()
                 .anyRequest().denyAll()
             )
             .headers(headers -> headers

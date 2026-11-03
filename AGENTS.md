@@ -39,7 +39,7 @@ extension / frontend --REST--> backend --gRPC(:50051)--> inference
 ```
 
 - `backend` preprocesses input, runs static and dynamic analyzers in parallel, fuses scores,
-  stores history in PostgreSQL (Flyway migrations) and rate-limits requests.
+  uses PostgreSQL (Flyway migrations) and rate-limits requests.
 - `inference` loads model weights from `inference/weights/` at startup and answers `AnalyzeText` /
   `AnalyzePhoto` / `AnalyzeVideo` RPCs. It never calls the backend.
 - `extension` content scripts never call the backend directly: they message the background service

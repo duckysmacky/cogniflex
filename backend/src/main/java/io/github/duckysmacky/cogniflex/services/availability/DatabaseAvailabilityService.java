@@ -1,22 +1,21 @@
 package io.github.duckysmacky.cogniflex.services.availability;
 
-import io.github.duckysmacky.cogniflex.repositories.HistoryRepository;
-
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DatabaseAvailabilityService implements AvailabilityService {
-    private final HistoryRepository historyRepository;
+    private final JdbcTemplate jdbcTemplate;
 
-    DatabaseAvailabilityService(HistoryRepository historyRepository) {
-        this.historyRepository = historyRepository;
+    DatabaseAvailabilityService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public boolean isAvailable() {
         try {
-            historyRepository.count();
+            jdbcTemplate.queryForObject("select 1", Integer.class);
             return true;
         } catch (DataAccessException e) {
             return false;

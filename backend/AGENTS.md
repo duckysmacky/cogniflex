@@ -40,13 +40,13 @@ Everything lives under `io.github.duckysmacky.cogniflex`:
     and its gRPC implementation `InferenceGrpcClient`
   - `score/` - `ScoreFusionStrategy` -> `FinalScore`
 - `processing/` - `text/` (normalization, segmentation, locale detection, model input) and `media/` (parsing)
-- `controllers/` - `/api/analyze/{text,media}`, `/api/history`, `/api/status`, `/api/metrics`
-- `services/` - `AnalyzeService`, `HistoryService`, `StatusService`, rate limiting,
+- `controllers/` - `/api/analyze/{text,media}`, `/api/status`, `/api/metrics`
+- `services/` - `AnalyzeService`, `StatusService`, rate limiting,
   `availability/` (DB, Redis, inference health)
-- `dto/`, `entities/`, `repositories/`, `converters/`, `config/`, `exceptions/` (`GlobalExceptionHandler`)
+- `dto/`, `config/`, `exceptions/` (`GlobalExceptionHandler`)
 
 Request flow: controller -> `AnalyzeService` -> preprocess -> `AnalysisOrchestrator`
-(static rules + `InferenceGrpcClient`) -> score fusion -> `HistoryService` -> response DTO.
+(static rules + `InferenceGrpcClient`) -> score fusion -> response DTO.
 
 ## Common tasks
 
