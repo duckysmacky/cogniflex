@@ -30,6 +30,25 @@ spring:
 server:
   port: "${BACKEND_PORT:8080}"
 
+management:
+  server:
+    port: "${MANAGEMENT_PORT:8081}"
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-components: always
+      show-details: always
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,db,redis,inference
+
 grpc:
   inference:
     host: ${INFERENCE_HOST:localhost}
