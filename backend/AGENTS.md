@@ -5,9 +5,9 @@ Spring Boot REST API and analysis pipeline. Read the root `AGENTS.md` first for 
 ## Stack
 
 - Java **25** (Gradle toolchain), Spring Boot **4.0.x**, Gradle **9.x** via the wrapper (`build.gradle`, Groovy DSL)
-- Spring Web MVC, Data JPA, Security, Validation, springdoc-openapi (Swagger UI)
+- Spring Web MVC, Data JPA, Security, Validation, Actuator (health probes), springdoc-openapi (Swagger UI)
 - PostgreSQL 18 + **Flyway** (`src/main/resources/db/migration/`), Hibernate `ddl-auto: validate`
-- Bucket4j rate limiting (`InMemoryRateLimitService`); Redis is used for status/metrics availability checks
+- Bucket4j rate limiting (`InMemoryRateLimitService`); Redis is only checked by the Actuator readiness probe
 - gRPC client: stubs generated from `../proto` by the `com.google.protobuf` Gradle plugin
   into package `io.github.duckysmacky.cogniflex.grpc` (build output, never committed)
 - Text processing: ICU4J, Lingua (language detection), Aho-Corasick (phrase matching)
@@ -40,10 +40,21 @@ Everything lives under `io.github.duckysmacky.cogniflex`:
     and its gRPC implementation `InferenceGrpcClient`
   - `score/` - `ScoreFusionStrategy` -> `FinalScore`
 - `processing/` - `text/` (normalization, segmentation, locale detection, model input) and `media/` (parsing)
-- `controllers/` - `/api/analyze/{text,media}`, `/api/history`, `/api/status`, `/api/metrics`
-- `services/` - `AnalyzeService`, `HistoryService`, `StatusService`, rate limiting,
-  `availability/` (DB, Redis, inference health)
+- `controllers/` - `/api/analyze/{text,media}`, `/api/history`
+- `services/` - `AnalyzeService`, `HistoryService`, rate limiting
+- `health/` - custom Actuator health indicators (`InferenceHealthIndicator`: gRPC channel state)
 - `dto/`, `entities/`, `repositories/`, `converters/`, `config/`, `exceptions/` (`GlobalExceptionHandler`)
+
+## Health endpoints
+
+Actuator serves only `health`, on a separate management port (`MANAGEMENT_PORT`, default `8081`) that is
+internal to the Docker network and not published in `docker-compose.yml`. Do not add it to `ports:`.
+
+- `/actuator/health/liveness` - the process is up (no dependency checks).
+- `/actuator/health/readiness` - `readinessState`, `db`, `redis`, `inference`; returns 503 if any is not UP.
+
+`db` and `redis` come from Boot's auto-configured indicators; `inference` is `InferenceHealthIndicator`.
+`ManagementSecurityConfig` opens the exposed Actuator endpoints; the main chain still ends with `denyAll()`.
 
 Request flow: controller -> `AnalyzeService` -> preprocess -> `AnalysisOrchestrator`
 (static rules + `InferenceGrpcClient`) -> score fusion -> `HistoryService` -> response DTO.
