@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,12 +25,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableConfigurationProperties(CorsProperties.class)
 public class SecurityConfig {
+    private static final String DEV_PROFILE = "dev";
 
     private final CorsProperties corsProperties;
+    private final Environment environment;
 
-    SecurityConfig(CorsProperties corsProperties)
+    SecurityConfig(CorsProperties corsProperties, Environment environment)
     {
         this.corsProperties = corsProperties;
+        this.environment = environment;
     }
 
     @Bean
@@ -39,16 +44,19 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/error").permitAll()
-                .requestMatchers("/api/analyze/**").permitAll()
-                .requestMatchers(
-                    "/v3/api-docs/**",
-                    "/swagger-ui/**",
-                    "/swagger-ui.html"
-                ).permitAll()
-                .anyRequest().denyAll()
-            )
+            .authorizeHttpRequests(auth -> {
+                auth.requestMatchers("/error").permitAll();
+                auth.requestMatchers("/api/analyze/**").permitAll();
+                // API docs are a dev-only convenience; in every other profile they fall through to denyAll()
+                if (environment.acceptsProfiles(Profiles.of(DEV_PROFILE))) {
+                    auth.requestMatchers(
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html"
+                    ).permitAll();
+                }
+                auth.anyRequest().denyAll();
+            })
             .headers(headers -> headers
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::deny)
                 .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
