@@ -7,8 +7,8 @@ spring:
       - "optional:file:../.env[.properties]"
   servlet:
     multipart:
-      max-file-size: 1024MB
-      max-request-size: 1024MB
+      max-file-size: "${MULTIPART_MAX_SIZE:100MB}"
+      max-request-size: "${MULTIPART_MAX_SIZE:100MB}"
   datasource:
     url: "jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:cogniflex}"
     username: "${DB_USER}"
@@ -35,6 +35,15 @@ springdoc:
 
 server:
   port: "${BACKEND_PORT:8080}"
+
+app:
+  input-limits:
+    text:
+      min-words: "${INPUT_MIN_WORDS:40}"
+      max-characters: "${INPUT_MAX_TEXT_CHARACTERS:50000}"
+    media:
+      max-image-size: "${INPUT_MAX_IMAGE_SIZE:10MB}"
+      max-video-size: "${INPUT_MAX_VIDEO_SIZE:100MB}"
 
 management:
   server:

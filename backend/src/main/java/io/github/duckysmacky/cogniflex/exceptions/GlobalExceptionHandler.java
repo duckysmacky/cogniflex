@@ -6,10 +6,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(InputLimitException.class)
+    public ResponseEntity<ErrorResponse> handleInputLimitException(InputLimitException ex) {
+        return ResponseEntity.status(ex.status())
+            .body(new ErrorResponse(ex.code(), ex.getMessage()));
+    }
+
+    // Must stay more specific than the MultipartException handler below (it is a subclass)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {
+        return ResponseEntity.status(HttpStatus.CONTENT_TOO_LARGE)
+            .body(new ErrorResponse("FILE_TOO_LARGE", "Upload exceeds the maximum allowed request size"));
+    }
+
     @ExceptionHandler(MultipartException.class)
     public ResponseEntity<ErrorResponse> handleMultipartException(MultipartException ex) {
         Throwable cause = ex.getCause();
@@ -18,7 +32,7 @@ public class GlobalExceptionHandler {
             return ResponseEntity.badRequest()
                 .body(new ErrorResponse(
                     "File upload failed",
-                    "Upload is incomplete or file is too large (> 1024MB)"
+                    "Upload is incomplete or unreadable"
                 ));
         }
         return ResponseEntity.badRequest()

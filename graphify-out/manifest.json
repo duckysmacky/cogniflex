@@ -1,27 +1,27 @@
 {
   ".agents/skills/context-manager/scripts/new_issue.sh": {
-    "mtime": 1792241321.841029,
+    "mtime": 1792247169.0305028,
     "ast_hash": "d2d2b07246118bbf109a1b09f7c0e6c1",
     "semantic_hash": ""
   },
   ".claude/settings.json": {
-    "mtime": 1792246666.4276881,
+    "mtime": 1792247169.0316246,
     "ast_hash": "a27e4eb2ad210f212cf90a419e15163d",
     "semantic_hash": ""
   },
   ".claude/settings.local.json": {
-    "mtime": 1780162792.0404758,
-    "ast_hash": "4151250bc3cdf58396546cb771cb2b69",
+    "mtime": 1794078033.3327951,
+    "ast_hash": "0e858c6cb035ac41711aa7c41c7185a7",
     "semantic_hash": ""
   },
   ".codex/hooks.json": {
-    "mtime": 1792246666.4310634,
+    "mtime": 1792247169.0316246,
     "ast_hash": "6475233fd87cada038b57031779a2681",
     "semantic_hash": ""
   },
   "backend/build.gradle": {
-    "mtime": 1791932575.4792633,
-    "ast_hash": "2e438c598046cbfe3ee5708979d529ee",
+    "mtime": 1794006697.8694549,
+    "ast_hash": "e1779690aaf007ac50cf0058b534995a",
     "semantic_hash": ""
   },
   "backend/gradlew": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/analysis/dynamic/inference/InferenceGrpcClient.java": {
-    "mtime": 1791374531.6985042,
-    "ast_hash": "f11d085ca978cc39bdb4474e18262f99",
+    "mtime": 1794006697.8704548,
+    "ast_hash": "262e00508f5f6af608128cfcf669b028",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/analysis/score/FinalScore.java": {
@@ -395,8 +395,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/config/SecurityConfig.java": {
-    "mtime": 1780492016.1013026,
-    "ast_hash": "6ebca752439a351d3db678efc4e3e1c1",
+    "mtime": 1794006697.8704548,
+    "ast_hash": "43fc19b0061404820b2edf5533dd2198",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/config/SwaggerConfig.java": {
@@ -409,34 +409,9 @@
     "ast_hash": "de0c04efd19b03e7d193361ad37eca02",
     "semantic_hash": ""
   },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/controllers/HistoryController.java": {
-    "mtime": 1789567539.6088789,
-    "ast_hash": "b50ed15b6fb76877611698b0357a76a6",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/controllers/MetricsController.java": {
-    "mtime": 1791374531.6985042,
-    "ast_hash": "e4e722ca8a278ed16d1646f63bf2a14e",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/controllers/StatusController.java": {
-    "mtime": 1779480839.7642229,
-    "ast_hash": "ce94af468d2bc15979045e33ad334b7f",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/converters/AnalysisVerdictConverter.java": {
-    "mtime": 1789567539.6088789,
-    "ast_hash": "0ed2dcf64c549c6fbea6acc9fe567571",
-    "semantic_hash": ""
-  },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/dto/AnalysisResultResponse.java": {
     "mtime": 1789567539.6088789,
     "ast_hash": "00b2f07a13e46ee32e1c9322e9d86d0e",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/dto/CreateHistoryItemRequest.java": {
-    "mtime": 1789567539.6088789,
-    "ast_hash": "44b44c3e999947d659cf09656ad3bb62",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/dto/CreateTextDetectionRequest.java": {
@@ -454,29 +429,9 @@
     "ast_hash": "069f1b224f7ea903e8f9202d98a19c7d",
     "semantic_hash": ""
   },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/dto/HistoryItemResponse.java": {
-    "mtime": 1789567539.6088789,
-    "ast_hash": "e5e8c411e07c1cd522ad3f0b3f1bcded",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/dto/MetricsResponse.java": {
-    "mtime": 1779480839.7652967,
-    "ast_hash": "5867fac9b1119c50ce5c8941dd8dd14b",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/dto/StatusResponse.java": {
-    "mtime": 1791374531.6985042,
-    "ast_hash": "0ec8ba41cf8b4b01a76a7b9979048b4c",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/entities/HistoryRecord.java": {
-    "mtime": 1789567539.6088789,
-    "ast_hash": "164084e057ca1ab0d1a0b64be01948fd",
-    "semantic_hash": ""
-  },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/GlobalExceptionHandler.java": {
-    "mtime": 1780224786.833344,
-    "ast_hash": "39a3d43be700258a340f1bc3ab1ec216",
+    "mtime": 1794225036.4011757,
+    "ast_hash": "166e3669d428fdde0c31a6915876f345",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/MediaParsingException.java": {
@@ -599,19 +554,9 @@
     "ast_hash": "655206b4c8c6eff4669c30bdd49a210e",
     "semantic_hash": ""
   },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/repositories/HistoryRepository.java": {
-    "mtime": 1779480839.7680407,
-    "ast_hash": "ce252a9cadf17a2a64e8111815ce813d",
-    "semantic_hash": ""
-  },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/services/AnalyzeService.java": {
-    "mtime": 1789567539.6116424,
-    "ast_hash": "166d7c4cc4dc80b80b7430ff8eb82c2b",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/HistoryService.java": {
-    "mtime": 1789567539.6116424,
-    "ast_hash": "f4768301ce3a46c8b606b5b35f4549a6",
+    "mtime": 1794225035.9831893,
+    "ast_hash": "4e85b12633348aa382834322d91c831c",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/services/InMemoryRateLimitService.java": {
@@ -627,31 +572,6 @@
   "backend/src/main/java/io/github/duckysmacky/cogniflex/services/RateLimiterService.java": {
     "mtime": 1779480839.769044,
     "ast_hash": "cdfb0049c9e4aa40d32dde5442ea8ffe",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/StatusService.java": {
-    "mtime": 1791374531.6985042,
-    "ast_hash": "2f0515fc6b0416772e86c9185e334833",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/availability/AvailabilityService.java": {
-    "mtime": 1780224786.834509,
-    "ast_hash": "5b832842b3744263cee52eeb0fecd674",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/availability/DatabaseAvailabilityService.java": {
-    "mtime": 1780224786.8351939,
-    "ast_hash": "d642741c6d0967e78a81e0d2ad32b248",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/availability/InferenceAvailabilityService.java": {
-    "mtime": 1791374531.6985042,
-    "ast_hash": "12ac12b575ce8ffc5b636b3b58928445",
-    "semantic_hash": ""
-  },
-  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/availability/RedisAvailabilityService.java": {
-    "mtime": 1780224786.8351939,
-    "ast_hash": "2469b5a0f33add62060cfff4282dd4c4",
     "semantic_hash": ""
   },
   "backend/src/main/resources/db/migration/V1__create_history_records_table.sql": {
@@ -675,8 +595,8 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/analysis/dynamic/InferenceGrpcClientTest.java": {
-    "mtime": 1791374531.6991088,
-    "ast_hash": "939561540b82f07775b96f4623f8a826",
+    "mtime": 1794006697.8734548,
+    "ast_hash": "2443d05cd749dffcae38bb9689ec8688",
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/analysis/score/TextOnlyScoreFusionStrategyTest.java": {
@@ -735,18 +655,8 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/controllers/DetectionControllerTest.java": {
-    "mtime": 1789567539.6155312,
-    "ast_hash": "e1bc24243e356c0ea4fd5d8e9f7e35f9",
-    "semantic_hash": ""
-  },
-  "backend/src/test/java/io/github/duckysmacky/cogniflex/controllers/HistoryControllerTest.java": {
-    "mtime": 1789567539.6155312,
-    "ast_hash": "a6830f24a01717504bc5f284fa0d1d1c",
-    "semantic_hash": ""
-  },
-  "backend/src/test/java/io/github/duckysmacky/cogniflex/controllers/StatusControllerTest.java": {
-    "mtime": 1791374531.6991088,
-    "ast_hash": "37b93c71d134612513929f05fe335a2f",
+    "mtime": 1794225076.4948816,
+    "ast_hash": "7813aea26fe7992b58f36c657c6d8104",
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/processing/TextPreprocessorTest.java": {
@@ -770,8 +680,8 @@
     "semantic_hash": ""
   },
   "deploy.sh": {
-    "mtime": 1791923781.4834409,
-    "ast_hash": "513da4cdc162038fb7380b8f5c8fce2d",
+    "mtime": 1794224304.8314426,
+    "ast_hash": "7df9ee6c72f1e835117775afa4e30819",
     "semantic_hash": ""
   },
   "extension/.prettierrc.js": {
@@ -1110,8 +1020,8 @@
     "semantic_hash": ""
   },
   "inference/app/detectors/mocks.py": {
-    "mtime": 1791374531.7015839,
-    "ast_hash": "8f636105c8b3da4aeae9058e295efe39",
+    "mtime": 1794006697.8744547,
+    "ast_hash": "0f641a697c8b674e84e1489482216b93",
     "semantic_hash": ""
   },
   "inference/app/detectors/photo_detector.py": {
@@ -1125,8 +1035,8 @@
     "semantic_hash": ""
   },
   "inference/app/grpc_service.py": {
-    "mtime": 1791374531.7015839,
-    "ast_hash": "898d56f54d83e4ad1417ac7ab2ca4a61",
+    "mtime": 1794006697.8744547,
+    "ast_hash": "059560ed766029af56a0ce2193df4b7c",
     "semantic_hash": ""
   },
   "inference/app/inference/__init__.py": {
@@ -1145,8 +1055,8 @@
     "semantic_hash": ""
   },
   "inference/app/server.py": {
-    "mtime": 1791374531.7021124,
-    "ast_hash": "40537c1636b15fc27bf97c38b2060165",
+    "mtime": 1794006697.8754547,
+    "ast_hash": "510001441b0c9319f983fb0ad833cb3e",
     "semantic_hash": ""
   },
   "inference/main.py": {
@@ -1240,212 +1150,212 @@
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/SKILL.md": {
-    "mtime": 1792241321.8413782,
+    "mtime": 1792247169.025899,
     "ast_hash": "715e8380dfc2ad274d879058cdac617c",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/agents/openai.yaml": {
-    "mtime": 1792241321.8358424,
+    "mtime": 1792247169.0264344,
     "ast_hash": "69e5360cb0cbdae4f3bfcaaf6d3af8f2",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/ATTEMPTS.md": {
-    "mtime": 1792241321.8370178,
+    "mtime": 1792247169.0266569,
     "ast_hash": "19878d46bb0964c92ced6de66e434f66",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/CONNECTIONS.md": {
-    "mtime": 1792241321.836889,
+    "mtime": 1792247169.026805,
     "ast_hash": "912e1272c5d0c9bed76fca265ad2a51c",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/DECISIONS.md": {
-    "mtime": 1792241321.8369558,
+    "mtime": 1792247169.026805,
     "ast_hash": "be3554ee8db98a140d2233c06545b167",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/FINDINGS.md": {
-    "mtime": 1792241321.8371832,
+    "mtime": 1792247169.026805,
     "ast_hash": "97834b7fa18fbcd34c9434bb70985c9c",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/HANDOFF.md": {
-    "mtime": 1792241321.8372896,
+    "mtime": 1792247169.026805,
     "ast_hash": "29231183eb04fb427dc3eb0bd358e6b8",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/ISSUE.md": {
-    "mtime": 1792241321.8370912,
+    "mtime": 1792247169.026805,
     "ast_hash": "8cd0e4c167d70858e6db2ad73156df55",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/assets/templates/ISSUES.md": {
-    "mtime": 1792241321.8372364,
+    "mtime": 1792247169.026805,
     "ast_hash": "7a1b6b1e0fd28fb2b3069d73f797421f",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/ATTEMPTS.md": {
-    "mtime": 1792241321.8402557,
+    "mtime": 1792247169.0274308,
     "ast_hash": "21b81802fd450b060840a4922a719db7",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/CONNECTIONS.md": {
-    "mtime": 1792241321.840333,
+    "mtime": 1792247169.0276117,
     "ast_hash": "8f92cd64e8a460145b531e95cb175035",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/DECISIONS.md": {
-    "mtime": 1792241321.8403978,
+    "mtime": 1792247169.0276117,
     "ast_hash": "b3b8ceb39381b67396438c9b694bae78",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/FINDINGS.md": {
-    "mtime": 1792241321.8404567,
+    "mtime": 1792247169.0276117,
     "ast_hash": "2e43ac1ae1ebde0977f84e4bfbc69a4c",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/HANDOFF.md": {
-    "mtime": 1792241321.840537,
+    "mtime": 1792247169.0276117,
     "ast_hash": "c8350cadc2d071cfe76ca1e57fd2e33c",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/ISSUE.md": {
-    "mtime": 1792241321.840598,
+    "mtime": 1792247169.0276117,
     "ast_hash": "6a98d95f9bf78fc5ce07179adbf9b31e",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/bios-settings.md": {
-    "mtime": 1792241321.8392131,
+    "mtime": 1792247169.0283456,
     "ast_hash": "586b27de9ba1027d6b978518401345bb",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/bus-rebalance-solution-report.md": {
-    "mtime": 1792241321.83929,
+    "mtime": 1792247169.028711,
     "ast_hash": "85813643eabe235e5298f7cd87a65acc",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/debug-boot-logging-optimization.md": {
-    "mtime": 1792241321.8393464,
+    "mtime": 1792247169.028711,
     "ast_hash": "7ac0ff9db88fb989f84094abfed09f15",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/nvme-timing-investigation.md": {
-    "mtime": 1792241321.8394017,
+    "mtime": 1792247169.028711,
     "ast_hash": "efc30a96574a772c649cc2afddf43621",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/pci-bus-allocation-findings.md": {
-    "mtime": 1792241321.8394566,
+    "mtime": 1792247169.028711,
     "ast_hash": "36d6cd9a674d6dc9bb54aecdf83eea40",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/pcie-nvme-discovery-progress.md": {
-    "mtime": 1792241321.839517,
+    "mtime": 1792247169.028711,
     "ast_hash": "7bc65fe8f4df39e9cf213603b81b8a27",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/recovery-algorithm-analysis.md": {
-    "mtime": 1792241321.8395784,
+    "mtime": 1792247169.028711,
     "ast_hash": "0f1547780aee1674d60a5216f6dece39",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/recovery-failure-investigation-2026-07-24.md": {
-    "mtime": 1792241321.8396409,
+    "mtime": 1792247169.028711,
     "ast_hash": "91ec1fd769322add89a61bdf2fa6d397",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/recovery-solution-report.md": {
-    "mtime": 1792241321.839752,
+    "mtime": 1792247169.028711,
     "ast_hash": "6b042d82245864157e22a10af86df691",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/risers-and-slots.md": {
-    "mtime": 1792241321.839696,
+    "mtime": 1792247169.028711,
     "ast_hash": "34665485ad1d4fa5208e88b2f377fcb5",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/notes/verification-commands.md": {
-    "mtime": 1792241321.839809,
+    "mtime": 1792247169.028711,
     "ast_hash": "6ac8ce534e1597a21d828da65a6ea9c6",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/sources/customer-conversation.md": {
-    "mtime": 1792241321.839973,
+    "mtime": 1792247169.028711,
     "ast_hash": "31304b3e3c0ba5b0c18a087c55ade3b3",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/sources/follow-up-prompt.md": {
-    "mtime": 1792241321.8400576,
+    "mtime": 1792247169.0298984,
     "ast_hash": "0b9174a6d2cb70948acfff5549ddc8a4",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/sources/starting-prompt.md": {
-    "mtime": 1792241321.8401346,
+    "mtime": 1792247169.0298984,
     "ast_hash": "5a4110f4514b151032e7f37cf3245995",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/examples/FW-1427/sources/ticket-conversation.md": {
-    "mtime": 1792241321.8401961,
+    "mtime": 1792247169.0298984,
     "ast_hash": "88ff408c09fa0b22ce0ab9cad83bcdd5",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/references/file-schemas.md": {
-    "mtime": 1792241321.8408191,
+    "mtime": 1792247169.0298984,
     "ast_hash": "8294082450d874b8435f2eddace947a7",
     "semantic_hash": ""
   },
   ".agents/skills/context-manager/references/naming-conventions.md": {
-    "mtime": 1792241321.840898,
+    "mtime": 1792247169.0305028,
     "ast_hash": "ebd3a41209e38fee2f3da5559a055492",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/SKILL.md": {
-    "mtime": 1792241149.5644767,
+    "mtime": 1792247169.031009,
     "ast_hash": "11fc0b88d693cd8e293c799039d386a8",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/add-watch.md": {
-    "mtime": 1784024143.4500806,
+    "mtime": 1792247169.031009,
     "ast_hash": "d59d027fe449f06aa03905a01184e779",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/exports.md": {
-    "mtime": 1784024143.46708,
+    "mtime": 1792247169.0316246,
     "ast_hash": "9da2a2152e60a22f07f05fed5158f287",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/extraction-spec.md": {
-    "mtime": 1784024143.46708,
+    "mtime": 1792247169.0316246,
     "ast_hash": "42fef56a01698118f7fd722acdadea34",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/github-and-merge.md": {
-    "mtime": 1784024143.46708,
+    "mtime": 1792247169.0316246,
     "ast_hash": "cde13df085e4c492aeb7ba298a996d0d",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/hooks.md": {
-    "mtime": 1784024143.46708,
+    "mtime": 1792247169.0316246,
     "ast_hash": "aea24fe86e18fe8aeb304403032cfce7",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/query.md": {
-    "mtime": 1784024143.46808,
+    "mtime": 1792247169.0316246,
     "ast_hash": "3c46f8ad006874260614ed8657d02307",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/transcribe.md": {
-    "mtime": 1784024143.46908,
+    "mtime": 1792247169.0316246,
     "ast_hash": "67b6a5fa6c0974e18f60db9f8932fbd8",
     "semantic_hash": ""
   },
   ".agents/skills/graphify/references/update.md": {
-    "mtime": 1784024143.678074,
+    "mtime": 1792247169.0316246,
     "ast_hash": "c698309979460d0f02ba616417844399",
     "semantic_hash": ""
   },
   ".claude/CLAUDE.md": {
-    "mtime": 1792246666.4278016,
+    "mtime": 1792247169.0316246,
     "ast_hash": "9b31786b637be3c13978bec4c2330752",
     "semantic_hash": ""
   },
@@ -1470,13 +1380,13 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1792246551.070945,
-    "ast_hash": "bde095e1c942281e1d82526ca504a9de",
+    "mtime": 1794006697.868455,
+    "ast_hash": "9daa92b34430b9a5e4ca8c446f4dd0af",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
-    "mtime": 1792246551.070945,
-    "ast_hash": "bde095e1c942281e1d82526ca504a9de",
+    "mtime": 1794006697.868455,
+    "ast_hash": "9daa92b34430b9a5e4ca8c446f4dd0af",
     "semantic_hash": ""
   },
   "README.md": {
@@ -1485,13 +1395,13 @@
     "semantic_hash": ""
   },
   "backend/AGENTS.md": {
-    "mtime": 1792246592.7064795,
-    "ast_hash": "85dc45154a2c9b83bccf8758ba863ebf",
+    "mtime": 1794224304.8304427,
+    "ast_hash": "9b21fc0772ce9ebe63c2b1b1bb8c3e87",
     "semantic_hash": ""
   },
   "backend/CLAUDE.md": {
-    "mtime": 1792246592.7064795,
-    "ast_hash": "85dc45154a2c9b83bccf8758ba863ebf",
+    "mtime": 1794224304.8304427,
+    "ast_hash": "9b21fc0772ce9ebe63c2b1b1bb8c3e87",
     "semantic_hash": ""
   },
   "backend/src/main/resources/analysis/static-analysis-config.yml": {
@@ -1535,18 +1445,18 @@
     "semantic_hash": ""
   },
   "backend/src/main/resources/application.yml": {
-    "mtime": 1791374531.6991088,
-    "ast_hash": "ae13e9cccb0d3f51e451a196435cb41a",
+    "mtime": 1794225036.792163,
+    "ast_hash": "e2de9310a890ae0f5d47e926be03b1e4",
     "semantic_hash": ""
   },
   "backend/src/test/resources/application.yml": {
-    "mtime": 1791374531.6991088,
-    "ast_hash": "2aaf7181da909922810912098f05cd3a",
+    "mtime": 1794225036.8851597,
+    "ast_hash": "4910c513c87cfbb64c989c94b42c7795",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1791932090.2325761,
-    "ast_hash": "6501c5dca79f6f3269d9ce6d9d2325dd",
+    "mtime": 1794224304.8314426,
+    "ast_hash": "ae58410214f33b1f03bb1f3e59fac37e",
     "semantic_hash": ""
   },
   "docs/ai-artifacts-research-ru.md": {
@@ -1565,12 +1475,12 @@
     "semantic_hash": ""
   },
   "extension/AGENTS.md": {
-    "mtime": 1792246656.4057713,
+    "mtime": 1792247169.0329566,
     "ast_hash": "2923697c61fa1ce1da871764a5a74e06",
     "semantic_hash": ""
   },
   "extension/CLAUDE.md": {
-    "mtime": 1792246656.4057713,
+    "mtime": 1792247169.0329566,
     "ast_hash": "2923697c61fa1ce1da871764a5a74e06",
     "semantic_hash": ""
   },
@@ -1580,12 +1490,12 @@
     "semantic_hash": ""
   },
   "frontend/AGENTS.md": {
-    "mtime": 1792246643.2799168,
+    "mtime": 1792247169.0329566,
     "ast_hash": "4db1035a25e27107b028e2ab15197225",
     "semantic_hash": ""
   },
   "frontend/CLAUDE.md": {
-    "mtime": 1792246643.2799168,
+    "mtime": 1792247169.0329566,
     "ast_hash": "4db1035a25e27107b028e2ab15197225",
     "semantic_hash": ""
   },
@@ -1600,12 +1510,12 @@
     "semantic_hash": ""
   },
   "inference/AGENTS.md": {
-    "mtime": 1792246601.2383845,
+    "mtime": 1792247169.047179,
     "ast_hash": "3dd67901752e454deb5b6edc0263727a",
     "semantic_hash": ""
   },
   "inference/CLAUDE.md": {
-    "mtime": 1792246601.2383845,
+    "mtime": 1792247169.047179,
     "ast_hash": "3dd67901752e454deb5b6edc0263727a",
     "semantic_hash": ""
   },
@@ -1620,12 +1530,12 @@
     "semantic_hash": ""
   },
   "model/AGENTS.md": {
-    "mtime": 1792246643.179918,
+    "mtime": 1792247169.047179,
     "ast_hash": "34d95aff6eb23bc7626883381d3cfe07",
     "semantic_hash": ""
   },
   "model/CLAUDE.md": {
-    "mtime": 1792246643.179918,
+    "mtime": 1792247169.047179,
     "ast_hash": "34d95aff6eb23bc7626883381d3cfe07",
     "semantic_hash": ""
   },
@@ -1657,6 +1567,81 @@
   "backend/src/test/resources/static/video_test.mp4": {
     "mtime": 1775678240.1225219,
     "ast_hash": "a260fc56aedbab12868fdba9d3d26e55",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/config/InputLimitsProperties.java": {
+    "mtime": 1794225016.177839,
+    "ast_hash": "d3a460dd6aa77ebc605da8d021ef6d24",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/config/ManagementSecurityConfig.java": {
+    "mtime": 1794006697.8704548,
+    "ast_hash": "17bfc1d9c301480ffde3b066386074fc",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/InputLimitException.java": {
+    "mtime": 1794225017.0698097,
+    "ast_hash": "874be545a5bce7f85d57e2d635c0b250",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/UnsupportedAnalysisException.java": {
+    "mtime": 1794006697.8704548,
+    "ast_hash": "76dd758344720e920d3db6d151003e9e",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/health/InferenceHealthIndicator.java": {
+    "mtime": 1794006697.871455,
+    "ast_hash": "b87e34e69eba3388c0737b9992c1cbd3",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/InputLimitValidator.java": {
+    "mtime": 1794225017.2258046,
+    "ast_hash": "44ab9c22b10e825448d40d891ca28089",
+    "semantic_hash": ""
+  },
+  "backend/src/main/resources/db/migration/V3__drop_history_records.sql": {
+    "mtime": 1794006697.872455,
+    "ast_hash": "2a8093020daf470a61acc64db1d804af",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/config/ActuatorHealthEndpointTest.java": {
+    "mtime": 1794224304.8314426,
+    "ast_hash": "1cd90e66a30c139f45b6b7c8e46ddda8",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/config/SecurityConfigDevProfileTest.java": {
+    "mtime": 1794006697.8743114,
+    "ast_hash": "86d2d67a86f496901aa3d037acb239e6",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/config/SecurityConfigTest.java": {
+    "mtime": 1794006697.8743114,
+    "ast_hash": "e73e29dfe9a771182d3f5a6b0008a62a",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/health/InferenceHealthIndicatorTest.java": {
+    "mtime": 1794006697.8744547,
+    "ast_hash": "1c03109cdebd6b3253bdfa2e7928b918",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/services/AnalyzeServiceTest.java": {
+    "mtime": 1794225068.9751222,
+    "ast_hash": "ba0b09a688fd7952a357c7913f1d4f83",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/services/InputLimitValidatorTest.java": {
+    "mtime": 1794225128.4162445,
+    "ast_hash": "5ff77b1fc4e1e834226da9ec2aca56e5",
+    "semantic_hash": ""
+  },
+  ".github/instructions/review.instructions.md": {
+    "mtime": 1792247169.0329566,
+    "ast_hash": "c9963ad58dcc010fe4e4b50c4268bf0e",
+    "semantic_hash": ""
+  },
+  "REVIEW.md": {
+    "mtime": 1792247169.0329566,
+    "ast_hash": "a56f6dfd49019926e0675920425f6b04",
     "semantic_hash": ""
   }
 }

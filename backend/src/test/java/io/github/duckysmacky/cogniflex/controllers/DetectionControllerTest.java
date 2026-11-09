@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
+import io.github.duckysmacky.cogniflex.exceptions.InputLimitException;
 import io.github.duckysmacky.cogniflex.exceptions.UnsupportedAnalysisException;
 import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 
@@ -57,6 +58,34 @@ public class DetectionControllerTest {
                 .andExpect(jsonPath("$.verdict").value(response.verdict().toString()))
                 .andExpect(jsonPath("$.confidence").value(response.confidence()))
                 .andExpect(jsonPath("$.evidence").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    public void checkTooShortTextIsUnprocessable() throws Exception {
+        CreateTextDetectionRequest request = new CreateTextDetectionRequest("Too short");
+
+        given(service.analyzeText(request)).willThrow(InputLimitException.textTooShort(2, 40));
+
+        mockMvc.perform(post("/api/analyze/text").with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.error").value("TEXT_TOO_SHORT"));
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    public void checkOversizedFileIsRejectedWithContentTooLarge() throws Exception {
+        MockMultipartFile img = new MockMultipartFile("file", "big.png", "image/png", new byte[] {1});
+
+        given(service.analyzeMedia(any())).willThrow(InputLimitException.fileTooLarge("image", 11, 10));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/analyze/media").file(img)
+                .with(csrf()))
+                .andExpect(status().isContentTooLarge())
+                .andExpect(jsonPath("$.error").value("FILE_TOO_LARGE"));
     }
 
     @Test

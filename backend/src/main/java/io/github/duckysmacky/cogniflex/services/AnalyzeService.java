@@ -30,25 +30,30 @@ public class AnalyzeService {
     private final TextPreprocessor textPreprocessor;
     private final MediaParser mediaParser;
     private final MediaTypeResolver mediaTypeResolver;
+    private final InputLimitValidator inputLimitValidator;
 
     public AnalyzeService(
         AnalysisOrchestrator analysisOrchestrator,
         ContentItemFactory contentItemFactory,
         TextPreprocessor textPreprocessor,
         MediaParser mediaParser,
-        MediaTypeResolver mediaTypeResolver
+        MediaTypeResolver mediaTypeResolver,
+        InputLimitValidator inputLimitValidator
     ) {
         this.analysisOrchestrator = analysisOrchestrator;
         this.contentItemFactory = contentItemFactory;
         this.textPreprocessor = textPreprocessor;
         this.mediaParser = mediaParser;
         this.mediaTypeResolver = mediaTypeResolver;
+        this.inputLimitValidator = inputLimitValidator;
     }
 
     public AnalysisResultResponse analyzeText(CreateTextDetectionRequest request) {
         long startedAt = System.nanoTime();
 
+        inputLimitValidator.validateTextLength(request.text());
         PreprocessedText text = textPreprocessor.preprocess(request.text(), TextPreprocessingOptions.forModelInput());
+        inputLimitValidator.validateWordCount(text);
         ContentItem item = contentItemFactory.fromText(text);
 
         AnalysisResultSummary result = analysisOrchestrator.submit(item);
@@ -62,7 +67,9 @@ public class AnalyzeService {
         long startedAt = System.nanoTime();
 
         // Reject before the (potentially huge) upload is read: video analysis has no real implementation yet
-        if (mediaTypeResolver.resolve(file) == MediaType.VIDEO) {
+        MediaType mediaType = mediaTypeResolver.resolve(file);
+        inputLimitValidator.validateMediaSize(mediaType, file);
+        if (mediaType == MediaType.VIDEO) {
             throw new UnsupportedAnalysisException("Video analysis is not supported yet");
         }
 

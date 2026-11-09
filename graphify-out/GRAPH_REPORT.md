@@ -1,16 +1,16 @@
-# Graph Report - cogniflex  (2026-10-17)
+# Graph Report - cogniflex  (2026-11-09)
 
 ## Corpus Check
-- 308 files · ~71,000 words
+- 305 files · ~72,982 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1979 nodes · 3476 edges · 186 communities (136 shown, 50 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 156 edges (avg confidence: 0.79)
+- 1982 nodes · 3519 edges · 178 communities (134 shown, 44 thin omitted)
+- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 193 edges (avg confidence: 0.79)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `79834e86`
+- Built from commit: `fff5d9ef`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -71,14 +71,14 @@
 - TextAnalysisContext
 - DetectionControllerTest.java
 - TextStaticAnalyzerConfigTest.java
-- .from
+- ModelInputPreparer
 - LeakageRulesTest.java
 - HiddenCharacterRulesTest.java
 - StylometryRulesTest.java
 - package.json
 - Attempts
 - FabricatedCitationRule
-- TextPreprocessor
+- REVIEW.md
 - SemanticRulesTest.java
 - StructureRulesTest.java
 - Deferred endpoint-recovery solution report
@@ -92,8 +92,7 @@
 - NVMe endpoint-readiness investigation
 - Recovery algorithm analysis
 - graphify reference: extra exports and benchmark
-- ContentType
-- EmojiDecorationRule
+- @babel/core
 - MarkdownStructureRule
 - SmartTypographyConsistencyRule
 - scripts
@@ -112,7 +111,6 @@
 - FINDINGS.md
 - Handoff
 - PCI bus-allocation findings
-- ContentItemFactory
 - TextStaticAnalyzer
 - AnalysisExecutorConfig
 - SwaggerConfig.java
@@ -126,13 +124,10 @@
 - PCIe/NVMe discovery progress
 - Recovery failure investigation — 2026-07-24
 - graphify reference: query, path, explain
-- MatchTextNormalizer
-- ModelInputPreparer
 - 0. How to read this document
 - model/AGENTS.md
 - Reliable discovery of cascaded external NVMe shelves
 - Firmware setup controls handoff
-- HistoryRepository
 - deploy.sh
 - settings.store.ts
 - MockVideoDetector
@@ -141,10 +136,8 @@
 - graphify reference: commit hook and native AGENTS.md integration
 - graphify reference: incremental update and cluster-only
 - gradlew
-- TextPreprocessingException
 - React + TypeScript + Vite
 - MultitypePictureDetector
-- proto.py
 - Inference-сервис
 - Attempts
 - Decisions
@@ -167,7 +160,6 @@
 - extraction-spec.md
 - CLAUDE.md
 - babel-plugin-react-compiler
-- eslint
 - eslint-plugin-prettier
 - eslint-plugin-react-hooks
 - eslint-plugin-react-refresh
@@ -190,32 +182,32 @@
 7. `DynamicAnalysisResult` - 33 edges
 8. `TextAnalysisContextBuilder` - 30 edges
 9. `AnalysisRule` - 28 edges
-10. `AnalysisVerdict` - 26 edges
+10. `StaticAnalyzer` - 24 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `serve()` --calls--> `load_settings()`  [INFERRED]
   inference/app/server.py → inference/app/config.py
-- `_load_video_model()` --calls--> `MockVideoDetector`  [INFERRED]
-  inference/app/server.py → inference/app/detectors/mocks.py
+- `AnalyzerServicer` --uses--> `MultitypePictureDetector`  [INFERRED]
+  inference/app/grpc_service.py → inference/app/detectors/photo_detector.py
 - `_load_photo_model()` --calls--> `MultitypePictureDetector`  [INFERRED]
   inference/app/server.py → inference/app/detectors/photo_detector.py
+- `AnalyzerServicer` --uses--> `TextDetector`  [INFERRED]
+  inference/app/grpc_service.py → inference/app/detectors/text_detector.py
 - `_load_text_model()` --calls--> `TextDetector`  [INFERRED]
   inference/app/server.py → inference/app/detectors/text_detector.py
-- `serve()` --calls--> `AnalyzerServicer`  [INFERRED]
-  inference/app/server.py → inference/app/grpc_service.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (186 total, 50 thin omitted)
+## Communities (178 total, 44 thin omitted)
 
 ### Community 0 - "InferenceGrpcClient"
-Cohesion: 0.06
-Nodes (30): AfterEach, AnalyzeReply, InferenceGrpcClient, AnalyzerBlockingStub, Logger, Override, ResponseStatusException, Service (+22 more)
+Cohesion: 0.08
+Nodes (25): InferenceGrpcClient, AnalyzerBlockingStub, AnalyzeReply, Logger, Override, ResponseStatusException, Service, GrpcClientConfig (+17 more)
 
 ### Community 1 - "InferenceAvailabilityService"
-Cohesion: 0.06
-Nodes (34): ApplicationAvailability, GetMapping, Profile, RequestMapping, RestController, MetricsController, GetMapping, ResponseEntity (+26 more)
+Cohesion: 0.14
+Nodes (13): InferenceHealthIndicator, Component, Logger, ManagedChannel, Override, InferenceHealthIndicatorTest, AfterEach, ManagedChannel (+5 more)
 
 ### Community 2 - "dependencies"
 Cohesion: 0.04
@@ -234,8 +226,8 @@ Cohesion: 0.06
 Nodes (35): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection, moduleResolution (+27 more)
 
 ### Community 6 - "DynamicAnalysisResult"
-Cohesion: 0.14
-Nodes (12): AnalysisResult, AnalysisResultSummary, DynamicAnalysisResult, Override, FinalScore, ScoreFusionStrategy, Component, Override (+4 more)
+Cohesion: 0.13
+Nodes (11): AnalysisResult, DynamicAnalysisResult, Override, FinalScore, ScoreFusionStrategy, Component, Override, TextOnlyScoreFusionStrategy (+3 more)
 
 ### Community 7 - "LiteralPhraseMatcher"
 Cohesion: 0.11
@@ -243,7 +235,7 @@ Nodes (14): DirectAiLeakageRule, Component, Override, Pattern, Component, Overri
 
 ### Community 8 - "preprocess_images.py"
 Cohesion: 0.06
-Nodes (8): MultitypePictureDetector, MultitypePictureDetector_test, PictureDetector, DeepfakeDataset, Dataset, preprocess__one_video(), Dataset, VideoDataset
+Nodes (9): Exception, MultitypePictureDetector, MultitypePictureDetector_test, PictureDetector, DeepfakeDataset, Dataset, preprocess__one_video(), Dataset (+1 more)
 
 ### Community 9 - "File schemas"
 Cohesion: 0.06
@@ -254,36 +246,36 @@ Cohesion: 0.14
 Nodes (28): analyzedElements, attachHoverListeners(), clearPendingTimer(), createIntersectionObserver(), createTooltip(), getMediaUrl(), getSettings(), hideTooltip() (+20 more)
 
 ### Community 11 - "AnalyzeService.java"
-Cohesion: 0.15
-Nodes (13): DetectionController, MultipartFile, PostMapping, RequestMapping, ResponseEntity, RestController, AnalysisResultResponse, CreateTextDetectionRequest (+5 more)
+Cohesion: 0.21
+Nodes (7): EvidenceResponse, Component, TextPreprocessor, AnalyzeService, Logger, MultipartFile, Service
 
 ### Community 12 - "HistoryRecord"
-Cohesion: 0.13
-Nodes (10): InputType, MEDIA, TEXT, MediaType, IMAGE, VIDEO, HistoryRecord, ParsedMedia (+2 more)
+Cohesion: 0.16
+Nodes (11): from(), InputType, MEDIA, TEXT, MediaType, IMAGE, VIDEO, Component (+3 more)
 
 ### Community 13 - "compilerOptions"
 Cohesion: 0.07
 Nodes (26): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection, moduleResolution (+18 more)
 
 ### Community 14 - "AnalysisOrchestrator"
-Cohesion: 0.14
-Nodes (8): AnalysisOrchestrator, Logger, Service, TimedAnalysisResult, Analyzer, DynamicAnalyzer, Override, CompletionException
+Cohesion: 0.17
+Nodes (7): AnalysisOrchestrator, Logger, Service, TimedAnalysisResult, DynamicAnalyzer, Override, CompletionException
 
 ### Community 15 - "ContentItem"
-Cohesion: 0.14
-Nodes (12): ContentItem, Override, AnalysisContext, AnalysisContextBuilder, ImageAnalysisContext, ImageAnalysisContextBuilder, Component, Override (+4 more)
+Cohesion: 0.13
+Nodes (14): InputLimitsProperties, ConfigurationProperties, Media, Text, InputLimitException, HttpStatus, PreprocessedText, InputLimitValidator (+6 more)
 
 ### Community 16 - "InferenceClient"
-Cohesion: 0.12
-Nodes (10): ImageDynamicAnalyzer, Component, Override, InferenceClient, Component, Override, TextDynamicAnalyzer, Component (+2 more)
+Cohesion: 0.11
+Nodes (14): ContentType, IMAGE, TEXT, VIDEO, ImageDynamicAnalyzer, Component, Override, InferenceClient (+6 more)
 
 ### Community 17 - "What You Must Do When Invoked"
 Cohesion: 0.08
 Nodes (24): For /graphify add and --watch, For /graphify query, For the commit hook and native AGENTS.md integration, For --update and --cluster-only, /graphify, Honesty Rules, Interpreter guard for subcommands, Part A - Structural extraction for code files (+16 more)
 
 ### Community 18 - "TextAnalysisContextBuilder"
-Cohesion: 0.18
-Nodes (9): Component, TextAnalysisContextBuilder, HiddenCharacterScanner, ParagraphSplitter, SentenceSegmenter, TextLayout, WordTokenizer, Test (+1 more)
+Cohesion: 0.05
+Nodes (35): ContentItem, Override, ContentItemFactory, Component, AnalysisContextBuilder, ImageAnalysisContext, ImageAnalysisContextBuilder, Component (+27 more)
 
 ### Community 19 - "compilerOptions"
 Cohesion: 0.08
@@ -294,32 +286,32 @@ Cohesion: 0.09
 Nodes (22): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+14 more)
 
 ### Community 21 - "StaticAnalysisConfig"
-Cohesion: 0.16
-Nodes (11): StaticAnalysisConfig, Component, LexicalMarkerRule, Component, PerplexityRule, Component, SentenceLengthVarianceRule, Component (+3 more)
+Cohesion: 0.18
+Nodes (9): Component, LexicalMarkerRule, Component, PerplexityRule, Component, SentenceLengthVarianceRule, Component, TextWatermarkRule (+1 more)
 
 ### Community 22 - ".evidence"
-Cohesion: 0.13
-Nodes (6): Builder, HedgingDensityRule, Component, Override, Pattern, Override
+Cohesion: 0.29
+Nodes (4): HedgingDensityRule, Component, Override, Pattern
 
 ### Community 23 - "HistoryItemResponse"
-Cohesion: 0.18
-Nodes (11): HistoryController, GetMapping, PostMapping, RequestMapping, ResponseEntity, RestController, CreateHistoryItemRequest, HistoryItemResponse (+3 more)
+Cohesion: 0.17
+Nodes (13): ActuatorHealthEndpointTest, ActiveProfiles, SpringBootTest, Test, ActiveProfiles, ExtendWith, Import, MockMvc (+5 more)
 
 ### Community 24 - "index.ts"
 Cohesion: 0.13
 Nodes (9): AnalyzeSection(), getFileIcon(), TODO: рефактор, вынести компоненты/хуки, AnalyzeResultProps, VERDICT_TO_RESULT_CLASSES, settingsFormSchema, SettingsFormSchema, useSettingsForm() (+1 more)
 
 ### Community 25 - "StaticScoringConfig"
-Cohesion: 0.15
-Nodes (7): Autowired, Component, RuleConfigEntry, StaticAnalysisConfigFile, StaticRuleConfig, StaticScoringConfig, Component
+Cohesion: 0.23
+Nodes (6): Component, RuleConfigEntry, StaticAnalysisConfig, StaticAnalysisConfigFile, StaticRuleConfig, StaticScoringConfig
 
 ### Community 26 - "Evidence"
-Cohesion: 0.20
-Nodes (8): Evidence, Component, Override, SteganographyRule, Component, Override, ZeroWidthCharacterRule, HiddenCharacter
+Cohesion: 0.12
+Nodes (13): Evidence, Override, Override, Override, Component, Override, SteganographyRule, Override (+5 more)
 
 ### Community 27 - ".parse"
-Cohesion: 0.19
-Nodes (8): Component, MultipartFile, MediaParser, Component, MultipartFile, MediaTypeResolver, Test, MediaParserTest
+Cohesion: 0.18
+Nodes (8): HttpStatus, MediaParsingException, Component, MultipartFile, MediaParser, Test, MediaParserTest, ResponseStatusException
 
 ### Community 28 - "1.B Detailed signals — Text"
 Cohesion: 0.10
@@ -330,28 +322,28 @@ Cohesion: 0.13
 Nodes (14): catalogue_path, context_dir, core_files, die(), issue_dir, now, require_value(), script_dir (+6 more)
 
 ### Community 30 - "AnalysisVerdict"
-Cohesion: 0.16
-Nodes (11): AttributeConverter, AnalysisVerdict, AI, HUMAN, fromString(), toString(), AnalysisVerdictConverter, Override (+3 more)
+Cohesion: 0.14
+Nodes (14): AnalysisVerdict, AI, HUMAN, fromString(), toString(), DetectionController, MultipartFile, ResponseEntity (+6 more)
 
 ### Community 31 - "LinguaTextLocaleDetector"
-Cohesion: 0.18
-Nodes (7): DetectedTextLocale, Component, Override, LinguaTextLocaleDetector, Test, LinguaTextLocaleDetectorTest, LanguageDetector
+Cohesion: 0.13
+Nodes (9): DetectedTextLocale, Component, Override, LinguaTextLocaleDetector, TextLocaleDetector, Test, LinguaTextLocaleDetectorTest, FunctionalInterface (+1 more)
 
 ### Community 32 - "api.ts"
 Cohesion: 0.14
 Nodes (9): api, apiInstance, TODO: полумать, почему не берется из енв в итоговой сборке, пока оставить фолбек, ApiProxyMethodResult, ApiProxyRequestPayload, ApiProxyKey, ApiProxyMethod, AnalyzeMediaResponse (+1 more)
 
 ### Community 33 - "AnalysisRule"
-Cohesion: 0.17
-Nodes (5): AnalysisRule, VideoAnalysisRule, Component, Override, VideoStaticAnalyzer
+Cohesion: 0.23
+Nodes (5): VideoAnalysisContext, VideoAnalysisRule, Component, Override, VideoStaticAnalyzer
 
 ### Community 34 - "text_preprocess_prod.py"
 Cohesion: 0.17
 Nodes (7): predict_text_prod(), prepare_text_prod(), RoBERTaDetectorProd, AIDetectionDataset, Dataset, RoBERTaDetector, RoBERTaDetector
 
 ### Community 35 - "AnalysisOrchestratorTest.java"
-Cohesion: 0.20
-Nodes (5): AnalysisOrchestratorTest, EmptyTextStaticAnalyzer, Override, Test, TrackingTextDynamicAnalyzer
+Cohesion: 0.17
+Nodes (6): AnalysisContext, AnalysisOrchestratorTest, EmptyTextStaticAnalyzer, Override, Test, TrackingTextDynamicAnalyzer
 
 ### Community 36 - "2.B Detailed signals — Image"
 Cohesion: 0.12
@@ -366,32 +358,32 @@ Cohesion: 0.12
 Nodes (5): ButtonProps, DividerProps, InputProps, SwitchProps, TextAreaProps
 
 ### Community 39 - "Category"
-Cohesion: 0.13
+Cohesion: 0.14
 Nodes (13): Category, ENCODING, FILENAME, HIDDEN_CHARACTERS, LEAKAGE, LEXICAL, METADATA, PHRASING (+5 more)
 
 ### Community 40 - "SecurityConfig.java"
 Cohesion: 0.23
-Nodes (10): CorsProperties, ConfigurationProperties, Bean, Configuration, EnableConfigurationProperties, SecurityConfig, CorsConfigurationSource, EnableWebSecurity (+2 more)
+Nodes (11): CorsProperties, ConfigurationProperties, Bean, Configuration, EnableConfigurationProperties, HttpSecurity, SecurityFilterChain, SecurityConfig (+3 more)
 
 ### Community 41 - ".preprocess"
-Cohesion: 0.25
-Nodes (4): TextPreprocessingOptions, Test, TextPreprocessorTest, Form
+Cohesion: 0.18
+Nodes (5): TextPreprocessingException, TextPreprocessingOptions, Test, TextPreprocessorTest, Form
 
 ### Community 42 - "HistoryControllerTest.java"
-Cohesion: 0.28
-Nodes (9): HistoryControllerTest, ActiveProfiles, BeforeEach, ExtendWith, MockMvc, ObjectMapper, Test, WebMvcTest (+1 more)
+Cohesion: 0.21
+Nodes (8): ErrorResponse, GlobalExceptionHandler, ResponseEntity, UnsupportedAnalysisException, ExceptionHandler, MaxUploadSizeExceededException, MultipartException, RestControllerAdvice
 
 ### Community 43 - "devDependencies"
 Cohesion: 0.13
-Nodes (15): devDependencies, @babel/core, eslint-config-prettier, @eslint/js, globals, @rolldown/plugin-babel, @types/node, vite (+7 more)
+Nodes (15): devDependencies, eslint, eslint-config-prettier, @eslint/js, globals, @rolldown/plugin-babel, @types/node, vite (+7 more)
 
 ### Community 44 - "StaticAnalyzer"
-Cohesion: 0.23
-Nodes (7): Logger, Override, StaticAnalyzer, CogniflexBackendApplicationTests, ActiveProfiles, Test, SpringBootTest
+Cohesion: 0.17
+Nodes (8): Analyzer, Logger, Override, StaticAnalyzer, CogniflexBackendApplicationTests, ActiveProfiles, SpringBootTest, Test
 
 ### Community 45 - ".build"
-Cohesion: 0.31
-Nodes (3): Override, Test, TextAnalysisContextBuilderTest
+Cohesion: 0.26
+Nodes (3): AnalysisResultSummary, AnalyzeServiceTest, Test
 
 ### Community 46 - "Cogniflex ML gRPC API"
 Cohesion: 0.14
@@ -410,28 +402,24 @@ Cohesion: 0.15
 Nodes (12): 1.A Summary table — Text, 2.A Summary table — Image, 4.1 Signals that span all modalities, 4.2 Suggested rule-engine wiring (maps to your Java design), 4.3 Suggested Java libraries / tooling, 4.4 Severity → weight mapping cheat-sheet, 4.5 Composing static + dynamic into the final verdict, 4.6 Anti-evasion reminders (+4 more)
 
 ### Community 52 - "HistoryController.java"
-Cohesion: 0.30
-Nodes (3): MediaParsingException, HttpStatus, ResponseStatusException
+Cohesion: 0.31
+Nodes (7): ActiveProfiles, ExtendWith, Import, MockMvc, Test, WebMvcTest, SecurityConfigTest
 
 ### Community 53 - "TextAnalysisContext"
-Cohesion: 0.21
-Nodes (7): Override, Component, Override, Pattern, RepetitiveOpenerRule, Override, TextAnalysisContext
+Cohesion: 0.38
+Nodes (4): Component, Override, Pattern, RepetitiveOpenerRule
 
 ### Community 54 - "DetectionControllerTest.java"
-Cohesion: 0.30
-Nodes (8): DetectionControllerTest, ActiveProfiles, ExtendWith, MockMvc, ObjectMapper, Test, WebMvcTest, WithMockUser
+Cohesion: 0.24
+Nodes (9): CreateTextDetectionRequest, DetectionControllerTest, ActiveProfiles, ExtendWith, MockMvc, Test, WebMvcTest, ObjectMapper (+1 more)
 
 ### Community 55 - "TextStaticAnalyzerConfigTest.java"
-Cohesion: 0.23
-Nodes (5): Component, Component, Component, Test, TextStaticAnalyzerConfigTest
+Cohesion: 0.43
+Nodes (6): Bean, Configuration, HttpSecurity, SecurityFilterChain, ManagementSecurityConfig, Order
 
-### Community 56 - ".from"
-Cohesion: 0.17
-Nodes (5): LineEndingNormalization, ModelInput, NormalizationStats, PreprocessedText, WhitespaceNormalization
-
-### Community 57 - "LeakageRulesTest.java"
-Cohesion: 0.35
-Nodes (3): Component, Test, LeakageRulesTest
+### Community 56 - "ModelInputPreparer"
+Cohesion: 0.15
+Nodes (6): LineEndingNormalization, ModelInput, Component, ModelInputPreparer, NormalizationStats, WhitespaceNormalization
 
 ### Community 60 - "package.json"
 Cohesion: 0.17
@@ -445,25 +433,37 @@ Nodes (10): 2026-05-21 - Increase root-port extra-bus reservation, 2026-06-08 - 
 Cohesion: 0.31
 Nodes (4): FabricatedCitationRule, Component, Override, Pattern
 
-### Community 63 - "TextPreprocessor"
-Cohesion: 0.24
-Nodes (4): TextLocaleDetector, Component, TextPreprocessor, FunctionalInterface
+### Community 63 - "REVIEW.md"
+Cohesion: 0.29
+Nodes (5): Blocking (Important), Do not report, How to comment, Nit (at most 5 per review), Should fix (Normal)
+
+### Community 65 - "StructureRulesTest.java"
+Cohesion: 0.20
+Nodes (6): EmojiDecorationRule, Component, Override, Pattern, Test, StructureRulesTest
 
 ### Community 66 - "Deferred endpoint-recovery solution report"
 Cohesion: 0.20
 Nodes (10): Correctness constraints, Deferred endpoint-recovery solution report, Deferred sequence, Identity absent, Invalid BAR, Result, Summary, Two failure modes (+2 more)
 
 ### Community 67 - "Severity"
-Cohesion: 0.22
-Nodes (6): atLeast(), Severity, CRITICAL, HIGH, LOW, MEDIUM
+Cohesion: 0.15
+Nodes (7): atLeast(), Builder, Severity, CRITICAL, HIGH, LOW, MEDIUM
 
 ### Community 68 - "ImageStaticAnalyzer"
-Cohesion: 0.24
-Nodes (4): ImageAnalysisRule, ImageStaticAnalyzer, Component, Override
+Cohesion: 0.16
+Nodes (5): AnalysisRule, ImageAnalysisRule, ImageStaticAnalyzer, Component, Override
+
+### Community 69 - "StaticScoreCalculator"
+Cohesion: 0.26
+Nodes (4): Autowired, RuleResult, Component, StaticScoreCalculator
 
 ### Community 70 - "EmDashDensityRule"
 Cohesion: 0.33
 Nodes (4): EmDashDensityRule, Component, Override, Pattern
+
+### Community 71 - "TypographyRulesTest.java"
+Cohesion: 0.33
+Nodes (5): Blocking, Comments, Copilot code review instructions, Do not report, Per-service checks
 
 ### Community 72 - "chrome.ts"
 Cohesion: 0.20
@@ -484,14 +484,6 @@ Nodes (8): Implementation boundaries, Placement, Policy budgets, Quarantine, Rec
 ### Community 76 - "graphify reference: extra exports and benchmark"
 Cohesion: 0.22
 Nodes (8): graphify reference: extra exports and benchmark, Step 6b - Wiki (only if --wiki flag), Step 7 - Neo4j export (only if --neo4j or --neo4j-push flag), Step 7a - FalkorDB export (only if --falkordb or --falkordb-push flag), Step 7b - SVG export (only if --svg flag), Step 7c - GraphML export (only if --graphml flag), Step 7d - MCP server (only if --mcp flag), Step 8 - Token reduction benchmark (only if total_words > 5000)
-
-### Community 77 - "ContentType"
-Cohesion: 0.31
-Nodes (5): ContentType, IMAGE, TEXT, VIDEO, from()
-
-### Community 78 - "EmojiDecorationRule"
-Cohesion: 0.33
-Nodes (4): EmojiDecorationRule, Component, Override, Pattern
 
 ### Community 79 - "MarkdownStructureRule"
 Cohesion: 0.36
@@ -518,8 +510,8 @@ Cohesion: 0.25
 Nodes (8): Bus-rebalance solution report, Parallel versus cascade, Problem statement, Rebalance algorithm, Result and remaining issue, Safety and controls, Two allocation levels, Why the reported numbers were misleading
 
 ### Community 85 - "backend/AGENTS.md"
-Cohesion: 0.25
-Nodes (7): backend/AGENTS.md, Build and run, Common tasks, Java style, Package layout, Stack, Testing
+Cohesion: 0.22
+Nodes (8): backend/AGENTS.md, Build and run, Common tasks, Health endpoints, Java style, Package layout, Stack, Testing
 
 ### Community 86 - "ConfusableScriptRule"
 Cohesion: 0.36
@@ -538,12 +530,12 @@ Cohesion: 0.36
 Nodes (5): Component, Override, Pattern, RhetoricalTemplateRule, Template
 
 ### Community 90 - "AGENTS.md"
-Cohesion: 0.25
-Nodes (7): AGENTS.md, Architecture, Git workflow, Guardrails, Repository map, Tools and skills, What Cogniflex is
+Cohesion: 0.22
+Nodes (8): AGENTS.md, Architecture, Git workflow, graphify, Guardrails, Repository map, Tools and skills, What Cogniflex is
 
 ### Community 91 - "AnalyzerServicer"
-Cohesion: 0.46
-Nodes (3): AnalyzerServicer, _reply_from_prediction(), _set_internal_error()
+Cohesion: 0.38
+Nodes (5): AnalyzerServicer, AnalyzeReply, _reply_from_prediction(), _set_internal_error(), ServicerContext
 
 ### Community 92 - "inference/AGENTS.md"
 Cohesion: 0.25
@@ -582,8 +574,8 @@ Cohesion: 0.29
 Nodes (6): Build and run, Checks before pushing, frontend/AGENTS.md, Layout, Rules, Stack
 
 ### Community 105 - "server.py"
-Cohesion: 0.48
-Nodes (6): _load_photo_model(), _load_text_model(), _load_video_model(), _preload_models(), Path, serve()
+Cohesion: 0.27
+Nodes (7): ensure_generated_proto(), Path, _load_photo_model(), _load_text_model(), _preload_models(), Path, serve()
 
 ### Community 106 - "Handoff"
 Cohesion: 0.33
@@ -609,10 +601,6 @@ Nodes (6): Follow-up, Interpretation, Recovery failure investigation — 2026-07
 Cohesion: 0.33
 Nodes (5): For /graphify explain, For /graphify path, graphify reference: query, path, explain, Step 0 — Constrained query expansion (REQUIRED before traversal), Step 1 — Traversal
 
-### Community 112 - "MatchTextNormalizer"
-Cohesion: 0.53
-Nodes (3): Component, MatchTextNormalizer, Normalizer2
-
 ### Community 114 - "0. How to read this document"
 Cohesion: 0.33
 Nodes (6): 0.1 Terminology (matches the system design), 0.2 The scoring contract (suggestion), 0.3 Two weight philosophies — pick deliberately per rule, 0.4 Combination bonus (strongly recommended), 0.5 False-positive discipline (calibration notes), 0. How to read this document
@@ -628,10 +616,6 @@ Nodes (5): Acceptance criteria, Links, Reliable discovery of cascaded external N
 ### Community 118 - "Firmware setup controls handoff"
 Cohesion: 0.40
 Nodes (4): Control 1 — cascade bus allocation, Control 2 — cascade slot, Firmware setup controls handoff, Validation
-
-### Community 119 - "HistoryRepository"
-Cohesion: 0.60
-Nodes (3): HistoryRepository, JpaRepository, Repository
 
 ### Community 120 - "deploy.sh"
 Cohesion: 0.70
@@ -666,24 +650,24 @@ Cohesion: 0.50
 Nodes (3): Inference-сервис, Запуск, Структура
 
 ## Knowledge Gaps
-- **530 isolated node(s):** `VALID_KINDS`, `script_dir`, `templates_dir`, `context_dir`, `issue_dir` (+525 more)
+- **541 isolated node(s):** `VALID_KINDS`, `script_dir`, `templates_dir`, `context_dir`, `issue_dir` (+536 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **50 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `ContentItem` connect `ContentItem` to `AnalyzeService.java`, `AnalysisOrchestrator`, `InferenceClient`, `TextAnalysisContextBuilder`, `AnalysisOrchestratorTest.java`, `StaticAnalyzer`, `.build`, `LexicalPhrasingRulesTest`, `TextAnalysisContext`, `TextStaticAnalyzerConfigTest.java`, `LeakageRulesTest.java`, `HiddenCharacterRulesTest.java`, `StylometryRulesTest.java`, `SemanticRulesTest.java`, `StructureRulesTest.java`, `StaticScoreCalculator`, `TypographyRulesTest.java`, `ContentType`, `ContentItemFactory`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `TextAnalysisContext` connect `TextAnalysisContext` to `LiteralPhraseMatcher`, `ContentItem`, `TextAnalysisContextBuilder`, `StaticAnalysisConfig`, `.evidence`, `Evidence`, `.build`, `LexicalPhrasingRulesTest`, `LeakageRulesTest.java`, `HiddenCharacterRulesTest.java`, `StylometryRulesTest.java`, `FabricatedCitationRule`, `SemanticRulesTest.java`, `StructureRulesTest.java`, `EmDashDensityRule`, `TypographyRulesTest.java`, `EmojiDecorationRule`, `MarkdownStructureRule`, `SmartTypographyConsistencyRule`, `ConfusableScriptRule`, `ConversationalScaffoldRule`, `PlaceholderLeakageRule.java`, `RhetoricalTemplateRule.java`, `TextStaticAnalyzer`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
-- **Why does `Evidence` connect `Evidence` to `RhetoricalTemplateRule.java`, `AnalysisRule`, `Severity`, `StaticScoreCalculator`, `DynamicAnalysisResult`, `LiteralPhraseMatcher`, `EmDashDensityRule`, `AnalyzeService.java`, `EmojiDecorationRule`, `MarkdownStructureRule`, `SmartTypographyConsistencyRule`, `StaticAnalysisConfig`, `.evidence`, `ConfusableScriptRule`, `ConversationalScaffoldRule`, `TextAnalysisContext`, `PlaceholderLeakageRule.java`, `FabricatedCitationRule`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
+- **Why does `TextAnalysisContext` connect `Evidence` to `LiteralPhraseMatcher`, `TextAnalysisContextBuilder`, `StaticAnalysisConfig`, `.evidence`, `AnalysisOrchestratorTest.java`, `LexicalPhrasingRulesTest`, `TextAnalysisContext`, `LeakageRulesTest.java`, `HiddenCharacterRulesTest.java`, `StylometryRulesTest.java`, `FabricatedCitationRule`, `SemanticRulesTest.java`, `StructureRulesTest.java`, `EmDashDensityRule`, `MarkdownStructureRule`, `SmartTypographyConsistencyRule`, `ConfusableScriptRule`, `ConversationalScaffoldRule`, `PlaceholderLeakageRule.java`, `RhetoricalTemplateRule.java`, `TextStaticAnalyzer`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+- **Why does `ContentItem` connect `TextAnalysisContextBuilder` to `SemanticRulesTest.java`, `AnalysisRule`, `StructureRulesTest.java`, `AnalysisOrchestratorTest.java`, `HiddenCharacterRulesTest.java`, `StaticScoreCalculator`, `DynamicAnalysisResult`, `StaticAnalyzer`, `AnalysisOrchestrator`, `InferenceClient`, `LexicalPhrasingRulesTest`, `LeakageRulesTest.java`, `Evidence`, `StylometryRulesTest.java`?**
+  _High betweenness centrality (0.039) - this node is a cross-community bridge._
+- **Why does `ContentType` connect `InferenceClient` to `InferenceGrpcClient`, `AnalysisRule`, `TextStaticAnalyzer`, `AnalysisOrchestratorTest.java`, `ImageStaticAnalyzer`, `DynamicAnalysisResult`, `StaticAnalyzer`, `HistoryRecord`, `AnalysisOrchestrator`, `TextAnalysisContextBuilder`?**
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `ContentItem` (e.g. with `.context()` and `.context()`) actually correct?**
   _`ContentItem` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `VALID_KINDS`, `script_dir`, `templates_dir` to the rest of the system?**
-  _530 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _541 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `InferenceGrpcClient` be split into smaller, more focused modules?**
-  _Cohesion score 0.06201923076923077 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07744107744107744 - nodes in this community are weakly interconnected._
 - **Should `InferenceAvailabilityService` be split into smaller, more focused modules?**
-  _Cohesion score 0.05961538461538462 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14333333333333334 - nodes in this community are weakly interconnected._

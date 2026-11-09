@@ -41,6 +41,13 @@ grpc:
     plaintext: true
 
 app:
+  input-limits:
+    text:
+      min-words: 40
+      max-characters: 50000
+    media:
+      max-image-size: 10MB
+      max-video-size: 100MB
   cors:
     allowed-origins-patterns: "*"
     allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]
