@@ -15,6 +15,11 @@ FROM eclipse-temurin:25-jdk-jammy AS runner
 
 WORKDIR /app
 
+# curl is used by the Compose healthcheck
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=builder /app/backend/build/libs/*.jar app.jar
 
 ENTRYPOINT ["java", "--enable-native-access=ALL-UNNAMED", "-jar", "app.jar"]

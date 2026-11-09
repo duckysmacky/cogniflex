@@ -104,8 +104,13 @@ fi
 log "Pulling public service images"
 docker compose pull db redis
 
-log "Recreating services"
-docker compose up -d --force-recreate --no-build
+log "Recreating services and waiting for them to become healthy"
+if ! docker compose up -d --force-recreate --no-build --wait --wait-timeout 300; then
+  log "Error: services did not become healthy"
+  docker compose ps
+  docker compose logs --tail 50 backend inference
+  exit 1
+fi
 
 log "Removing old Cogniflex images"
 if [[ -n "$REGISTRY" && -n "$REGISTRY_USERNAME" ]]; then

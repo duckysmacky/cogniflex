@@ -12,6 +12,11 @@ services:
       - postgres_data:/var/lib/postgresql
     networks:
       - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   redis:
@@ -21,6 +26,11 @@ services:
       - redis_data:/data
     networks:
       - backend-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   backend:
@@ -41,12 +51,21 @@ services:
     volumes:
       - ./backend/src/main/resources:/app/config:ro
     depends_on:
-      - db
-      - redis
-      - inference
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      inference:
+        condition: service_healthy
     networks:
       - backend-network
       - analysis-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:$${MANAGEMENT_PORT:-8081}/health/readiness"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     restart: unless-stopped
 
   inference:
@@ -64,6 +83,16 @@ services:
       - ./inference/weights:/app/inference/weights:ro
     networks:
       - analysis-network
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import os, socket; socket.create_connection(("127.0.0.1", int(os.environ.get("GRPC_PORT") or 50051)), 3)
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
     restart: unless-stopped
 
 networks:
