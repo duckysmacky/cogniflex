@@ -36,7 +36,7 @@ class ActuatorHealthEndpointTest {
 
     @Test
     void livenessIsUpWithoutAuthenticationAndHasNoDependencyComponents() throws Exception {
-        var response = get(managementPort, "/actuator/health/liveness");
+        var response = get(managementPort, "/health/liveness");
 
         assertEquals(200, response.statusCode());
         assertTrue(response.body().contains("\"status\":\"UP\""), response.body());
@@ -47,7 +47,7 @@ class ActuatorHealthEndpointTest {
 
     @Test
     void readinessReportsDatabaseRedisAndInferenceComponents() throws Exception {
-        var response = get(managementPort, "/actuator/health/readiness");
+        var response = get(managementPort, "/health/readiness");
 
         // 200 or 503 depending on whether Redis/inference are reachable; both are valid readiness answers
         assertTrue(response.statusCode() == 200 || response.statusCode() == 503, response.body());
@@ -60,13 +60,13 @@ class ActuatorHealthEndpointTest {
     @Test
     void onlyHealthEndpointIsExposed() throws Exception {
         // not exposed, so the main chain's denyAll() rejects them; the point is that they are not served
-        assertTrue(get(managementPort, "/actuator/env").statusCode() >= 400);
-        assertTrue(get(managementPort, "/actuator/beans").statusCode() >= 400);
+        assertTrue(get(managementPort, "/env").statusCode() >= 400);
+        assertTrue(get(managementPort, "/beans").statusCode() >= 400);
     }
 
     @Test
     void actuatorIsNotServedOnThePublicApplicationPort() throws Exception {
-        assertTrue(get(applicationPort, "/actuator/health/liveness").statusCode() >= 400);
+        assertTrue(get(applicationPort, "/health/liveness").statusCode() >= 400);
     }
 
     @Test

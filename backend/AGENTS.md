@@ -47,11 +47,11 @@ Everything lives under `io.github.duckysmacky.cogniflex`:
 
 ## Health endpoints
 
-Actuator serves only `health`, on a separate management port (`MANAGEMENT_PORT`, default `8081`) that is
+Actuator serves only `health` (mounted at `/health`, not `/actuator`), on a separate management port (`MANAGEMENT_PORT`, default `8081`) that is
 internal to the Docker network and not published in `docker-compose.yml`. Do not add it to `ports:`.
 
-- `/actuator/health/liveness` - the process is up (no dependency checks).
-- `/actuator/health/readiness` - `readinessState`, `db`, `redis`, `inference`; returns 503 if any is not UP.
+- `/health/liveness` - the process is up (no dependency checks).
+- `/health/readiness` - `readinessState`, `db`, `redis`, `inference`; returns 503 if any is not UP.
 
 `db` and `redis` come from Boot's auto-configured indicators; `inference` is `InferenceHealthIndicator`.
 `ManagementSecurityConfig` opens the exposed Actuator endpoints; the main chain still ends with `denyAll()`.

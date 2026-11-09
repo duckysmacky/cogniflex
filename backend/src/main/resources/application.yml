@@ -41,6 +41,7 @@ management:
     port: "${MANAGEMENT_PORT:8081}"
   endpoints:
     web:
+      base-path: /
       exposure:
         include: health
   endpoint:
