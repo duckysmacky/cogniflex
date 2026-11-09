@@ -21,7 +21,7 @@ class InputLimitValidatorTest {
     private final InputLimitValidator validator = new InputLimitValidator(
         new InputLimitsProperties(
             new InputLimitsProperties.Text(3, 20),
-            new InputLimitsProperties.Media(DataSize.ofBytes(10), DataSize.ofBytes(100))
+            new InputLimitsProperties.Media(DataSize.ofBytes(10), DataSize.ofBytes(100), 50_000_000L)
         ),
         new WordTokenizer()
     );

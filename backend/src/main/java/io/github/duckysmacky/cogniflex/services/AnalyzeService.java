@@ -10,6 +10,7 @@ import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.dto.EvidenceResponse;
 import io.github.duckysmacky.cogniflex.analysis.MediaType;
 import io.github.duckysmacky.cogniflex.exceptions.UnsupportedAnalysisException;
+import io.github.duckysmacky.cogniflex.processing.media.MediaInfo;
 import io.github.duckysmacky.cogniflex.processing.media.MediaParser;
 import io.github.duckysmacky.cogniflex.processing.media.MediaTypeResolver;
 import io.github.duckysmacky.cogniflex.processing.media.ParsedMedia;
@@ -31,6 +32,7 @@ public class AnalyzeService {
     private final MediaParser mediaParser;
     private final MediaTypeResolver mediaTypeResolver;
     private final InputLimitValidator inputLimitValidator;
+    private final MediaContentValidator mediaContentValidator;
 
     public AnalyzeService(
         AnalysisOrchestrator analysisOrchestrator,
@@ -38,7 +40,8 @@ public class AnalyzeService {
         TextPreprocessor textPreprocessor,
         MediaParser mediaParser,
         MediaTypeResolver mediaTypeResolver,
-        InputLimitValidator inputLimitValidator
+        InputLimitValidator inputLimitValidator,
+        MediaContentValidator mediaContentValidator
     ) {
         this.analysisOrchestrator = analysisOrchestrator;
         this.contentItemFactory = contentItemFactory;
@@ -46,6 +49,7 @@ public class AnalyzeService {
         this.mediaParser = mediaParser;
         this.mediaTypeResolver = mediaTypeResolver;
         this.inputLimitValidator = inputLimitValidator;
+        this.mediaContentValidator = mediaContentValidator;
     }
 
     public AnalysisResultResponse analyzeText(CreateTextDetectionRequest request) {
@@ -66,14 +70,14 @@ public class AnalyzeService {
     public AnalysisResultResponse analyzeMedia(MultipartFile file) {
         long startedAt = System.nanoTime();
 
-        // Reject before the (potentially huge) upload is read: video analysis has no real implementation yet
-        MediaType mediaType = mediaTypeResolver.resolve(file);
-        inputLimitValidator.validateMediaSize(mediaType, file);
-        if (mediaType == MediaType.VIDEO) {
+        MediaInfo info = mediaTypeResolver.resolve(file);
+        mediaContentValidator.validate(info);
+        inputLimitValidator.validateMediaSize(info.declaredType(), file);
+        if (info.declaredType() == MediaType.VIDEO) {
             throw new UnsupportedAnalysisException("Video analysis is not supported yet");
         }
 
-        ParsedMedia media = mediaParser.parse(file);
+        ParsedMedia media = mediaParser.parse(file, info);
         ContentItem item = contentItemFactory.fromMedia(media);
 
         AnalysisResultSummary result = analysisOrchestrator.submit(item);

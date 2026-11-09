@@ -27,6 +27,7 @@ import io.github.duckysmacky.cogniflex.dto.AnalysisResultResponse;
 import io.github.duckysmacky.cogniflex.dto.CreateTextDetectionRequest;
 import io.github.duckysmacky.cogniflex.analysis.AnalysisVerdict;
 import io.github.duckysmacky.cogniflex.exceptions.InputLimitException;
+import io.github.duckysmacky.cogniflex.exceptions.InvalidMediaException;
 import io.github.duckysmacky.cogniflex.exceptions.UnsupportedAnalysisException;
 import io.github.duckysmacky.cogniflex.services.AnalyzeService;
 
@@ -86,6 +87,34 @@ public class DetectionControllerTest {
                 .with(csrf()))
                 .andExpect(status().isContentTooLarge())
                 .andExpect(jsonPath("$.error").value("FILE_TOO_LARGE"));
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    public void checkSpoofedMediaIsUnsupportedMediaType() throws Exception {
+        MockMultipartFile fake = new MockMultipartFile("file", "fake.png", "image/png", new byte[] {1});
+
+        given(service.analyzeMedia(any())).willThrow(InvalidMediaException.unsupportedFormat());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/analyze/media").file(fake)
+                .with(csrf()))
+                .andExpect(status().isUnsupportedMediaType())
+                .andExpect(jsonPath("$.error").value("UNSUPPORTED_MEDIA_TYPE"));
+    }
+
+    @Test
+    @WithMockUser(username = "user")
+    public void checkHugeImageIsRejectedWithContentTooLarge() throws Exception {
+        MockMultipartFile img = new MockMultipartFile("file", "bomb.png", "image/png", new byte[] {1});
+
+        given(service.analyzeMedia(any())).willThrow(InputLimitException.imageTooLarge(100_000_000L, 50_000_000L));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart("/api/analyze/media").file(img)
+                .with(csrf()))
+                .andExpect(status().isContentTooLarge())
+                .andExpect(jsonPath("$.error").value("IMAGE_TOO_LARGE"));
     }
 
     @Test

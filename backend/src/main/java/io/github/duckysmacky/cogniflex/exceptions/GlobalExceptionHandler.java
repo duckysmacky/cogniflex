@@ -17,6 +17,12 @@ public class GlobalExceptionHandler {
             .body(new ErrorResponse(ex.code(), ex.getMessage()));
     }
 
+    @ExceptionHandler(InvalidMediaException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidMediaException(InvalidMediaException ex) {
+        return ResponseEntity.status(ex.status())
+            .body(new ErrorResponse(ex.code(), ex.getMessage()));
+    }
+
     // Must stay more specific than the MultipartException handler below (it is a subclass)
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {

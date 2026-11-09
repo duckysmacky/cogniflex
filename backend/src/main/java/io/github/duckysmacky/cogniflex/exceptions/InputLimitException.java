@@ -36,6 +36,14 @@ public class InputLimitException extends RuntimeException {
         );
     }
 
+    public static InputLimitException imageTooLarge(long pixels, long maxPixels) {
+        return new InputLimitException(
+            HttpStatus.CONTENT_TOO_LARGE,
+            "IMAGE_TOO_LARGE",
+            "Image has %d pixels, at most %d are allowed".formatted(pixels, maxPixels)
+        );
+    }
+
     public HttpStatus status() {
         return status;
     }

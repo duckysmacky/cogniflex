@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "backend/build.gradle": {
-    "mtime": 1794006697.8694549,
-    "ast_hash": "e1779690aaf007ac50cf0058b534995a",
+    "mtime": 1794227449.6639347,
+    "ast_hash": "3afd4f664fac08df601cdd0b58f47953",
     "semantic_hash": ""
   },
   "backend/gradlew": {
@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/analysis/ContentItemFactory.java": {
-    "mtime": 1789567539.6018143,
-    "ast_hash": "0761d8582a360a5242107acfbbeb640e",
+    "mtime": 1794227439.5024953,
+    "ast_hash": "20996ea1d139bc4788eeab4e3a8af4eb",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/analysis/ContentType.java": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/GlobalExceptionHandler.java": {
-    "mtime": 1794225036.4011757,
-    "ast_hash": "166e3669d428fdde0c31a6915876f345",
+    "mtime": 1794227439.5020392,
+    "ast_hash": "ac4d1f3d7d73f7da3718392195a79fae",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/MediaParsingException.java": {
@@ -450,18 +450,18 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/media/MediaParser.java": {
-    "mtime": 1789567539.6104853,
-    "ast_hash": "77da41a0b2ff439bfd064cdd450a6bda",
+    "mtime": 1794227418.613779,
+    "ast_hash": "80896f7bdeb984914dd04d656f7ba0ca",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/media/MediaTypeResolver.java": {
-    "mtime": 1789567539.610662,
-    "ast_hash": "22a756ff86a8e1fac74436f3c8174da9",
+    "mtime": 1794227526.8023639,
+    "ast_hash": "73391dbeb64c00f0c849ea5562d0025d",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/media/ParsedMedia.java": {
-    "mtime": 1789567539.610662,
-    "ast_hash": "e184f8eb47b24c0ec14bbcc43812dbcf",
+    "mtime": 1794227418.2594543,
+    "ast_hash": "50ceee01b462f4a86ba509780384adc4",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/text/DetectedTextLocale.java": {
@@ -555,8 +555,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/services/AnalyzeService.java": {
-    "mtime": 1794225035.9831893,
-    "ast_hash": "4e85b12633348aa382834322d91c831c",
+    "mtime": 1794227439.5027094,
+    "ast_hash": "9230fa97141918aae7775c22b298b760",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/services/InMemoryRateLimitService.java": {
@@ -655,8 +655,8 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/controllers/DetectionControllerTest.java": {
-    "mtime": 1794225076.4948816,
-    "ast_hash": "7813aea26fe7992b58f36c657c6d8104",
+    "mtime": 1794227552.5204637,
+    "ast_hash": "42b029c738ac59fee2c77ceb8720f052",
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/processing/TextPreprocessorTest.java": {
@@ -670,8 +670,8 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/processing/media/MediaParserTest.java": {
-    "mtime": 1789567539.6156423,
-    "ast_hash": "20f20abb80eb916279f3ab6f45a2160c",
+    "mtime": 1794227592.4884553,
+    "ast_hash": "22be018079fe1c065292c43375b9f238",
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/processing/text/LinguaTextLocaleDetectorTest.java": {
@@ -1445,13 +1445,13 @@
     "semantic_hash": ""
   },
   "backend/src/main/resources/application.yml": {
-    "mtime": 1794225036.792163,
-    "ast_hash": "e2de9310a890ae0f5d47e926be03b1e4",
+    "mtime": 1794227439.501765,
+    "ast_hash": "04724fabb991fce9251f43583041b85e",
     "semantic_hash": ""
   },
   "backend/src/test/resources/application.yml": {
-    "mtime": 1794225036.8851597,
-    "ast_hash": "4910c513c87cfbb64c989c94b42c7795",
+    "mtime": 1794227439.5018983,
+    "ast_hash": "69445e09cf7d734ab93ae49b0599db96",
     "semantic_hash": ""
   },
   "docker-compose.yml": {
@@ -1570,8 +1570,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/config/InputLimitsProperties.java": {
-    "mtime": 1794225016.177839,
-    "ast_hash": "d3a460dd6aa77ebc605da8d021ef6d24",
+    "mtime": 1794227439.5015728,
+    "ast_hash": "ef0b7bc90be152361ea252063e4f1fda",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/config/ManagementSecurityConfig.java": {
@@ -1580,8 +1580,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/InputLimitException.java": {
-    "mtime": 1794225017.0698097,
-    "ast_hash": "874be545a5bce7f85d57e2d635c0b250",
+    "mtime": 1794227438.8241153,
+    "ast_hash": "03d623beec5a808a3d8dafa4d97c622a",
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/UnsupportedAnalysisException.java": {
@@ -1595,8 +1595,8 @@
     "semantic_hash": ""
   },
   "backend/src/main/java/io/github/duckysmacky/cogniflex/services/InputLimitValidator.java": {
-    "mtime": 1794225017.2258046,
-    "ast_hash": "44ab9c22b10e825448d40d891ca28089",
+    "mtime": 1794225398.9322793,
+    "ast_hash": "584971a5874426964aec665e71e3a7c3",
     "semantic_hash": ""
   },
   "backend/src/main/resources/db/migration/V3__drop_history_records.sql": {
@@ -1625,13 +1625,13 @@
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/services/AnalyzeServiceTest.java": {
-    "mtime": 1794225068.9751222,
-    "ast_hash": "ba0b09a688fd7952a357c7913f1d4f83",
+    "mtime": 1794227552.2831712,
+    "ast_hash": "8e3a3aaa99ebb4e86d395fbed8b30bbd",
     "semantic_hash": ""
   },
   "backend/src/test/java/io/github/duckysmacky/cogniflex/services/InputLimitValidatorTest.java": {
-    "mtime": 1794225128.4162445,
-    "ast_hash": "5ff77b1fc4e1e834226da9ec2aca56e5",
+    "mtime": 1794227552.5202317,
+    "ast_hash": "8319fcdf7be07bd3a95b6db7463a4f1c",
     "semantic_hash": ""
   },
   ".github/instructions/review.instructions.md": {
@@ -1642,6 +1642,51 @@
   "REVIEW.md": {
     "mtime": 1792247169.0329566,
     "ast_hash": "a56f6dfd49019926e0675920425f6b04",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/exceptions/InvalidMediaException.java": {
+    "mtime": 1794227438.7501166,
+    "ast_hash": "794e45683f09129d0a269044aab8447f",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/media/Dimensions.java": {
+    "mtime": 1794227417.0034747,
+    "ast_hash": "d8892ebdb0a0dc2401a61e26cfa01fba",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/media/MediaFormat.java": {
+    "mtime": 1794227416.915476,
+    "ast_hash": "1209430941c8a9402a01d5ade821e284",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/processing/media/MediaInfo.java": {
+    "mtime": 1794227417.3934684,
+    "ast_hash": "faefc242a001d8227efa62cf56168623",
+    "semantic_hash": ""
+  },
+  "backend/src/main/java/io/github/duckysmacky/cogniflex/services/MediaContentValidator.java": {
+    "mtime": 1794227439.14111,
+    "ast_hash": "49cc6413f6914edb61ee6056298208c4",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/analysis/ContentItemFactoryTest.java": {
+    "mtime": 1794227593.5084372,
+    "ast_hash": "23c272a3c46344797904c6cb380cb79e",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/processing/media/MediaFormatTest.java": {
+    "mtime": 1794227592.79645,
+    "ast_hash": "aaed70b888de3dbdcf4428e5e970cdba",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/processing/media/MediaTypeResolverTest.java": {
+    "mtime": 1794227592.9454472,
+    "ast_hash": "6ac0c17b72140241a8aff4212d50ee8d",
+    "semantic_hash": ""
+  },
+  "backend/src/test/java/io/github/duckysmacky/cogniflex/services/MediaContentValidatorTest.java": {
+    "mtime": 1794227593.2514417,
+    "ast_hash": "be0d8ae6d6a84939acd2c3de93bacd93",
     "semantic_hash": ""
   }
 }

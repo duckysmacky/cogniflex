@@ -15,6 +15,7 @@ public record InputLimitsProperties(
 
     public record Media(
 		DataSize maxImageSize,
-		DataSize maxVideoSize
+		DataSize maxVideoSize,
+		long maxImagePixels
 	) {}
 }

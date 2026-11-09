@@ -8,5 +8,7 @@ public record ParsedMedia(
     String filename,
     String contentType,
     long size,
-    String extension
+    String extension,
+    MediaFormat format,
+    Dimensions dimensions
 ) { }

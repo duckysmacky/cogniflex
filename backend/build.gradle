@@ -49,6 +49,7 @@ dependencies {
 	implementation 'com.ibm.icu:icu4j:77.1'
 	implementation 'com.github.pemistahl:lingua:1.2.2'
 	implementation 'org.ahocorasick:ahocorasick:0.6.3'
+	implementation 'com.github.usefulness:webp-imageio:0.10.0'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'

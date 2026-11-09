@@ -48,6 +48,7 @@ app:
     media:
       max-image-size: 10MB
       max-video-size: 100MB
+      max-image-pixels: 50000000
   cors:
     allowed-origins-patterns: "*"
     allowed-methods: [GET, POST, DELETE, PUT, OPTIONS]

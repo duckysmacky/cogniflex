@@ -17,6 +17,9 @@ public class ContentItemFactory {
     public static final String EXTENSION_ATTRIBUTE = "extension";
     public static final String HIDDEN_CHARACTERS_ATTRIBUTE = "hiddenCharacters";
     public static final String LOCALE_ATTRIBUTE = "locale";
+    public static final String FORMAT_ATTRIBUTE = "format";
+    public static final String WIDTH_ATTRIBUTE = "width";
+    public static final String HEIGHT_ATTRIBUTE = "height";
 
     public ContentItem fromText(PreprocessedText text) {
         if (text == null) {
@@ -47,6 +50,13 @@ public class ContentItemFactory {
         putIfPresent(attributes, CONTENT_TYPE_ATTRIBUTE, media.contentType());
         putIfPresent(attributes, EXTENSION_ATTRIBUTE, media.extension());
         attributes.put(SIZE_ATTRIBUTE, Long.toString(media.size()));
+        if (media.format() != null) {
+            attributes.put(FORMAT_ATTRIBUTE, media.format().name().toLowerCase(Locale.ROOT));
+        }
+        if (media.dimensions() != null) {
+            attributes.put(WIDTH_ATTRIBUTE, Integer.toString(media.dimensions().width()));
+            attributes.put(HEIGHT_ATTRIBUTE, Integer.toString(media.dimensions().height()));
+        }
 
         return new ContentItem(
             ContentType.from(InputType.MEDIA, media.mediaType()),

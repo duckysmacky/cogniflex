@@ -5,7 +5,6 @@ import io.github.duckysmacky.cogniflex.exceptions.MediaParsingException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MediaParserTest {
-    private final MediaParser parser = new MediaParser(new MediaTypeResolver());
+    private final MediaParser parser = new MediaParser();
+    private final MediaInfo imageInfo = new MediaInfo(MediaType.IMAGE, MediaFormat.PNG, new Dimensions(4, 3));
 
     @Test
     void parseReturnsImageBytesTypeAndMetadata() {
@@ -25,7 +25,7 @@ class MediaParserTest {
             bytes
         );
 
-        ParsedMedia media = parser.parse(file);
+        ParsedMedia media = parser.parse(file, imageInfo);
 
         assertEquals(MediaType.IMAGE, media.mediaType());
         assertArrayEquals(bytes, media.bytes());
@@ -33,6 +33,16 @@ class MediaParserTest {
         assertEquals("image/png", media.contentType());
         assertEquals(3, media.size());
         assertEquals("png", media.extension());
+    }
+
+    @Test
+    void parseCarriesDetectedFormatAndDimensions() {
+        MockMultipartFile file = new MockMultipartFile("file", "a.png", "image/png", new byte[] {1});
+
+        ParsedMedia media = parser.parse(file, imageInfo);
+
+        assertEquals(MediaFormat.PNG, media.format());
+        assertEquals(new Dimensions(4, 3), media.dimensions());
     }
 
     @Test
@@ -44,10 +54,11 @@ class MediaParserTest {
             new byte[] {4, 5}
         );
 
-        ParsedMedia media = parser.parse(file);
+        ParsedMedia media = parser.parse(file, new MediaInfo(MediaType.VIDEO, MediaFormat.MP4, null));
 
         assertEquals(MediaType.VIDEO, media.mediaType());
         assertEquals("mp4", media.extension());
+        assertNull(media.dimensions());
     }
 
     @Test
@@ -59,7 +70,7 @@ class MediaParserTest {
             new byte[] {1}
         );
 
-        ParsedMedia media = parser.parse(file);
+        ParsedMedia media = parser.parse(file, imageInfo);
 
         assertNull(media.filename());
         assertNull(media.extension());
@@ -67,22 +78,11 @@ class MediaParserTest {
 
     @Test
     void parseRejectsMissingFile() {
-        MediaParsingException exception = assertThrows(MediaParsingException.class, () -> parser.parse(null));
-
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-    }
-
-    @Test
-    void parseRejectsUnsupportedMediaType() {
-        MockMultipartFile file = new MockMultipartFile(
-            "file",
-            "document.pdf",
-            "application/pdf",
-            new byte[] {1}
+        MediaParsingException exception = assertThrows(
+            MediaParsingException.class,
+            () -> parser.parse(null, imageInfo)
         );
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> parser.parse(file));
-
-        assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, exception.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
     }
 }

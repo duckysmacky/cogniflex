@@ -9,18 +9,11 @@ import java.util.Locale;
 
 @Component
 public class MediaParser {
-    private final MediaTypeResolver mediaTypeResolver;
-
-    public MediaParser(MediaTypeResolver mediaTypeResolver) {
-        this.mediaTypeResolver = mediaTypeResolver;
-    }
-
-    public ParsedMedia parse(MultipartFile file) {
+    public ParsedMedia parse(MultipartFile file, MediaInfo info) {
         if (file == null) {
             throw MediaParsingException.missingFile();
         }
 
-        var mediaType = mediaTypeResolver.resolve(file);
         byte[] bytes = readBytes(file);
 
         if (bytes.length == 0) {
@@ -28,12 +21,14 @@ public class MediaParser {
         }
 
         return new ParsedMedia(
-            mediaType,
+            info.declaredType(),
             bytes,
             normalizeFilename(file.getOriginalFilename()),
             file.getContentType(),
             bytes.length,
-            extensionOf(file.getOriginalFilename())
+            extensionOf(file.getOriginalFilename()),
+            info.format(),
+            info.dimensions()
         );
     }
 

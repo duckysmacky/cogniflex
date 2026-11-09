@@ -44,6 +44,7 @@ app:
     media:
       max-image-size: "${INPUT_MAX_IMAGE_SIZE:10MB}"
       max-video-size: "${INPUT_MAX_VIDEO_SIZE:100MB}"
+      max-image-pixels: "${INPUT_MAX_IMAGE_PIXELS:50000000}"
 
 management:
   server:
