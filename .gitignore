@@ -11,8 +11,6 @@ node_modules
 .env
 .DS_Store
 
-graphify-out/.graphify_*
-graphify-out/cache
 
 inference/generated/
 
@@ -22,3 +20,4 @@ inference/generated/
 !inference/weights/.gitkeep
 !model/artifacts/.gitkeep
 !model/artifacts/**/.gitkeep
+graphify-out/
