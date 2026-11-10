@@ -8,6 +8,9 @@ springdoc:
   swagger-ui:
     enabled: false
 
+server:
+  forward-headers-strategy: native
+
 app:
   cors:
     allowed-origins-patterns: "*"
@@ -15,9 +18,9 @@ app:
     allowed-headers: ["Content-Type", "Authorization"]
     allow-credentials: true
   rate-limit:
-    active: false
-    path-patterns: 
-      - /app/analyze/**
+    active: true
+    path-patterns:
+      - /api/analyze/**
     capacity: 100
     refill-greedy-capacity: 100
     refill-greedy-duration-seconds: 60

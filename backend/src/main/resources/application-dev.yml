@@ -21,7 +21,7 @@ app:
   rate-limit:
     active: false
     path-patterns: 
-      - /app/analyze/**
+      - /api/analyze/**
     capacity: 100
     refill-greedy-capacity: 100
     refill-greedy-duration-seconds: 60
