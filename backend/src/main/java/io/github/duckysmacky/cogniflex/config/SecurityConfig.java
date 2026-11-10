@@ -1,13 +1,8 @@
 package io.github.duckysmacky.cogniflex.config;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.security.config.Customizer;
@@ -30,8 +25,7 @@ public class SecurityConfig {
     private final CorsProperties corsProperties;
     private final Environment environment;
 
-    SecurityConfig(CorsProperties corsProperties, Environment environment)
-    {
+    SecurityConfig(CorsProperties corsProperties, Environment environment) {
         this.corsProperties = corsProperties;
         this.environment = environment;
     }
@@ -64,7 +58,7 @@ public class SecurityConfig {
             .build();
     }
 
-     @Bean
+    @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(corsProperties.allowedOriginsPatterns());
@@ -74,7 +68,6 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        System.out.println("cors config loaded successfully");
         return source;
     }
 }
