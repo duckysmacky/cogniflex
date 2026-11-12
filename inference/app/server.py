@@ -33,7 +33,12 @@ def serve(service_root: Path, project_root: Path):
         ],
     )
     analyzer_pb2_grpc.add_AnalyzerServicer_to_server(
-        AnalyzerServicer(photo_detector, text_detector),
+        AnalyzerServicer(
+            photo_detector,
+            text_detector,
+            max_concurrent_photo=settings.grpc.max_concurrent_photo,
+            max_concurrent_text=settings.grpc.max_concurrent_text,
+        ),
         server,
     )
     server.add_insecure_port(f"{settings.grpc.host}:{settings.grpc.port}")

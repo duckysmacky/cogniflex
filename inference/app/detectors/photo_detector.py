@@ -1,3 +1,5 @@
+import threading
+
 import cv2
 import numpy as np
 import torch
@@ -20,9 +22,17 @@ class MultitypePictureDetector:
         self.model_faces.load_state_dict(torch.load(path_faces, map_location="cpu"))
         self.model_faces.eval()
 
-        self.face_cascade = cv2.CascadeClassifier(
-            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
-        )
+        # CascadeClassifier keeps mutable detection state, so each thread gets its own copy.
+        self._cascades = threading.local()
+
+    def _face_cascade(self) -> cv2.CascadeClassifier:
+        cascade = getattr(self._cascades, "value", None)
+        if cascade is None:
+            cascade = cv2.CascadeClassifier(
+                cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+            )
+            self._cascades.value = cascade
+        return cascade
 
     def predict_picture(self, image_bytes: bytes) -> tuple[float, int]:
         image_bgr = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
@@ -31,7 +41,7 @@ class MultitypePictureDetector:
 
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(
+        faces = self._face_cascade().detectMultiScale(
             gray,
             scaleFactor=1.1,
             minNeighbors=5,

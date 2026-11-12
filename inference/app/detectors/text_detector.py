@@ -1,3 +1,5 @@
+import threading
+
 import torch
 from transformers import AutoTokenizer, AutoModel
 import torch.nn as nn
@@ -28,6 +30,9 @@ class TextDetector:
     def __init__(self, model_weights_path: str, model_name: str = 'roberta-base'):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        # The fast tokenizer mutates its truncation/padding state on every call and
+        # raises "Already borrowed" when used from several threads; the model forward is safe.
+        self._tokenizer_lock = threading.Lock()
         self.model = RoBERTaDetector(model_name, dropout_rate=0.3)
 
         from safetensors.torch import load_file
@@ -38,13 +43,14 @@ class TextDetector:
 
     def predict_text(self, text: str) -> tuple[float, int]:
         with torch.no_grad():
-            encoded = self.tokenizer(
-                text,
-                truncation=True,
-                padding=True,
-                max_length=512,
-                return_tensors='pt'
-            )
+            with self._tokenizer_lock:
+                encoded = self.tokenizer(
+                    text,
+                    truncation=True,
+                    padding=True,
+                    max_length=512,
+                    return_tensors='pt'
+                )
             input_ids = encoded['input_ids'].to(self.device)
             attention_mask = encoded['attention_mask'].to(self.device)
             logits = self.model(input_ids, attention_mask)

@@ -18,11 +18,14 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         self,
         photo_detector: "MultitypePictureDetector",
         text_detector: "TextDetector",
+        max_concurrent_photo: int = 1,
+        max_concurrent_text: int = 1,
     ) -> None:
         self.photo_detector = photo_detector
         self.text_detector = text_detector
-        self._photo_lock = threading.Lock()
-        self._text_lock = threading.Lock()
+        # Bound concurrent inferences per model family (1 = fully serialised).
+        self._photo_slots = threading.Semaphore(max_concurrent_photo)
+        self._text_slots = threading.Semaphore(max_concurrent_text)
 
     def AnalyzePhoto(self, request, context):
         image_bytes = request.image_data
@@ -45,7 +48,7 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         start_time = time.time()
 
         try:
-            with self._photo_lock:
+            with self._photo_slots:
                 confidence, pred = self.photo_detector.predict_picture(image_bytes)
             return _reply_from_prediction("Photo", start_time, confidence, pred)
         except Exception as e:
@@ -80,7 +83,7 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         start_time = time.time()
 
         try:
-            with self._text_lock:
+            with self._text_slots:
                 confidence, pred = self.text_detector.predict_text(text)
             return _reply_from_prediction("Text", start_time, confidence, pred)
         except Exception as e:
