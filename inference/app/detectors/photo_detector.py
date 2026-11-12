@@ -11,7 +11,7 @@ from app.inference.image_preprocessing import IMAGE_TRANSFORM_VAL
 
 
 class MultitypePictureDetector:
-    def __init__(self, path_general: str, path_faces: str):
+    def __init__(self, path_general: str, path_faces: str) -> None:
         self.model_general = models.resnet18(weights=None)
         self.model_general.fc = nn.Linear(self.model_general.fc.in_features, 2)
         self.model_general.load_state_dict(torch.load(path_general, map_location="cpu"))

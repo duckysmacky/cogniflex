@@ -27,7 +27,7 @@ class RoBERTaDetector(nn.Module):
 
 
 class TextDetector:
-    def __init__(self, model_weights_path: str, model_name: str = 'roberta-base'):
+    def __init__(self, model_weights_path: str, model_name: str = 'roberta-base') -> None:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         # The fast tokenizer mutates its truncation/padding state on every call and

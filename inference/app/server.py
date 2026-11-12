@@ -15,7 +15,7 @@ from app.detectors.photo_detector import MultitypePictureDetector
 from app.grpc_service import AnalyzerServicer
 
 
-def serve(service_root: Path, project_root: Path):
+def serve(service_root: Path, project_root: Path) -> None:
     settings = load_settings(service_root, project_root)
     max_message_length_bytes = settings.grpc.max_message_mb * 1024 * 1024
 

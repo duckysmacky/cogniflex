@@ -27,7 +27,11 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         self._photo_slots = threading.Semaphore(max_concurrent_photo)
         self._text_slots = threading.Semaphore(max_concurrent_text)
 
-    def AnalyzePhoto(self, request, context):
+    def AnalyzePhoto(
+        self,
+        request: analyzer_pb2.PhotoRequest,
+        context: grpc.ServicerContext,
+    ) -> analyzer_pb2.AnalyzeReply:
         image_bytes = request.image_data
 
         logging.info("=" * 60)
@@ -66,7 +70,11 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         context.set_details(VIDEO_UNSUPPORTED_DETAILS)
         return analyzer_pb2.AnalyzeReply()
 
-    def AnalyzeText(self, request, context):
+    def AnalyzeText(
+        self,
+        request: analyzer_pb2.TextRequest,
+        context: grpc.ServicerContext,
+    ) -> analyzer_pb2.AnalyzeReply:
         text = request.text
 
         logging.info("=" * 60)
