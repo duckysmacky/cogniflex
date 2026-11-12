@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -23,10 +24,10 @@ class MultitypePictureDetector:
             cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
         )
 
-    def predict_picture(self, picture_path: str):
-        image_bgr = cv2.imread(picture_path)
+    def predict_picture(self, image_bytes: bytes) -> tuple[float, int]:
+        image_bgr = cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
         if image_bgr is None:
-            raise ValueError(f"Cannot read image: {picture_path}")
+            raise ValueError("Cannot decode image")
 
         image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
         gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)

@@ -1,6 +1,4 @@
 import logging
-import os
-import tempfile
 import time
 import threading
 from typing import TYPE_CHECKING
@@ -11,8 +9,6 @@ from cogniflex.inference import analyzer_pb2, analyzer_pb2_grpc
 if TYPE_CHECKING:
     from app.detectors.photo_detector import MultitypePictureDetector
     from app.detectors.text_detector import TextDetector
-
-_inference_lock = threading.Lock()
 
 VIDEO_UNSUPPORTED_DETAILS = "Video analysis is not supported yet"
 
@@ -25,6 +21,8 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
     ) -> None:
         self.photo_detector = photo_detector
         self.text_detector = text_detector
+        self._photo_lock = threading.Lock()
+        self._text_lock = threading.Lock()
 
     def AnalyzePhoto(self, request, context):
         image_bytes = request.image_data
@@ -44,24 +42,15 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
             context.set_details("Empty image bytes received")
             return analyzer_pb2.AnalyzeReply()
 
-        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp_file:
-            tmp_file.write(image_bytes)
-            tmp_path = tmp_file.name
-        logging.info("[Photo] Saved to temp file: %s", tmp_path)
-
         start_time = time.time()
 
         try:
-            with _inference_lock:
-                confidence, pred = self.photo_detector.predict_picture(tmp_path)
+            with self._photo_lock:
+                confidence, pred = self.photo_detector.predict_picture(image_bytes)
             return _reply_from_prediction("Photo", start_time, confidence, pred)
         except Exception as e:
             _set_internal_error(context, "Photo", start_time, e)
             return analyzer_pb2.AnalyzeReply()
-        finally:
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
-                logging.info("[Photo] Temp file deleted: %s", tmp_path)
 
     def AnalyzeVideo(
         self,
@@ -91,7 +80,7 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         start_time = time.time()
 
         try:
-            with _inference_lock:
+            with self._text_lock:
                 confidence, pred = self.text_detector.predict_text(text)
             return _reply_from_prediction("Text", start_time, confidence, pred)
         except Exception as e:
