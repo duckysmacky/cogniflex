@@ -7,6 +7,7 @@ from concurrent import futures
 from pathlib import Path
 
 import grpc
+import torch
 from cogniflex.inference import analyzer_pb2_grpc
 
 from app.config import load_settings
@@ -14,21 +15,30 @@ from app.detectors.photo_detector import MultitypePictureDetector
 from app.grpc_service import AnalyzerServicer
 
 
-def serve(service_root: Path, project_root: Path):
+def serve(service_root: Path, project_root: Path) -> None:
     settings = load_settings(service_root, project_root)
     max_message_length_bytes = settings.grpc.max_message_mb * 1024 * 1024
+
+    if settings.grpc.torch_threads > 0:
+        torch.set_num_threads(settings.grpc.torch_threads)
+    logging.info("Torch intra-op threads: %s", torch.get_num_threads())
 
     photo_detector, text_detector = _preload_models(settings)
 
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=1),
+        futures.ThreadPoolExecutor(max_workers=settings.grpc.max_workers),
         options=[
             ("grpc.max_send_message_length", max_message_length_bytes),
             ("grpc.max_receive_message_length", max_message_length_bytes),
         ],
     )
     analyzer_pb2_grpc.add_AnalyzerServicer_to_server(
-        AnalyzerServicer(photo_detector, text_detector),
+        AnalyzerServicer(
+            photo_detector,
+            text_detector,
+            max_concurrent_photo=settings.grpc.max_concurrent_photo,
+            max_concurrent_text=settings.grpc.max_concurrent_text,
+        ),
         server,
     )
     server.add_insecure_port(f"{settings.grpc.host}:{settings.grpc.port}")

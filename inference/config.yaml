@@ -1,5 +1,9 @@
 app:
   max_message_mb: 100
+  max_workers: 12
+  torch_threads: 0
+  max_concurrent_text: 4
+  max_concurrent_photo: 4
 
 models:
   image:

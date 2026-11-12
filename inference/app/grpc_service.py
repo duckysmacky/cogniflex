@@ -1,6 +1,4 @@
 import logging
-import os
-import tempfile
 import time
 import threading
 from typing import TYPE_CHECKING
@@ -12,8 +10,6 @@ if TYPE_CHECKING:
     from app.detectors.photo_detector import MultitypePictureDetector
     from app.detectors.text_detector import TextDetector
 
-_inference_lock = threading.Lock()
-
 VIDEO_UNSUPPORTED_DETAILS = "Video analysis is not supported yet"
 
 
@@ -22,11 +18,20 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         self,
         photo_detector: "MultitypePictureDetector",
         text_detector: "TextDetector",
+        max_concurrent_photo: int = 1,
+        max_concurrent_text: int = 1,
     ) -> None:
         self.photo_detector = photo_detector
         self.text_detector = text_detector
+        # Bound concurrent inferences per model family (1 = fully serialised).
+        self._photo_slots = threading.Semaphore(max_concurrent_photo)
+        self._text_slots = threading.Semaphore(max_concurrent_text)
 
-    def AnalyzePhoto(self, request, context):
+    def AnalyzePhoto(
+        self,
+        request: analyzer_pb2.PhotoRequest,
+        context: grpc.ServicerContext,
+    ) -> analyzer_pb2.AnalyzeReply:
         image_bytes = request.image_data
 
         logging.info("=" * 60)
@@ -44,24 +49,15 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
             context.set_details("Empty image bytes received")
             return analyzer_pb2.AnalyzeReply()
 
-        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp_file:
-            tmp_file.write(image_bytes)
-            tmp_path = tmp_file.name
-        logging.info("[Photo] Saved to temp file: %s", tmp_path)
-
         start_time = time.time()
 
         try:
-            with _inference_lock:
-                confidence, pred = self.photo_detector.predict_picture(tmp_path)
+            with self._photo_slots:
+                confidence, pred = self.photo_detector.predict_picture(image_bytes)
             return _reply_from_prediction("Photo", start_time, confidence, pred)
         except Exception as e:
             _set_internal_error(context, "Photo", start_time, e)
             return analyzer_pb2.AnalyzeReply()
-        finally:
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
-                logging.info("[Photo] Temp file deleted: %s", tmp_path)
 
     def AnalyzeVideo(
         self,
@@ -74,7 +70,11 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         context.set_details(VIDEO_UNSUPPORTED_DETAILS)
         return analyzer_pb2.AnalyzeReply()
 
-    def AnalyzeText(self, request, context):
+    def AnalyzeText(
+        self,
+        request: analyzer_pb2.TextRequest,
+        context: grpc.ServicerContext,
+    ) -> analyzer_pb2.AnalyzeReply:
         text = request.text
 
         logging.info("=" * 60)
@@ -91,7 +91,7 @@ class AnalyzerServicer(analyzer_pb2_grpc.AnalyzerServicer):
         start_time = time.time()
 
         try:
-            with _inference_lock:
+            with self._text_slots:
                 confidence, pred = self.text_detector.predict_text(text)
             return _reply_from_prediction("Text", start_time, confidence, pred)
         except Exception as e:
