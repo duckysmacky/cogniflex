@@ -36,12 +36,12 @@ class TextDetector:
         self.model.to(self.device)
         self.model.eval()
 
-    def predict_text(self, text: str):
+    def predict_text(self, text: str) -> tuple[float, int]:
         with torch.no_grad():
             encoded = self.tokenizer(
                 text,
                 truncation=True,
-                padding='max_length',
+                padding=True,
                 max_length=512,
                 return_tensors='pt'
             )
