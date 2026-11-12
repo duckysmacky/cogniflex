@@ -10,6 +10,8 @@ class GrpcSettings:
     host: str
     port: str
     max_message_mb: int
+    max_workers: int
+    torch_threads: int
 
 
 @dataclass(frozen=True)
@@ -66,6 +68,8 @@ def load_settings(service_root: Path, project_root: Path) -> Settings:
             host=os.getenv("GRPC_HOST", "[::]"),
             port=os.getenv("GRPC_PORT", "50051"),
             max_message_mb=int(config["app"].get("max_message_mb", 100)),
+            max_workers=int(config["app"].get("max_workers", 4)),
+            torch_threads=int(config["app"].get("torch_threads", 0)),
         ),
         image_model=ImageModelSettings(
             general_weights=_resolve_service_path(service_root, image_config["general_weights"]),

@@ -7,6 +7,7 @@ from concurrent import futures
 from pathlib import Path
 
 import grpc
+import torch
 from cogniflex.inference import analyzer_pb2_grpc
 
 from app.config import load_settings
@@ -18,10 +19,14 @@ def serve(service_root: Path, project_root: Path):
     settings = load_settings(service_root, project_root)
     max_message_length_bytes = settings.grpc.max_message_mb * 1024 * 1024
 
+    if settings.grpc.torch_threads > 0:
+        torch.set_num_threads(settings.grpc.torch_threads)
+    logging.info("Torch intra-op threads: %s", torch.get_num_threads())
+
     photo_detector, text_detector = _preload_models(settings)
 
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=1),
+        futures.ThreadPoolExecutor(max_workers=settings.grpc.max_workers),
         options=[
             ("grpc.max_send_message_length", max_message_length_bytes),
             ("grpc.max_receive_message_length", max_message_length_bytes),
